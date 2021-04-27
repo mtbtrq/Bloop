@@ -23,15 +23,6 @@ class Hypixel(commands.Cog):
         )
 
     @commands.command()
-    async def duelswlr(self, ctx, user):
-        data = requests.get(f"https://api.slothpixel.me/api/players/{user}").json()
-
-        await ctx.send(
-        str(data["stats"]["Duels"]["general"]["win_loss_ratio"]) +
-        " W/L Ratio."
-        )
-
-    @commands.command()
     async def bwwins(self, ctx, user):
         data = requests.get(f"https://api.slothpixel.me/api/players/{user}").json()
 
@@ -92,6 +83,15 @@ class Hypixel(commands.Cog):
         await ctx.send(
         str(data["stats"]["Duels"]["general"]["kills"]) +
         " Kills."
+        )
+
+    @commands.command()
+    async def duelswlr(self, ctx, user):
+        data = requests.get(f"https://api.slothpixel.me/api/players/{user}").json()
+
+        await ctx.send(
+        str(data["stats"]["Duels"]["general"]["win_loss_ratio"]) +
+        " W/L Ratio."
         )
 
 
