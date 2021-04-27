@@ -1,9 +1,6 @@
 import discord
 import json
-import math
 from asyncio import sleep
-import random
-import requests
 import pprint
 import os
 import cogs
@@ -41,27 +38,12 @@ async def help(ctx):
     em.add_field(
         name='BedWars', value='.bwfkdr <IGN> ; .bwlvl <IGN>; .bwwins <IGN>; .bwwlr <IGN>', inline=True)
     em.add_field(
-        name='Maths', value='.mathadd ; .mathsub; .mathdiv; .mathmult; .mathsqrt', inline=True)
-    em.add_field(
-        name='Misc', value='.nwlevel <IGN> ; .karma <IGN>; .coinflip; .about', inline=True)
+        name='Misc', value='.nwlevel <IGN> ; .karma <IGN>; .coinflip; .about; .src', inline=True)
     em.add_field(name='Moderation', value='.kick ; .ban; .ping;', inline=True)
     em.set_thumbnail(
       url='https://media.discordapp.net/attachments/835818650916487180/835837071771041822/5.png?width=480&height=480')
 
     await ctx.send(embed=em)
-
-
-@client.command()
-async def coinflip(ctx):
-    choices = ("Tails", "Heads")
-    rancoin = random.choice(choices)
-    await ctx.send(rancoin)
-
-
-@client.command()
-async def about(ctx):
-
-    await ctx.send("Bot made by Supelion#4292 as a side project and as a introduction to python :D")
 
 
 client.run(TOKEN)
