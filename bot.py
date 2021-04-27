@@ -22,7 +22,7 @@ async def on_ready():
     print('Ready.')
 
 
-TOKEN = 'ODM1MjM3ODMxNDEyNTQ3NjA3.YIMh2A.wQOyr7neUh_oH7i-mUrYaxSEWLM'
+TOKEN = 'INSERT TOKEN HERE'
 
 
 @client.command()
