@@ -2,7 +2,6 @@ import discord
 import json
 from asyncio import sleep
 import pprint
-from webserver import keep_alive
 import os
 import cogs
 from discord.ext import commands
