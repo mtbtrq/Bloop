@@ -21,7 +21,7 @@ async def on_ready():
     print('Am Ready, lololololooololololololoolololololollolol.')
 
 
-TOKEN = 'ODM1MjM3ODMxNDEyNTQ3NjA3.YIMh2A._hKgQoxyikFps0iwBmr3UjCPOIE'
+TOKEN = 'INSERT TOKEN HERE'
 
 
 @client.event
