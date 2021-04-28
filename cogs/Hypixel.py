@@ -1,6 +1,8 @@
 import discord
 import requests
+import aiohttp
 from discord.ext import commands
+
 
 class Hypixel(commands.Cog):
 
@@ -9,13 +11,15 @@ class Hypixel(commands.Cog):
 
     @commands.command()
     async def nwlevel(self, ctx, user):
-        data = requests.get(f"https://api.slothpixel.me/api/players/{user}").json()
+        data = requests.get(
+            f"https://api.slothpixel.me/api/players/{user}").json()
 
         await ctx.send(data["level"])
 
     @commands.command()
     async def karma(self, ctx, user):
-        data = requests.get(f"https://api.slothpixel.me/api/players/{user}").json()
+        data = requests.get(
+            f"https://api.slothpixel.me/api/players/{user}").json()
 
         await ctx.send(
         str(data["karma"]) +
@@ -24,43 +28,48 @@ class Hypixel(commands.Cog):
 
     @commands.command()
     async def bwwins(self, ctx, user):
-        data = requests.get(f"https://api.slothpixel.me/api/players/{user}").json()
+        data = requests.get(
+            f"https://api.slothpixel.me/api/players/{user}").json()
 
         await ctx.send(
-        str(data["stats"]["BedWars"]["wins"]) + 
+        str(data["stats"]["BedWars"]["wins"]) +
         " Wins."
         )
 
     @commands.command()
     async def bwlevel(self, ctx, user):
-        data = requests.get(f"https://api.slothpixel.me/api/players/{user}").json()
+        data = requests.get(
+            f"https://api.slothpixel.me/api/players/{user}").json()
 
         await ctx.send(
-        str(data["stats"]["BedWars"]["level"]) + 
+        str(data["stats"]["BedWars"]["level"]) +
         " Stars."
         )
 
     @commands.command()
     async def bwwlr(self, ctx, user):
-        data = requests.get(f"https://api.slothpixel.me/api/players/{user}").json()
+        data = requests.get(
+            f"https://api.slothpixel.me/api/players/{user}").json()
 
         await ctx.send(
-        str(data["stats"]["BedWars"]["w_l"]) + 
+        str(data["stats"]["BedWars"]["w_l"]) +
         " W/L Ratio."
         )
 
     @commands.command()
     async def bwfkdr(self, ctx, user):
-        data = requests.get(f"https://api.slothpixel.me/api/players/{user}").json()
+        data = requests.get(
+            f"https://api.slothpixel.me/api/players/{user}").json()
 
         await ctx.send(
-        str(data["stats"]["BedWars"]["final_k_d"]) + 
+        str(data["stats"]["BedWars"]["final_k_d"]) +
         " FKDR."
         )
 
     @commands.command()
     async def duelskdr(self, ctx, user):
-        data = requests.get(f"https://api.slothpixel.me/api/players/{user}").json()
+        data = requests.get(
+            f"https://api.slothpixel.me/api/players/{user}").json()
 
         await ctx.send(
         str(data["stats"]["Duels"]["general"]["kd_ratio"]) +
@@ -69,7 +78,8 @@ class Hypixel(commands.Cog):
 
     @commands.command()
     async def duelswins(self, ctx, user):
-        data = requests.get(f"https://api.slothpixel.me/api/players/{user}").json()
+        data = requests.get(
+            f"https://api.slothpixel.me/api/players/{user}").json()
 
         await ctx.send(
         str(data["stats"]["Duels"]["general"]["wins"]) +
@@ -78,7 +88,8 @@ class Hypixel(commands.Cog):
 
     @commands.command()
     async def duelskills(self, ctx, user):
-        data = requests.get(f"https://api.slothpixel.me/api/players/{user}").json()
+        data = requests.get(
+            f"https://api.slothpixel.me/api/players/{user}").json()
 
         await ctx.send(
         str(data["stats"]["Duels"]["general"]["kills"]) +
@@ -87,7 +98,8 @@ class Hypixel(commands.Cog):
 
     @commands.command()
     async def duelswlr(self, ctx, user):
-        data = requests.get(f"https://api.slothpixel.me/api/players/{user}").json()
+        data = requests.get(
+            f"https://api.slothpixel.me/api/players/{user}").json()
 
         await ctx.send(
         str(data["stats"]["Duels"]["general"]["win_loss_ratio"]) +
@@ -96,4 +108,4 @@ class Hypixel(commands.Cog):
 
 
 def setup(client):
-  client.add_cog(Hypixel(client))
+    client.add_cog(Hypixel(client))
