@@ -27,84 +27,38 @@ class Hypixel(commands.Cog):
         )
 
     @commands.command()
-    async def bwwins(self, ctx, user):
+    async def bw(self, ctx, user):
         data = requests.get(
             f"https://api.slothpixel.me/api/players/{user}").json()
 
-        await ctx.send(
-        str(data["stats"]["BedWars"]["wins"]) +
-        " Wins."
-        )
+        Wins = str(data["stats"]["BedWars"]["wins"])
+        Finalkd = str(data["stats"]["BedWars"]["final_k_d"])
+        wlr = str(data["stats"]["BedWars"]["w_l"])
+        BBLR = str(data["stats"]["BedWars"]["bed_ratio"])
+        FinalDeaths = str(data["stats"]["BedWars"]["final_deaths"])
+        FinalKills = str(data["stats"]["BedWars"]["final_kills"])
+        IGN = str(data["username"])
+        
 
-    @commands.command()
-    async def bwlevel(self, ctx, user):
-        data = requests.get(
-            f"https://api.slothpixel.me/api/players/{user}").json()
+        bwembed = discord.Embed(
+        title='BedWars Stats', description=f'Bedwars Stats of {IGN}', color=ctx.author.color)
 
-        await ctx.send(
-        str(data["stats"]["BedWars"]["level"]) +
-        " Stars."
-        )
+        bwembed.add_field(
+        name='Wins', value=f'``{Wins}``', inline=True)
+        bwembed.add_field(
+        name='FKDR', value=f'``{Finalkd}``', inline=True)
+        bwembed.add_field(
+        name='WLR', value=f'``{wlr}``', inline=True)
+        bwembed.add_field(
+        name='BBLR', value=f'``{BBLR}``', inline=True)
+        bwembed.add_field(
+        name='Final Deaths', value=f'``{FinalDeaths}``', inline=True)
+        bwembed.add_field(
+        name='Final Kills', value=f'``{FinalKills}``', inline=True)
+        bwembed.set_thumbnail(
+      url='https://media.discordapp.net/attachments/836614888080015381/837749892382326834/logo.png')
 
-    @commands.command()
-    async def bwwlr(self, ctx, user):
-        data = requests.get(
-            f"https://api.slothpixel.me/api/players/{user}").json()
-
-        await ctx.send(
-        str(data["stats"]["BedWars"]["w_l"]) +
-        " W/L Ratio."
-        )
-
-    @commands.command()
-    async def bwfkdr(self, ctx, user):
-        data = requests.get(
-            f"https://api.slothpixel.me/api/players/{user}").json()
-
-        await ctx.send(
-        str(data["stats"]["BedWars"]["final_k_d"]) +
-        " FKDR."
-        )
-
-    @commands.command()
-    async def duelskdr(self, ctx, user):
-        data = requests.get(
-            f"https://api.slothpixel.me/api/players/{user}").json()
-
-        await ctx.send(
-        str(data["stats"]["Duels"]["general"]["kd_ratio"]) +
-        " KDR."
-        )
-
-    @commands.command()
-    async def duelswins(self, ctx, user):
-        data = requests.get(
-            f"https://api.slothpixel.me/api/players/{user}").json()
-
-        await ctx.send(
-        str(data["stats"]["Duels"]["general"]["wins"]) +
-        " Wins."
-        )
-
-    @commands.command()
-    async def duelskills(self, ctx, user):
-        data = requests.get(
-            f"https://api.slothpixel.me/api/players/{user}").json()
-
-        await ctx.send(
-        str(data["stats"]["Duels"]["general"]["kills"]) +
-        " Kills."
-        )
-
-    @commands.command()
-    async def duelswlr(self, ctx, user):
-        data = requests.get(
-            f"https://api.slothpixel.me/api/players/{user}").json()
-
-        await ctx.send(
-        str(data["stats"]["Duels"]["general"]["win_loss_ratio"]) +
-        " W/L Ratio."
-        )
+        await ctx.send(embed=bwembed)
 
 
 def setup(client):
