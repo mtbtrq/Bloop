@@ -2,6 +2,9 @@ import discord
 import json
 from asyncio import sleep
 import pprint
+import aiohttp
+import random
+import requests
 import os
 import cogs
 from discord.ext import commands
@@ -16,8 +19,8 @@ for filename in os.listdir('./cogs'):
 
 @client.event
 async def on_ready():
-    await client.change_presence(status=discord.Status.online, activity=discord.Game('.help for help'))
-    print('Am Ready, lololololooololololololoolololololollolol.')
+    await client.change_presence(status=discord.Status.online, activity=discord.Game(name=f"on {len(client.guilds)} servers | .help"))
+    print("I'm ready lololololololololololol.")
 
 
 TOKEN = 'INSERT TOKEN HERE'
@@ -27,10 +30,51 @@ TOKEN = 'INSERT TOKEN HERE'
 async def on_message_delete(message):
     client.sniped_messages[message.guild.id] = (
         message.content, message.author, message.channel.name, message.created_at)
-
+    await client.process_commands(message)
 
 @client.command()
-async def snipe(ctx):
+async def meme(ctx):
+    r = requests.get("https://memes.blademaker.tv/api?lang=en")
+    res = r.json()
+    title = res["title"]
+    sub = res["subreddit"]
+    memeembed = discord.Embed(title = f"{title}", color=discord.Color.blue())
+    memeembed.set_footer(text=f"Subreddit: {sub}")
+    memeembed.set_image(url = res["image"])
+    await ctx.send(embed=memeembed)
+
+@client.command(aliases= ['8ball', '8b'])
+async def eightball(ctx, *, question):
+    responses = ["It is certain.",
+                "It is decidedly so.",
+                "is that even a question? yeah idiot.",
+                "Yes - definitely.",
+                "You may rely on it.",
+                "lmao ofc lol",
+                "Most likely.",
+                "Outlook good.",
+                "Yes.",
+                "Signs point to yes.",
+                "Reply hazy, try again.",
+                "for the last time, YES.",
+                "Better not tell you now.",
+                "Cannot predict now.",
+                "Concentrate and ask again.",
+                "Don't count on it.",
+                "ofc not lol.",
+                "My sources say no.",
+                "doesnt seem like it tbh lol",
+                "Very doubtful."]
+    await ctx.send(f":8ball: Question: {question}\n:8ball: Answer: {random.choice(responses)}")
+
+@client.event
+async def on_message(message):
+    if message.guild.me in message.mentions:
+        await message.channel.send("Pls dont unecessarily pong me :c, it's .help to get help.")
+    await client.process_commands(message)
+
+@client.command()
+async def snipe(ctx, message):
     try:
         contents, author, channel_name, time = client.sniped_messages[ctx.guild.id]
 
@@ -39,12 +83,13 @@ async def snipe(ctx):
         return
 
     embed = discord.Embed(description=contents,
-                          color=discord.Color.purple(), timestamp=time)
+                          color=discord.Color.blue(), timestamp=time)
     embed.set_author(
         name=f"{author.name}#{author.discriminator}", icon_url=author.avatar_url)
     embed.set_footer(text=f"Deleted in : #{channel_name}")
 
     await ctx.channel.send(embed=embed)
+    await client.process_commands(message)
 
 
 @client.command()
@@ -56,17 +101,14 @@ async def ping(ctx):
 @client.group(invoke_without_command=True)
 async def help(ctx):
     helpembed = discord.Embed(
-        title='Help', description='Made with <3 by Supelion.', color=ctx.author.color)
+        title='Help', description='Made with <3 by Supelion.', color=discord.Color.blue())
 
     helpembed.add_field(
-        name='Duels', value='.duelskills <IGN>; .duelswins <IGN>; .duelskdr <IGN> ; .duelswlr <IGN>', inline=True)
+        name=':video_game: Hypixel', value='``.bw``', inline=True)
     helpembed.add_field(
-        name='BedWars', value='.bwfkdr <IGN> ; .bwlvl <IGN>; .bwwins <IGN>; .bwwlr <IGN>', inline=True)
-    helpembed.add_field(
-        name='Misc', value='.nwlevel <IGN> ; .karma <IGN>; .coinflip; .about; .src; .snipe; .dadjoke', inline=True)
-    helpembed.add_field(name='Moderation', value='.kick ; .ban; .ping;', inline=True)
+        name=':gear: Misc', value='``.coinflip; .about; .src; .snipe; .discord; .dadjoke; .meme; .ping``', inline=True)
     helpembed.set_thumbnail(
-      url='https://media.discordapp.net/attachments/835818650916487180/835837071771041822/5.png?width=480&height=480')
+      url='https://media.discordapp.net/attachments/836614888080015381/837749892382326834/logo.png')
 
     await ctx.send(embed=helpembed)
 

@@ -9,22 +9,16 @@ class Hypixel(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    @commands.command()
-    async def nwlevel(self, ctx, user):
-        data = requests.get(
-            f"https://api.slothpixel.me/api/players/{user}").json()
+    import discord
+import requests
+import aiohttp
+from discord.ext import commands
 
-        await ctx.send(data["level"])
 
-    @commands.command()
-    async def karma(self, ctx, user):
-        data = requests.get(
-            f"https://api.slothpixel.me/api/players/{user}").json()
+class Hypixel(commands.Cog):
 
-        await ctx.send(
-        str(data["karma"]) +
-        " Karma."
-        )
+    def __init__(self, client):
+        self.client = client
 
     @commands.command()
     async def bw(self, ctx, user):
@@ -32,8 +26,11 @@ class Hypixel(commands.Cog):
             f"https://api.slothpixel.me/api/players/{user}").json()
 
         Wins = str(data["stats"]["BedWars"]["wins"])
+        Levels = str(data["stats"]["BedWars"]["level"])
         Finalkd = str(data["stats"]["BedWars"]["final_k_d"])
         wlr = str(data["stats"]["BedWars"]["w_l"])
+        BedsBroken = str(data["stats"]["BedWars"]["beds_broken"])
+        BedsLost = str(data["stats"]["BedWars"]["beds_lost"])
         BBLR = str(data["stats"]["BedWars"]["bed_ratio"])
         FinalDeaths = str(data["stats"]["BedWars"]["final_deaths"])
         FinalKills = str(data["stats"]["BedWars"]["final_kills"])
@@ -44,13 +41,19 @@ class Hypixel(commands.Cog):
         title='BedWars Stats', description=f'Bedwars Stats of {IGN}', color=ctx.author.color)
 
         bwembed.add_field(
-        name='Wins', value=f'``{Wins}``', inline=True)
+        name='Stars', value=f'``{Levels}``', inline=True)
         bwembed.add_field(
-        name='FKDR', value=f'``{Finalkd}``', inline=True)
+        name='Wins', value=f'``{Wins}``', inline=True)
         bwembed.add_field(
         name='WLR', value=f'``{wlr}``', inline=True)
         bwembed.add_field(
         name='BBLR', value=f'``{BBLR}``', inline=True)
+        bwembed.add_field(
+        name='Beds Broken', value=f'``{BedsBroken}``', inline=True)
+        bwembed.add_field(
+        name='Beds Lost', value=f'``{BedsLost}``', inline=True)
+        bwembed.add_field(
+        name='FKDR', value=f'``{Finalkd}``', inline=True)
         bwembed.add_field(
         name='Final Deaths', value=f'``{FinalDeaths}``', inline=True)
         bwembed.add_field(
