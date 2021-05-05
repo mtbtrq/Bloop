@@ -111,7 +111,7 @@ async def help(ctx):
         name=':gear: Misc', value='``.coinflip; .about; .src; .snipe; .discord; .dadjoke; .meme; .ping; .invite``', inline=True)
     helpembed.set_thumbnail(
       url='https://media.discordapp.net/attachments/836614888080015381/837749892382326834/logo.png')
-    helpembed.set_footer(text="SupeBot v0.6")
+    helpembed.set_footer(text="SupeBot v0.7")
 
     await ctx.send(embed=helpembed)
 
