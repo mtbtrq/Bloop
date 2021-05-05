@@ -12,4 +12,5 @@ You can invite SupeBot for your server here: https://discord.com/api/oauth2/auth
 5. Open CMD and type in "cd (directory of the bot files) main.py"
 
 **How to get a Hypixel API key?**
+
 Log onto the Hypixel server using ```mc.hypixel.net``` and do /api new
