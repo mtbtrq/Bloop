@@ -1,8 +1,4 @@
 import discord
-import json
-from asyncio import sleep
-import pprint
-import aiohttp
 import random
 import requests
 import os
@@ -33,6 +29,11 @@ async def on_message_delete(message):
     await client.process_commands(message)
 
 @client.command()
+async def ping(ctx):
+
+  await ctx.send(f'{round(client.latency*1000)} ms')
+
+@client.command()
 async def meme(ctx):
     r = requests.get("https://memes.blademaker.tv/api?lang=en")
     res = r.json()
@@ -42,6 +43,13 @@ async def meme(ctx):
     memeembed.set_footer(text=f"Subreddit: {sub}")
     memeembed.set_image(url = res["image"])
     await ctx.send(embed=memeembed)
+
+@client.command()
+async def invite(ctx):
+  invitembed = discord.Embed(color = discord.Color.blue())
+  invitembed.add_field(name=f"Invite Link :link:", value = "https://discord.com/api/oauth2/authorize?client_id=835237831412547607&permissions=268762199&scope=bot")
+  await ctx.send(embed=invitembed)
+  
 
 @client.command(aliases= ['8ball', '8b'])
 async def eightball(ctx, *, question):
@@ -67,11 +75,6 @@ async def eightball(ctx, *, question):
                 "Very doubtful."]
     await ctx.send(f":8ball: Question: {question}\n:8ball: Answer: {random.choice(responses)}")
 
-@client.event
-async def on_message(message):
-    if message.guild.me in message.mentions:
-        await message.channel.send("Pls dont unecessarily pong me :c, it's .help to get help.")
-    await client.process_commands(message)
 
 @client.command()
 async def snipe(ctx, message):
@@ -82,21 +85,20 @@ async def snipe(ctx, message):
         await ctx.channel.send("Couldn't find a message to snipe!")
         return
 
-    embed = discord.Embed(description=contents,
+    snipeembed = discord.Embed(description=contents,
                           color=discord.Color.blue(), timestamp=time)
-    embed.set_author(
+    snipeembed.set_author(
         name=f"{author.name}#{author.discriminator}", icon_url=author.avatar_url)
-    embed.set_footer(text=f"Deleted in : #{channel_name}")
+    snipeembed.set_footer(text=f"Deleted in : #{channel_name}")
 
-    await ctx.channel.send(embed=embed)
+    await ctx.channel.send(embed=snipeembed)
     await client.process_commands(message)
-
-
-@client.command()
-async def ping(ctx):
-
-    await ctx.send(f'{round(client.latency*1000)} ms')
-
+    
+@client.event
+async def on_message(message):
+    if message.guild.me in message.mentions:
+        await message.channel.send("Pls dont unecessarily pong me :c, it's .help to get help.")
+    await client.process_commands(message)
 
 @client.group(invoke_without_command=True)
 async def help(ctx):
@@ -104,11 +106,12 @@ async def help(ctx):
         title='Help', description='Made with <3 by Supelion.', color=discord.Color.blue())
 
     helpembed.add_field(
-        name=':video_game: Hypixel', value='``.bw``', inline=True)
+        name=':video_game: Hypixel', value='``.bw; .sw; .karma; .nwlevel``', inline=True)
     helpembed.add_field(
-        name=':gear: Misc', value='``.coinflip; .about; .src; .snipe; .discord; .dadjoke; .meme; .ping``', inline=True)
+        name=':gear: Misc', value='``.coinflip; .about; .src; .snipe; .discord; .dadjoke; .meme; .ping; .invite``', inline=True)
     helpembed.set_thumbnail(
       url='https://media.discordapp.net/attachments/836614888080015381/837749892382326834/logo.png')
+    helpembed.set_footer(text="SupeBot v0.6")
 
     await ctx.send(embed=helpembed)
 

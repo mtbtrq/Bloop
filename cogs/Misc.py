@@ -18,6 +18,7 @@ class Misc(commands.Cog):
     @commands.command()
     async def about(self, ctx):
       aboutembed = discord.Embed(title="About", description="Bot made by Supelion#4292 as a side project and as a introduction to python :D", color=discord.Color.blue())
+      aboutembed.set_footer(text="SupeBot v0.6")
       await ctx.send(embed=aboutembed)
 
     @commands.command()
