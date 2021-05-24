@@ -1,103 +1,49 @@
 import discord
-import random
-import requests
 import os
-import cogs
-from discord.ext import commands
+import json
+from itertools import cycle
+from discord.ext import commands, tasks
 
-client = commands.Bot(command_prefix='.', help_command=None)
+intents = discord.Intents.default()
+intents.members = True
+client = commands.Bot(command_prefix='!', help_command=None,intents=intents)
 client.sniped_messages = {}
 
 for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
         client.load_extension(f'cogs.{filename[:-3]}')
 
+with open('./config.json') as f:
+    config = json.load(f)
+
+token = config.get('token')
 
 @client.event
 async def on_ready():
-    await client.change_presence(status=discord.Status.online, activity=discord.Game(name=f"on {len(client.guilds)} servers | .help"))
-    print("I'm ready lololololololololololol.")
+    print("I'm ready lol.")
 
 
-TOKEN = 'INSERT TOKEN HERE'
+@tasks.loop(seconds=15)
+async def changer():
+    await client.wait_until_ready()
+    await client.change_presence(activity=discord.Game(name=next(client.status)))
 
 
-@client.event
-async def on_message_delete(message):
-    client.sniped_messages[message.guild.id] = (
-        message.content, message.author, message.channel.name, message.created_at)
-    await client.process_commands(message)
-
-@client.command()
-async def ping(ctx):
-
-  await ctx.send(f'{round(client.latency*1000)} ms')
-
-@client.command()
-async def meme(ctx):
-    r = requests.get("https://memes.blademaker.tv/api?lang=en")
-    res = r.json()
-    title = res["title"]
-    sub = res["subreddit"]
-    memeembed = discord.Embed(title = f"{title}", color=discord.Color.blue())
-    memeembed.set_footer(text=f"Subreddit: {sub}")
-    memeembed.set_image(url = res["image"])
-    await ctx.send(embed=memeembed)
-
-@client.command()
-async def invite(ctx):
-  invitembed = discord.Embed(color = discord.Color.blue())
-  invitembed.add_field(name=f"Invite Link :link:", value = "https://discord.com/api/oauth2/authorize?client_id=835237831412547607&permissions=268762199&scope=bot")
-  await ctx.send(embed=invitembed)
-  
-
-@client.command(aliases= ['8ball', '8b'])
-async def eightball(ctx, *, question):
-    responses = ["It is certain.",
-                "It is decidedly so.",
-                "is that even a question? yeah idiot.",
-                "Yes - definitely.",
-                "You may rely on it.",
-                "lmao ofc lol",
-                "Most likely.",
-                "Outlook good.",
-                "Yes.",
-                "Signs point to yes.",
-                "Reply hazy, try again.",
-                "for the last time, YES.",
-                "Better not tell you now.",
-                "Cannot predict now.",
-                "Concentrate and ask again.",
-                "Don't count on it.",
-                "ofc not lol.",
-                "My sources say no.",
-                "doesnt seem like it tbh lol",
-                "Very doubtful."]
-    await ctx.send(f":8ball: Question: {question}\n:8ball: Answer: {random.choice(responses)}")
-
-
-@client.command()
-async def snipe(ctx, message):
-    try:
-        contents, author, channel_name, time = client.sniped_messages[ctx.guild.id]
-
-    except:
-        await ctx.channel.send("Couldn't find a message to snipe!")
-        return
-
-    snipeembed = discord.Embed(description=contents,
-                          color=discord.Color.blue(), timestamp=time)
-    snipeembed.set_author(
-        name=f"{author.name}#{author.discriminator}", icon_url=author.avatar_url)
-    snipeembed.set_footer(text=f"Deleted in : #{channel_name}")
-
-    await ctx.channel.send(embed=snipeembed)
-    await client.process_commands(message)
+status1 = f"Best bot ww! | !help"
+status2 = f"Hypixel Stats! | !help"
+status3 = f"Doggo Pictures! | !help"
+status4 = f"Crypto Stats! | !help"
+status5 = f"Memes! | !help"
+status6 = f"Dadjokes! 😒 | !help"
+status7 = f"Nitro Giveaway!! 🥳🎊🎉 (DM Supelion#0001) | !help"
+status8 = f"Open Source. | !help"
+client.status = cycle([status1, status2, status3, status4, status5,status6,status7])
+changer.start()
     
 @client.event
 async def on_message(message):
     if message.guild.me in message.mentions:
-        await message.channel.send("Pls dont unecessarily pong me :c, it's .help to get help.")
+        await message.channel.send("Do ``.help``!")
     await client.process_commands(message)
 
 @client.group(invoke_without_command=True)
@@ -106,14 +52,20 @@ async def help(ctx):
         title='Help', description='Made with <3 by Supelion.', color=discord.Color.blue())
 
     helpembed.add_field(
-        name=':video_game: Hypixel', value='``.bw; .sw; .karma; .nwlevel``', inline=True)
+        name='<:hypixel:844234115984130078> Hypixel', value='``.bw; .sw; .karma; .nwlevel``', inline=False)
     helpembed.add_field(
-        name=':gear: Misc', value='``.coinflip; .about; .src; .snipe; .discord; .dadjoke; .meme; .ping; .invite``', inline=True)
+        name='<:crypto:844234812331524117> Crypto', value='``.btc ; .eth; .doge; .bat; .ada``', inline=False)
+    helpembed.add_field(
+        name='<:misc:844235406877917234> Misc', value='``.about; .src; .support; .ping; .invite; .affirm``', inline=False)
+    helpembed.add_field(
+        name='<a:813111549941252126:844446604043878410> Fun', value='``.meme; .dadjoke; .coinflip; .8b; .avatar; .bored; .doggo``', inline=False)
+    helpembed.add_field(
+        name=':full_moon: Astronomy', value='``.apod``', inline=False)
     helpembed.set_thumbnail(
-      url='https://media.discordapp.net/attachments/836614888080015381/837749892382326834/logo.png')
-    helpembed.set_footer(text="SupeBot v0.7")
+      url='https://media.discordapp.net/attachments/835071270117834773/844229169863983154/logo.PNG')
+    helpembed.set_footer(text="SupeBot v0.9 | Supelion#0001")
 
     await ctx.send(embed=helpembed)
 
 
-client.run(TOKEN)
+client.run(f"ODM2NjU1MTEyMDIxMjEzMjI0.YIhJyw.OqyrfFdxyKGEz-vs3r8tMUUXlsY")
