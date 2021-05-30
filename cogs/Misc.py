@@ -53,17 +53,6 @@ class Misc(commands.Cog):
     async def support(self, ctx):
       serverembed = discord.Embed(title="Support Server.", description="SupeBot Support Server: https://discord.gg/CUwrDgCB4W", color=discord.Color.blue())
       await ctx.send(embed=serverembed)
-    
-    @commands.command()
-    async def affirm(self, ctx):
-      affirmationlmfao = requests.get("https://dulce-affirmations-api.herokuapp.com/affirmation")
-      affirmationjson = affirmationlmfao.json()
-      affirmation = affirmationjson["phrase"]
-
-      affirmationembed = discord.Embed(title = "Need a affirmation?")
-      affirmationembed.add_field(name = "Here's one: ", value = f"{affirmation}")
-      affirmationembed.set_footer(text = f"Made with ♥ by Supelion#0001")
-      await ctx.send(embed = affirmationembed)
 
     @commands.command(
       aliases = ["doggo"]
