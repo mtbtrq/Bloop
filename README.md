@@ -16,4 +16,5 @@
 
 
 **How to get a Hypixel API Key?**
+
 Log onto the hypixel minecraft server and do ``/api new``
