@@ -22,7 +22,7 @@ class Crypto(commands.Cog):
 
         btcembed = discord.Embed(title = f"Bitcoin [BTC]", color=discord.Color.gold())
         btcembed.add_field(
-        name='Price', value=f'{btcprice} USD', inline=True)
+        name='Price', value=f'{btcprice:,} USD', inline=True)
         btcembed.set_footer(text="Courtesy of urmom and CoinGecko API.")
         btcembed.add_field(name='Price Chart' ,value='[CryptoWatch](https://cryptowat.ch/assets/btc)', inline=False)
         btcembed.add_field(name='Conversion' ,value='[CoinGecko](https://www.coingecko.com/en/coins/bitcoin/usd)', inline=False)
@@ -42,7 +42,7 @@ class Crypto(commands.Cog):
         
         ethembed = discord.Embed(title = f"Ethereum [ETH]", color=discord.Color.purple())
         ethembed.add_field(
-        name='Price', value=f'{ethprice} USD', inline=True)
+        name='Price', value=f'{ethprice:,} USD', inline=True)
         ethembed.set_footer(text="Courtesy of urmom and CoinGecko API.")
         ethembed.add_field(name='Price Chart' ,value='[CryptoWatch](https://cryptowat.ch/assets/eth)', inline=False)
         ethembed.add_field(name='Conversion' ,value='[CoinGecko](https://www.coingecko.com/en/coins/ethereum/usd)', inline=False)
@@ -62,7 +62,7 @@ class Crypto(commands.Cog):
         
         dogeembed = discord.Embed(title = f"DogeCoin [DOGE]", color=discord.Color.gold())
         dogeembed.add_field(
-        name='Price', value=f'{dogeprice} USD', inline=True)
+        name='Price', value=f'{dogeprice:,} USD', inline=True)
         dogeembed.set_footer(text="Courtesy of urmom and CoinGecko API.")
         dogeembed.add_field(name='Price Chart' ,value='[CryptoWatch](https://cryptowat.ch/assets/doge)', inline=False)
         dogeembed.add_field(name='Conversion' ,value='[CoinGecko](https://www.coingecko.com/en/coins/dogecoin/usd)', inline=False)
@@ -82,7 +82,7 @@ class Crypto(commands.Cog):
 
         adaembed = discord.Embed(title = f"Cardano [ADA]", color=discord.Color.blue())
         adaembed.add_field(
-        name='Price', value=f'{adaprice} USD', inline=False)
+        name='Price', value=f'{adaprice:,} USD', inline=False)
         adaembed.set_footer(text="Courtesy of urmom and CoinGecko API.")
         adaembed.add_field(name='Price Chart' ,value='[CryptoWatch](https://cryptowat.ch/assets/ada)', inline=False)
         adaembed.add_field(name='Conversion' ,value='[CoinGecko](https://www.coingecko.com/en/coins/cardano/usd)', inline=False)
@@ -102,7 +102,7 @@ class Crypto(commands.Cog):
 
         batembed = discord.Embed(title = f"Basic Attention Token [BAT]", color=discord.Color.orange())
         batembed.add_field(
-        name='Price', value=f'{batprice} USD', inline=True)
+        name='Price', value=f'{batprice:,} USD', inline=True)
         batembed.set_footer(text="Courtesy of urmom and CoinGecko API.")
         batembed.add_field(name='Price Chart' ,value='[CryptoWatch](https://cryptowat.ch/assets/bat)', inline=False)
         batembed.add_field(name='Conversion' ,value='[CoinGecko](https://www.coingecko.com/en/coins/basic-attention-token/usd)', inline=False)

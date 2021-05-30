@@ -2,7 +2,9 @@ import discord
 import random
 import requests
 import aiohttp
+import tracemalloc
 import asyncio
+from asyncio import sleep as s
 import json
 from aiohttp import ClientSession
 from discord.ext import commands 
@@ -21,21 +23,42 @@ class Misc(commands.Cog):
 
     @commands.command()
     async def about(self, ctx):
-      aboutembed = discord.Embed(title="About", description=f"Bot made by Supelion#0001 as a side project and as a introduction to python. I am currently in ``{len(self.client.guilds)}`` servers", color=discord.Color.blue())
-      aboutembed.set_footer(text="SupeBot v1.0 | Supelion#0001")
+      aboutembed = discord.Embed(title="About", description=f"Bot made by Supelion#0001 as a side project and as a introduction to python. I am currently in ``{len(self.client.guilds)}`` servers and getting used by ``{len(self.client.users)}`` users!", color=discord.Color.blue())
+      aboutembed.set_footer(text="SupeBot v1.1 | Supelion#0001")
       await ctx.send(embed=aboutembed)
+
+    @commands.command()
+    async def stats(self, ctx):
+      statsembed = discord.Embed(title="Bot Stats", description = "SupeBot's stats", color=discord.Color.blue())
+      statsembed.add_field(name = f"Users:", value = f"```python\n{len(self.client.users)}```", inline = False)
+      statsembed.add_field(name = f"Guilds:", value = f"```python\n{len(self.client.guilds)}```", inline = False)
+      statsembed.set_footer(text="SupeBot v1.1 | Supelion#0001")
+      await ctx.send(embed=statsembed)
+
+    @commands.command(
+      aliases = ["reminder", "remindme"]
+    )
+    async def remind(self, ctx, time:int, *, msg):
+      await ctx.message.delete()
+      await ctx.send(f"{ctx.author.mention} You will be sent a reminder in ``{time} minutes`` to: ``{msg}``\n||Please note, if the bot goes offline, you will not be sent a reminder!||")
+      
+      
+      while True:
+        await s(60*time)
+        await ctx.send(f'{msg}, {ctx.author.mention}')
+        await ctx.message.delete()
+        return
 
     @commands.command()
     async def support(self, ctx):
       serverembed = discord.Embed(title="Support Server.", description="SupeBot Support Server: https://discord.gg/CUwrDgCB4W", color=discord.Color.blue())
       await ctx.send(embed=serverembed)
-
+    
     @commands.command()
     async def affirm(self, ctx):
-      async with aiohttp.ClientSession() as cs:
-         with cs.get('https://www.affirmations.devn') as affirmthing:
-          res = await affirmthing.json()  
-          affirmation = (res['affirmation'])
+      affirmationlmfao = requests.get("https://dulce-affirmations-api.herokuapp.com/affirmation")
+      affirmationjson = affirmationlmfao.json()
+      affirmation = affirmationjson["phrase"]
 
       affirmationembed = discord.Embed(title = "Need a affirmation?")
       affirmationembed.add_field(name = "Here's one: ", value = f"{affirmation}")
@@ -66,18 +89,6 @@ class Misc(commands.Cog):
           boredembed.add_field(name = 'Try:', value = f"{activity1}")
           await ctx.send(embed=boredembed)
 
-    @commands.command()
-    async def apod(self, ctx):
-      async with aiohttp.ClientSession() as cs:
-          async with cs.get('https://api.nasa.gov/planetary/apod?api_key=rmYhg5SgkCLJl2jKpHWhkaBUPz3AAqyBcZHKyKDx') as r:
-            ap0d = await r.json()
-            apod = ap0d["hdurl"]
-      
-      apodembed = discord.Embed(title = f"Nasa's APOD:")
-      apodembed.set_image(url = f"{apod}")
-      apodembed.set_footer(text = f"APOD = Astronomy Picture of the Day")
-      await ctx.send(embed=apodembed)
-
     @commands.command(
         aliases=['pfp']
     )
@@ -97,19 +108,8 @@ class Misc(commands.Cog):
       await ctx.send(f'{round(self.client.latency*1000)} ms')
 
     @commands.command()
-    @commands.cooldown(1, 10,commands.BucketType.user)
-    async def nitro(self, ctx):
-      await ctx.send(f"{ctx.author.mention}, you have entered the ``Discord Nitro Classic for 1 month`` giveaway! <:horriblydrawnnitroclassic:844645205431812097> <:nitro:844646006028632074>")
-
-    @commands.Cog.listener()
-    async def on_command_error(self, ctx, error):
-      if isinstance(error, commands.CommandOnCooldown):
-        cooldownmessage = f"{ctx.author.mention} **You can only use this command every ``10`` seconds!**"
-        await ctx.send(cooldownmessage, delete_after = 3)
-
-    @commands.command()
     async def src(self, ctx):
-      srcembed = discord.Embed(title="Source Code", url="https://github.com/Supelion/SupeBot/releases", description="SupeBot's SRC (up until 0.7) can be found on GitHub by clicking the title of this embed.", color=discord.Color.blue())
+      srcembed = discord.Embed(title="Source Code", url="https://github.com/Supelion/SupeBot/releases", description="SupeBot's SRC can be found on GitHub by clicking the title of this embed.", color=discord.Color.blue())
       await ctx.send(embed=srcembed)
         
     @commands.Cog.listener()
@@ -188,7 +188,7 @@ class Misc(commands.Cog):
             email_2 = fakeidjson["email_d"]
             email_3 = f'{email_1}@{email_2}'
             company = fakeidjson["company"]
-            idembed  = discord.Embed(title = "Fake ID Generator")
+            idembed  = discord.Embed(title = "Fake ID Generator", color=0x2f3136)
             idembed.add_field(name = "Name:", value = f'``{name}``', inline = False)
             idembed.add_field(name = "Address:", value = f'``{address}``', inline = False)
             idembed.add_field(name = "Date of Birth", value = f'``{birth_date}``', inline = False)
