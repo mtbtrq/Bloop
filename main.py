@@ -1,14 +1,26 @@
 import discord
 import os
+import asyncio
 import json
 from datetime import datetime
 from itertools import cycle
+import os
 from discord.ext import commands, tasks
 
 intents = discord.Intents.default()
 intents.members = True
 client = commands.Bot(command_prefix='.', help_command=None,intents=intents)
 client.launch_time = datetime.utcnow()
+
+page1 = discord.Embed(title="Minecraft", description=".bw | .sw | .p | .server", 
+colour=discord.Colour.orange())
+page1.set_footer(text = "Note: You get timed out after 20 seconds.")
+
+page2 = discord.Embed(title="Utility", description=".about | .src | .ping | .support | .invite | .stats", colour=discord.Colour.orange())
+page2.set_footer(text = "Note: You get timed out after 20 seconds.")
+
+
+help_pages = [page1, page2]
 
 for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
@@ -36,7 +48,7 @@ status3 = f"Doggo Pictures! | .help"
 status4 = f"Crypto Stats! | .help"
 status5 = f"Memes! | .help"
 status6 = f"Dadjokes! 😒 | .help"
-status7 = f"Open Source. | .help"
+status7 = f"Open Source! | .help"
 status8 = f"Website now live! supebot.ddns.net 🎉| .help"
 client.status = cycle([status1, status2, status3, status4, status5,status6,status7, status8])
 changer.start()
@@ -58,24 +70,41 @@ async def uptime(ctx):
     uptimeembed.add_field(name = "Uptime:", value = f"{days}d, {hours}h, {minutes}m, {seconds}s since last restart.")
     await ctx.send(embed=uptimeembed)
 
-@client.group(invoke_without_command=True)
+@client.command()
 async def help(ctx):
-    helpembed = discord.Embed(
-        title='Help', description='Made with <3 by Supelion.', color=discord.Color.blue())
+    buttons = [u"\u2B05", u"\u27A1"] 
+    current = 0
+    msg = await ctx.send(embed=help_pages[current])
+    
+    for button in buttons:
+        await msg.add_reaction(button)
+        
+    while True:
+        try:
+            reaction, user = await client.wait_for("reaction_add", check=lambda reaction, user: user == ctx.author and reaction.emoji in buttons, timeout=20.0)
 
-    helpembed.add_field(
-        name='<:hypixel:844234115984130078> Hypixel', value='``.bw; .sw; .nwlevel; .profile``', inline=False)
-    helpembed.add_field(
-        name='<:crypto:844234812331524117> Crypto', value='``.btc ; .eth; .doge; .bat; .ada``', inline=False)
-    helpembed.add_field(
-        name='<:misc:844235406877917234> Utility', value='``.about; .src; .support; .ping; .invite; .id; .stats; .remind; .uptime``', inline=False)
-    helpembed.add_field(
-        name='<a:813111549941252126:844446604043878410> Fun', value='``.meme; .dadjoke; .coinflip; .8b; .avatar; .bored; .doggo``', inline=False)
-    helpembed.set_thumbnail(
-      url='https://media.discordapp.net/attachments/835071270117834773/844229169863983154/logo.PNG')
-    helpembed.set_footer(text="SupeBot v1.1 | Supelion#0001")
+        except asyncio.TimeoutError:
+          pass
 
-    await ctx.send(embed=helpembed)
+        else:
+            previous_page = current
+                
+            if reaction.emoji == u"\u2B05":
+                if current > 0:
+                    current -= 1
+                    
+            elif reaction.emoji == u"\u27A1":
+                if current < len(help_pages)-1:
+                    current += 1
+
+            elif reaction.emoji == u"\u23E9":
+                current = len(help_pages)-1
+
+            for button in buttons:
+                await msg.remove_reaction(button, ctx.author)
+
+            if current != previous_page:
+                await msg.edit(embed=help_pages[current])
 
 
 client.run(f"{token}")
