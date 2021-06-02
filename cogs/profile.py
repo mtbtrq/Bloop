@@ -1,11 +1,14 @@
 import discord
-import requests
 import json
 import sys
+import aiohttp
 import random
 from discord.ext import commands
 
-hypixelapikey = "INSERT YOUR KEY HERE"
+with open('./config.json') as jsonload:
+    config = json.load(jsonload)
+
+hypixelapikey = config.get('hypixelapikey')
 
 class profile(commands.Cog):
 
@@ -20,23 +23,17 @@ class profile(commands.Cog):
         if user is None:
             await ctx.send("Please provide a valid user!", delete_after=3)
         else:
-            mojang_data = requests.get(
-                f'https://api.mojang.com/users/profiles/minecraft/{user}?').json()
+            async with aiohttp.ClientSession() as cs:
+                async with cs.get(f'https://api.mojang.com/users/profiles/minecraft/{user}') as mojangdataraw:
+                    mojang_data = await mojangdataraw.json()
 
             if not mojang_data:
                 await ctx.send(f"The user your provided is not valid! `{user}`", delete_after=3)
             else:
-                    profiledata = requests.get(
-                        f"https://api.slothpixel.me/api/players/{user}").json()
-                    guildinfo = requests.get(
-                        f'https://api.hypixel.net/guild?key={hypixelapikey}&player={mojang_data["id"]}').json()
-                    guild = guildinfo["guild"]["name"]
+                    async with aiohttp.ClientSession() as cs:
+                      async with cs.get(f"https://api.slothpixel.me/api/players/{user}") as profiledataraw:
+                        profiledata = await profiledataraw.json()
                     rank = profiledata["rank"]
-
-                    if not guildinfo:
-                      guild = None
-                    else:
-                      guild = guildinfo["guild"]["name"]
 
                     if rank == "MVP_PLUS_PLUS":
                       rank = "MVP++"
@@ -47,13 +44,11 @@ class profile(commands.Cog):
                     elif rank == None:
                       rank = "Non"
                     else:
-                      rank = profiledata["data"]
+                      rank = profiledata["rank"]
                     
                     
                     profileembed = discord.Embed(
-                        title=f'Profile of {profiledata["username"]}')
-                    profileembed.add_field(
-                        name="Rank:", value=f'{profiledata["rank"]}', inline=False)
+                        title=f'Profile of [{rank}] {profiledata["username"]}')
                     profileembed.add_field(
                         name="Karma:", value=f'{profiledata["karma"]:,}', inline=False)
                     profileembed.add_field(
@@ -62,8 +57,6 @@ class profile(commands.Cog):
                         name="Quests completed:", value=f'{profiledata["quests_completed"]:,}', inline=False)
                     profileembed.add_field(
                         name="Most Recent Game:", value=f'{profiledata["last_game"]}', inline=False)
-                    profileembed.add_field(
-                        name="Guild:", value=f'{guildinfo["guild"]["name"]}')
                     profileembed.set_footer(
                         text=f"This command uses the Slothpixel API, which is slow at updating.")
                     await ctx.send(embed=profileembed)

@@ -2,9 +2,13 @@ import discord
 import requests
 import json
 import random
+import aiohttp
 from discord.ext import commands
 
-hypixelapikey = "INSERT YOUR KEY HERE"
+with open('./config.json') as jsonload:
+    config = json.load(jsonload)
+
+hypixelapikey = config.get('hypixelapikey')
 
 class bw(commands.Cog):
 
@@ -18,12 +22,15 @@ class bw(commands.Cog):
             await ctx.send("Please provide a valid user!", delete_after = 3)
         else:
             try:
-                mojang_data = requests.get(f'https://api.mojang.com/users/profiles/minecraft/{user}?').json()
+                async with aiohttp.ClientSession() as cs:
+                      async with cs.get(f'https://api.mojang.com/users/profiles/minecraft/{user}') as moj4ngdataraw:
+                        mojang_data = await moj4ngdataraw.json()
             except:
                 await ctx.send(f"The user your provided is not valid! `{user}`", delete_after = 3)
             else:
-                bwdata = requests.get(
-                    f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}").json()
+                async with aiohttp.ClientSession() as cs:
+                      async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as bwdataraw:
+                        bwdata = await bwdataraw.json()
                 
                 Wins = (bwdata["player"]["stats"]["Bedwars"]["wins_bedwars"])
                 Levels = (bwdata["player"]["achievements"]["bedwars_level"])

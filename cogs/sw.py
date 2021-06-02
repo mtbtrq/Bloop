@@ -1,10 +1,15 @@
 import discord
-import requests
+import aiohttp
 import json
+import asyncio
 import random
 from discord.ext import commands
 
-hypixelapikey = "INSERT YOUR KEY HERE"
+
+with open('./config.json') as jsonload:
+    config = json.load(jsonload)
+
+hypixelapikey = config.get('hypixelapikey')
 
 class sw(commands.Cog):
 
@@ -18,25 +23,26 @@ class sw(commands.Cog):
             await ctx.send("Please provide a valid user!", delete_after = 3)
         else:
             try:
-                mojang_data = requests.get(f'https://api.mojang.com/users/profiles/minecraft/{user}?').json()
+                async with aiohttp.ClientSession() as cs:
+                      async with cs.get(f'https://api.mojang.com/users/profiles/minecraft/{user}') as mojangraw:
+                        mojang_data = await mojangraw.json()
             except:
                 await ctx.send(f"The user your provided is not valid! `{user}`", delete_after = 3)
             else:
-                data = requests.get(
-                    f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}").json()
-
-                swlvllmfao = requests.get(f"https://api.slothpixel.me/api/players/{user}").json()
+                async with aiohttp.ClientSession() as cs:
+                      async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as swdataraw:
+                        swdata = await swdataraw.json()
                 
-                SwWins = (data["player"]["stats"]["SkyWars"]["wins"])
-                Heads = (data["player"]["stats"]["SkyWars"]["heads"])
-                SwKills = (data["player"]["stats"]["SkyWars"]["kills"])
-                SwDeaths = (data["player"]["stats"]["SkyWars"]["deaths"])
-                SwLosses = (data["player"]["stats"]["SkyWars"]["losses"])
-                SwCoins = (data["player"]["stats"]["SkyWars"]["coins"])
+                SwWins = (swdata["player"]["stats"]["SkyWars"]["wins"])
+                Heads = (swdata["player"]["stats"]["SkyWars"]["heads"])
+                SwKills = (swdata["player"]["stats"]["SkyWars"]["kills"])
+                SwDeaths = (swdata["player"]["stats"]["SkyWars"]["deaths"])
+                SwLosses = (swdata["player"]["stats"]["SkyWars"]["losses"])
+                SwCoins = (swdata["player"]["stats"]["SkyWars"]["coins"])
                 SwKDR = round(float(SwKills) / float(SwDeaths), 1)
                 SwWLR = round(float(SwWins) / float(SwLosses), 1)
                 IGN = str(mojang_data['name'])
-                SwLvl = round(swlvllmfao["stats"]["SkyWars"]["level"], 1)
+                SwLvl = round(swdata["stats"]["SkyWars"]["level"], 1)
 
                 swembed = discord.Embed(
                     title='Skywars Stats', description=f'Skywars Stats of {IGN}', color=0x2f3136)
