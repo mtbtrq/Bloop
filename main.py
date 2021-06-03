@@ -53,7 +53,7 @@ async def uptime(ctx):
     minutes, seconds = divmod(remainder, 60)
     days, hours = divmod(hours, 24)
 
-    uptimeembed = discord.Embed(title = "")
+    uptimeembed = discord.Embed()
     uptimeembed.add_field(name = "Uptime:", value = f"{days}d, {hours}h, {minutes}m, {seconds}s since last restart.")
     await ctx.reply(embed=uptimeembed, mention_author=False)
 
@@ -63,14 +63,14 @@ async def help(ctx):
         title='Help', description='Made with <3 by Supelion.', color=discord.Color.blue())
 
     helpembed.add_field(
-        name='<:hypixel:844234115984130078> Hypixel', value='``.bw | .sw | .profile | .server``', inline=False)
+        name='<:hypixel:844234115984130078> Hypixel', value='``.bw | .sw | .duels | .profile | .server``', inline=False)
     helpembed.add_field(
-        name='<:misc:844235406877917234> Utility', value='``.about | .src | .support | .ping | .invite | .stats | .uptime``', inline=False)
+        name='<:misc:844235406877917234> Utility', value='``.src | .support | .ping | .invite | .stats | .uptime``', inline=False)
     helpembed.set_thumbnail(
       url='https://media.discordapp.net/attachments/835071270117834773/844229169863983154/logo.PNG')
     helpembed.set_footer(text="SupeBot v1.1 | Supelion#0001")
 
-    await ctx.send(embed=helpembed)
+    await ctx.reply(embed=helpembed, mention_author=False)
 
 
 client.run(f"{token}")

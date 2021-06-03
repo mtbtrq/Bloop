@@ -1,7 +1,5 @@
 import discord
-import requests
 import json
-import random
 import aiohttp
 from discord.ext import commands
 
@@ -15,7 +13,9 @@ class bw(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    @commands.command()
+    @commands.command(
+        aliases = ["bedwars", "bedwar"]
+    )
     @commands.cooldown(1, 5,commands.BucketType.user)
     async def bw(self, ctx, user=None):
         if user is None:

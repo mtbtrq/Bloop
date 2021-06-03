@@ -2,7 +2,6 @@ import discord
 import aiohttp
 import json
 import asyncio
-import random
 from discord.ext import commands
 
 
@@ -16,7 +15,9 @@ class sw(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    @commands.command()
+    @commands.command(
+        aliases = ["skywars", "skywar"]
+    )
     @commands.cooldown(1, 5,commands.BucketType.user)
     async def sw(self, ctx, user=None):
         if user is None:
