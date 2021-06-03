@@ -76,7 +76,7 @@ class bw(commands.Cog):
                 bwembed.set_thumbnail(
                     url='https://media.discordapp.net/attachments/836614888080015381/837749892382326834/logo.png')
 
-                await ctx.send(embed=bwembed)
+                await ctx.reply(embed=bwembed, mention_author=False)
 
 
 def setup(client):

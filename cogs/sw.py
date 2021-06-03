@@ -32,6 +32,10 @@ class sw(commands.Cog):
                 async with aiohttp.ClientSession() as cs:
                       async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as swdataraw:
                         swdata = await swdataraw.json()
+
+                async with aiohttp.ClientSession() as cs:
+                      async with cs.get(f"https://api.slothpixel.me/api/players/{user}") as swlvldataraw:
+                          swlvldata = await swlvldataraw.json()
                 
                 SwWins = (swdata["player"]["stats"]["SkyWars"]["wins"])
                 Heads = (swdata["player"]["stats"]["SkyWars"]["heads"])
@@ -42,7 +46,7 @@ class sw(commands.Cog):
                 SwKDR = round(float(SwKills) / float(SwDeaths), 1)
                 SwWLR = round(float(SwWins) / float(SwLosses), 1)
                 IGN = str(mojang_data['name'])
-                SwLvl = round(swdata["stats"]["SkyWars"]["level"], 1)
+                SwLvl = round(swlvldata["stats"]["SkyWars"]["level"], 1)
 
                 swembed = discord.Embed(
                     title='Skywars Stats', description=f'Skywars Stats of {IGN}', color=0x2f3136)
@@ -76,7 +80,7 @@ class sw(commands.Cog):
                 swembed.set_thumbnail(
                     url='https://media.discordapp.net/attachments/836614888080015381/837749892382326834/logo.png')
 
-                await ctx.send(embed=swembed)
+                await ctx.reply(embed=swembed, mention_author=False)
 
 
 def setup(client):

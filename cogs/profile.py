@@ -59,8 +59,9 @@ class profile(commands.Cog):
                         name="Most Recent Game:", value=f'{profiledata["last_game"]}', inline=False)
                     profileembed.set_footer(
                         text=f"This command uses the Slothpixel API, which is slow at updating.")
-                    await ctx.send(embed=profileembed)
-               
+                    
+                    await ctx.reply(embed=profileembed, mention_author=False)
+
 
 def setup(client):
     client.add_cog(profile(client))

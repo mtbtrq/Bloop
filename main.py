@@ -55,7 +55,7 @@ async def uptime(ctx):
 
     uptimeembed = discord.Embed(title = "")
     uptimeembed.add_field(name = "Uptime:", value = f"{days}d, {hours}h, {minutes}m, {seconds}s since last restart.")
-    await ctx.send(embed=uptimeembed)
+    await ctx.reply(embed=uptimeembed, mention_author=False)
 
 @client.group(invoke_without_command=True)
 async def help(ctx):
