@@ -68,7 +68,7 @@ async def help(ctx):
         name='<:misc:844235406877917234> Utility', value='``.src | .support | .ping | .invite | .stats | .uptime``', inline=False)
     helpembed.set_thumbnail(
       url='https://media.discordapp.net/attachments/835071270117834773/844229169863983154/logo.PNG')
-    helpembed.set_footer(text="SupeBot v1.1 | Supelion#0001")
+    helpembed.set_footer(text="SupeBot v1.4 | Supelion#0001")
 
     await ctx.reply(embed=helpembed, mention_author=False)
 
