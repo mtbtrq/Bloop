@@ -37,6 +37,12 @@ class CommandErrorHandler(commands.Cog):
         elif isinstance(error, commands.BadArgument):
             if ctx.command.qualified_name == 'tag list':
                 await ctx.send('I could not find that member. Please try again.')
+        
+        elif isinstance(error, commands.CommandNotFound):
+            await ctx.send(f'That is not a valid command!', delete_after=5)
+
+        elif isinstance(error, commands.errors.NotOwner):
+            await ctx.send(f'Only your mother and Supelion can use this comand!', delete_after=5)
 
         elif isinstance(error, discord.ext.commands.CommandOnCooldown):
           await ctx.send(f"This command is on cooldown, please try again in `{error.retry_after:.2f}` seconds.")

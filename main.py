@@ -1,10 +1,8 @@
 import discord
 import os
-import asyncio
 import json
 from datetime import datetime
 from itertools import cycle
-import os
 from discord.ext import commands, tasks
 
 intents = discord.Intents.default()
@@ -35,15 +33,17 @@ async def changer():
 
 status1 = f"Best bot ww! | .help"
 status2 = f"Hypixel Stats! | .help"
-status3 = f"Open Source! | .help"
+status3 = f"Open Source! (.src)| .help"
 status4 = f"Website now live! supebot.ddns.net 🎉| .help"
-client.status = cycle([status1, status2, status3, status4])
+status5 = f"Server Stats! | .help"
+status6 = f"Custom Scripts! | .help"
+client.status = cycle([status1, status2, status3, status4, status5, status6])
 changer.start()
     
 @client.event
 async def on_message(message):
     if message.guild.me in message.mentions:
-        await message.channel.send("Do ``.help``!")
+        await message.channel.send("Seems like you're lost. Do ``.help``!")
     await client.process_commands(message)
 
 @client.command()
@@ -53,24 +53,26 @@ async def uptime(ctx):
     minutes, seconds = divmod(remainder, 60)
     days, hours = divmod(hours, 24)
 
-    uptimeembed = discord.Embed()
+    uptimeembed = discord.Embed(color = 0x2f3136)
     uptimeembed.add_field(name = "Uptime:", value = f"{days}d, {hours}h, {minutes}m, {seconds}s since last restart.")
-    await ctx.reply(embed=uptimeembed, mention_author=False)
+    await ctx.reply(embed=uptimeembed, mention_author = False)
 
 @client.group(invoke_without_command=True)
 async def help(ctx):
     helpembed = discord.Embed(
         title='Help', description='Made with <3 by Supelion.', color=discord.Color.blue())
-
+    
+    helpembed.add_field(name = "My Prefix:", value = "``.``")
+    
     helpembed.add_field(
-        name='<:hypixel:844234115984130078> Hypixel', value='``.bw | .sw | .duels | .profile | .server``', inline=False)
+        name='<:minecraft:848988105943810095> Minecraft', value='``bw``, ``sw``, ``duels``, ``profile``, ``server``,  ``socials``', inline=False)
     helpembed.add_field(
-        name='<:misc:844235406877917234> Utility', value='``.src | .support | .ping | .invite | .stats | .uptime``', inline=False)
+        name='<:misc:844235406877917234> Utility', value='``src``, ``support``, ``ping``, ``invite``, ``stats``, ``uptime``, ``downloads``', inline=False)
     helpembed.set_thumbnail(
-      url='https://media.discordapp.net/attachments/835071270117834773/844229169863983154/logo.PNG')
-    helpembed.set_footer(text="SupeBot v1.4 | Supelion#0001")
+      url='https://cdn.discordapp.com/attachments/835071270117834773/851855084883017759/supbebot_logo_mgsmgsmg.png')
+    helpembed.set_footer(text="SupeBot v1.6 | Python#0001")
 
-    await ctx.reply(embed=helpembed, mention_author=False)
+    await ctx.reply(embed=helpembed, mention_author = False)
 
 
 client.run(f"{token}")

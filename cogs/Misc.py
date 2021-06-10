@@ -8,36 +8,42 @@ class Misc(commands.Cog):
         self.client = client
 
     @commands.command()
-    async def about(self, ctx):
-      aboutembed = discord.Embed(title="About", description=f"Bot made by Supelion#0001 as a side project and as a introduction to python.", color=discord.Color.blue())
-      aboutembed.set_footer(text="SupeBot v1.1 | Supelion#0001")
-      await ctx.reply(embed=aboutembed, mention_author=False)
-
-    @commands.command()
     async def stats(self, ctx):
-      statsembed = discord.Embed(title="Bot Stats", description = "SupeBot's stats", color=discord.Color.blue())
+      statsembed = discord.Embed(title="Bot Stats", description = "SupeBot's stats", color = 0x2f3136)
       statsembed.add_field(name = f"Users:", value = f"```python\n{len(self.client.users)}```", inline = False)
       statsembed.add_field(name = f"Guilds:", value = f"```python\n{len(self.client.guilds)}```", inline = False)
-      statsembed.set_footer(text="SupeBot v1.1 | Supelion#0001")
+      statsembed.set_footer(text="SupeBot v1.6 | Supelion#0001")
       await ctx.reply(embed=statsembed, mention_author=False)
 
     @commands.command()
     async def support(self, ctx):
-      serverembed = discord.Embed(title="Support Server.", description="SupeBot Support Server: https://discord.gg/CUwrDgCB4W", color=discord.Color.blue())
+      
+      serverembed = discord.Embed(color = 0x2f3136)
+      
+      serverembed.add_field(name = "Support Server:", value = f'https://discord.gg/CUwrDgCB4W')
+      
+      serverembed.add_field(name = "Website:", value = f'https://supebot.ddns.net', inline = False)
       await ctx.reply(embed=serverembed, mention_author=False)
       
-    @commands.command()
+    @commands.command(
+      aliases = ["ms", "latency"]
+    )
     async def ping(self, ctx):
-      await ctx.send(f'{round(self.client.latency*1000)} ms')
+      ping = round(self.client.latency*1000)
+      pingembed = discord.Embed(
+        color = 0x2f3136
+      )
+      pingembed.add_field(name = "Pong!", value = f"{ping} ms")
+      await ctx.reply(embed=pingembed, mention_author=False)
 
     @commands.command()
     async def src(self, ctx):
-      srcembed = discord.Embed(title="Source Code", url="https://github.com/Supelion/SupeBot/releases", description="SupeBot's SRC can be found on GitHub by clicking the title of this embed.", color=discord.Color.blue())
+      srcembed = discord.Embed(title="Source Code", url="https://github.com/Supelion/SupeBot/releases", description="SupeBot's SRC can be found on GitHub by clicking the title of this embed.", color = 0x2f3136)
       await ctx.reply(embed=srcembed, mention_author=False)
 
     @commands.command()
     async def invite(self, ctx):
-      invitembed = discord.Embed(color = discord.Color.blue())
+      invitembed = discord.Embed(color = 0x2f3136)
       invitembed.add_field(name=f"Invite Link :link:", value = "https://discord.com/api/oauth2/authorize?client_id=835237831412547607&permissions=268762199&scope=bot")
       await ctx.reply(embed=invitembed, mention_author=False)
 
