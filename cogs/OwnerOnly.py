@@ -92,7 +92,7 @@ class owner(commands.Cog):
         color = 0xa60000
       )
       
-      ownerhelpembed.add_field(name = "Misc:", value = " ``opinion``, ``bruh``, ````cringe, ``gg``, ``yes``, ``nice``, ``wtf``", inline = False)
+      ownerhelpembed.add_field(name = "Misc:", value = " ``opinion``, ``bruh``, ``cringe``, ``gg``, ``yes``, ``nice``, ``wtf``", inline = False)
       
       ownerhelpembed.add_field(name = "Math", value = "``add``, ``sub``, ``mult``, ``div``")
       
