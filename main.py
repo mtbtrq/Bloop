@@ -7,7 +7,7 @@ from discord.ext import commands, tasks
 
 intents = discord.Intents.default()
 intents.members = True
-client = commands.Bot(command_prefix='.', help_command=None,intents=intents)
+client = commands.Bot(command_prefix = '.', help_command=None,intents=intents)
 client.launch_time = datetime.utcnow()
 
 
@@ -25,7 +25,7 @@ async def on_ready():
     print("I'm ready lol.")
 
 
-@tasks.loop(minutes=2)
+@tasks.loop(minutes=5)
 async def changer():
     await client.wait_until_ready()
     await client.change_presence(activity=discord.Game(name=next(client.status)))
@@ -36,7 +36,7 @@ status2 = f"Hypixel Stats! | .help"
 status3 = f"Open Source! (.src)| .help"
 status4 = f"Website now live! supebot.ddns.net 🎉| .help"
 status5 = f"Server Stats! | .help"
-status6 = f"Custom Scripts! | .help"
+status6 = f"DLCs! | .help"
 client.status = cycle([status1, status2, status3, status4, status5, status6])
 changer.start()
     
@@ -65,12 +65,12 @@ async def help(ctx):
     helpembed.add_field(name = "My Prefix:", value = "``.``")
     
     helpembed.add_field(
-        name='<:minecraft:848988105943810095> Minecraft', value='``bw``, ``sw``, ``duels``, ``profile``, ``server``,  ``socials``', inline=False)
+        name='<:minecraft:848988105943810095> Minecraft', value='``bw``, ``sw``, ``duels``, ``profile``, ``wdr``, ``server``,  ``socials``, ``skin``', inline=False)
     helpembed.add_field(
         name='<:misc:844235406877917234> Utility', value='``src``, ``support``, ``ping``, ``invite``, ``stats``, ``uptime``, ``downloads``', inline=False)
     helpembed.set_thumbnail(
-      url='https://cdn.discordapp.com/attachments/835071270117834773/851855084883017759/supbebot_logo_mgsmgsmg.png')
-    helpembed.set_footer(text="SupeBot v1.6 | Python#0001")
+      url='https://media.discordapp.net/attachments/8350712o70117834773/853578246984433684/lol.png?width=480&height=480')
+    helpembed.set_footer(text="Bloop v1.7 | Supelion#4275")
 
     await ctx.reply(embed=helpembed, mention_author = False)
 

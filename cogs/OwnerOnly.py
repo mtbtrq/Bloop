@@ -49,6 +49,7 @@ class owner(commands.Cog):
     )
     @commands.is_owner()
     async def shutdown(self, ctx):
+      await ctx.send('Bot is shutting down...')
       await self.client.close()
       print('Bot Shut Down!')
 
@@ -56,17 +57,46 @@ class owner(commands.Cog):
     @commands.is_owner()
     async def opinion(self, ctx):
       await ctx.send('https://tenor.com/view/an-opinion-an-opinion-is-that-an-opinion-bruh-gif-21053118')
-
+      
     @commands.command()
     @commands.is_owner()
+    async def add(self, ctx, num1 : float, num2 : float):
+      ans = num1 + num2
+      await ctx.send(f'**Answer:** {ans:,}')
+      
+    @commands.command()
+    @commands.is_owner()
+    async def sub(self, ctx, num1 : float, num2 : float):
+      ans = num1 - num2
+      await ctx.send(f"**Answer:** {ans:,}")
+      
+    @commands.command()
+    @commands.is_owner()
+    async def div(self, ctx, num1 : float, num2 : float):
+      ans = num1 / num2
+      await ctx.send(f"**Answer:** {ans:,}")
+      
+    @commands.command()
+    @commands.is_owner()
+    async def mult(self, ctx, num1 : float, num2 : float):
+      ans = num1 * num2
+      await ctx.send(f"**Answer:** {ans:,}")
+
+    @commands.command(
+      aliases = ["oh"]
+    )
+    @commands.is_owner()
     async def ownerhelp(self, ctx):
+      
       ownerhelpembed = discord.Embed(
         color = 0xa60000
       )
       
-      ownerhelpembed.add_field(name = "Misc:", value = " ``opinion``, ``bruh``, ``cringe``, ``gg``, ``yes``, ``nice``, ``wtf``", inline = False)
+      ownerhelpembed.add_field(name = "Misc:", value = " ``opinion``, ``bruh``, ````cringe, ``gg``, ``yes``, ``nice``, ``wtf``", inline = False)
       
-      ownerhelpembed.add_field(name = "DANGEROUS:", value = '``shutdown``', inline = False)
+      ownerhelpembed.add_field(name = "Math", value = "``add``, ``sub``, ``mult``, ``div``")
+      
+      ownerhelpembed.add_field(name = ":no_entry: DANGEROUS: :no_entry:", value = '``shutdown``', inline = False)
 
       await ctx.reply(embed = ownerhelpembed)
 

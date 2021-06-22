@@ -25,21 +25,11 @@ class CommandErrorHandler(commands.Cog):
         if isinstance(error, ignored):
             return
 
-        if isinstance(error, commands.DisabledCommand):
-            await ctx.send(f'{ctx.command} has been disabled.')
-
         elif isinstance(error, commands.NoPrivateMessage):
             try:
                 await ctx.author.send(f'{ctx.command} can not be used in Private Messages.')
             except discord.HTTPException:
                 pass
-
-        elif isinstance(error, commands.BadArgument):
-            if ctx.command.qualified_name == 'tag list':
-                await ctx.send('I could not find that member. Please try again.')
-        
-        elif isinstance(error, commands.CommandNotFound):
-            await ctx.send(f'That is not a valid command!', delete_after=5)
 
         elif isinstance(error, commands.errors.NotOwner):
             await ctx.send(f'Only your mother and Supelion can use this comand!', delete_after=5)

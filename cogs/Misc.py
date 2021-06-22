@@ -9,10 +9,10 @@ class Misc(commands.Cog):
 
     @commands.command()
     async def stats(self, ctx):
-      statsembed = discord.Embed(title="Bot Stats", description = "SupeBot's stats", color = 0x2f3136)
+      statsembed = discord.Embed(title="Bloop's Stats", color = 0x2f3136)
       statsembed.add_field(name = f"Users:", value = f"```python\n{len(self.client.users)}```", inline = False)
       statsembed.add_field(name = f"Guilds:", value = f"```python\n{len(self.client.guilds)}```", inline = False)
-      statsembed.set_footer(text="SupeBot v1.6 | Supelion#0001")
+      statsembed.set_footer(text="Bloop v1.7 | Supelion#4275")
       await ctx.reply(embed=statsembed, mention_author=False)
 
     @commands.command()
@@ -22,8 +22,13 @@ class Misc(commands.Cog):
       
       serverembed.add_field(name = "Support Server:", value = f'https://discord.gg/CUwrDgCB4W')
       
-      serverembed.add_field(name = "Website:", value = f'https://supebot.ddns.net', inline = False)
+      serverembed.add_field(name = "Website:", value = f'bloopbot.ddns.net', inline = False)
       await ctx.reply(embed=serverembed, mention_author=False)
+
+    @commands.Cog.listener()
+    async def on_command(self, ctx):
+      channel = self.client.get_channel(854985071639265321)
+      await channel.send(f'{ctx.author.name}#{ctx.author.discriminator} executed the command ``{ctx.command}``')
       
     @commands.command(
       aliases = ["ms", "latency"]
@@ -38,7 +43,7 @@ class Misc(commands.Cog):
 
     @commands.command()
     async def src(self, ctx):
-      srcembed = discord.Embed(title="Source Code", url="https://github.com/Supelion/SupeBot/releases", description="SupeBot's SRC can be found on GitHub by clicking the title of this embed.", color = 0x2f3136)
+      srcembed = discord.Embed(title="Source Code", url="https://github.com/Supelion/SupeBot/releases", description="Bloop's SRC can be found on GitHub by clicking the title of this embed.", color = 0x2f3136)
       await ctx.reply(embed=srcembed, mention_author=False)
 
     @commands.command()
