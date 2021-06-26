@@ -6,9 +6,7 @@ class downloads(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    @commands.command(
-      aliases = ["download"]
-    )
+    @commands.command()
     async def downloads(self, ctx):
       
       downloadembed = discord.Embed(title = "List of Downloads:", color = 0x2f3136)
@@ -23,9 +21,7 @@ class downloads(commands.Cog):
       
       await ctx.reply(embed=downloadembed, mention_author = False)
 
-    @commands.command(
-      aliases = ["hypixelstatschecker"]
-    )
+    @commands.command()
     async def HypixelStatsChecker(self, ctx):
       
       statscheckerembed = discord.Embed(title = 'HypixelStatsChecker', color = 0x2f3136)
@@ -36,9 +32,7 @@ class downloads(commands.Cog):
 
       await ctx.reply(embed = statscheckerembed, mention_author = False)
 
-    @commands.command(
-      aliases = ["mousepos", "SimpleMousePos"]
-    )
+    @commands.command()
     async def simplemousepos(self, ctx):
       
       mouseposembed = discord.Embed(title = "SimpleMousePos", color = 0x2f3136)
@@ -49,9 +43,7 @@ class downloads(commands.Cog):
 
       await ctx.reply(embed = mouseposembed, mention_author = False)
 
-    @commands.command(
-      aliases = ["simpleres", "simpleresolution"]
-    )
+    @commands.command()
     async def SimpleResolution(self, ctx):
 
       simpleresembed = discord.Embed(title = 'SimpleResolution', color = 0x2f3136)
@@ -62,9 +54,7 @@ class downloads(commands.Cog):
 
       await ctx.reply(embed = simpleresembed, mention_author = False)
 
-    @commands.command(
-      aliases = ["autoclicker"]
-    )
+    @commands.command()
     async def AutoClicker(self, ctx):
       autoclickembed = discord.Embed(title = "AutoClicker", color = 0x2f3136)
 
@@ -76,9 +66,7 @@ class downloads(commands.Cog):
       
       await ctx.reply(embed = autoclickembed, mention_author = False)
 
-    @commands.command(
-      aliases = ["WindowOpener"]
-    )
+    @commands.command()
     async def windowopener(self, ctx):
 
       windowembed = discord.Embed(title = 'WindowOpener', color = 0x2f3136)

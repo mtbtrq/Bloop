@@ -6,29 +6,6 @@ class Misc(commands.Cog):
 
     def __init__(self, client):
         self.client = client
-
-    @commands.command()
-    async def stats(self, ctx):
-      statsembed = discord.Embed(title="Bloop's Stats", color = 0x2f3136)
-      statsembed.add_field(name = f"Users:", value = f"```python\n{len(self.client.users)}```", inline = False)
-      statsembed.add_field(name = f"Guilds:", value = f"```python\n{len(self.client.guilds)}```", inline = False)
-      statsembed.set_footer(text="Bloop v1.7 | Supelion#4275")
-      await ctx.reply(embed=statsembed, mention_author=False)
-
-    @commands.command()
-    async def support(self, ctx):
-      
-      serverembed = discord.Embed(color = 0x2f3136)
-      
-      serverembed.add_field(name = "Support Server:", value = f'https://discord.gg/CUwrDgCB4W')
-      
-      serverembed.add_field(name = "Website:", value = f'bloopbot.ddns.net', inline = False)
-      await ctx.reply(embed=serverembed, mention_author=False)
-
-    @commands.Cog.listener()
-    async def on_command(self, ctx):
-      channel = self.client.get_channel(854985071639265321)
-      await channel.send(f'{ctx.author.name}#{ctx.author.discriminator} executed the command ``{ctx.command}``')
       
     @commands.command(
       aliases = ["ms", "latency"]

@@ -16,7 +16,7 @@ class owner(commands.Cog):
     @commands.is_owner()
     async def cringe(self, ctx):
       await ctx.send('https://tenor.com/view/dies-of-cringe-cringe-gif-20747133')
-
+      
     @commands.command()
     @commands.is_owner()
     async def bruh(self, ctx):

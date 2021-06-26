@@ -1,13 +1,15 @@
 import discord
 import os
 import json
+from colorama import Fore
 from datetime import datetime
+import psutil
 from itertools import cycle
 from discord.ext import commands, tasks
 
 intents = discord.Intents.default()
 intents.members = True
-client = commands.Bot(command_prefix = '.', help_command=None,intents=intents)
+client = commands.Bot(command_prefix = '!', help_command=None,intents=intents)
 client.launch_time = datetime.utcnow()
 
 
@@ -22,7 +24,7 @@ token = config.get('token')
 
 @client.event
 async def on_ready():
-    print("I'm ready lol.")
+    print(f"{Fore.RED}I'm ready lol.")
 
 
 @tasks.loop(minutes=5)
@@ -34,10 +36,9 @@ async def changer():
 status1 = f"Best bot ww! | .help"
 status2 = f"Hypixel Stats! | .help"
 status3 = f"Open Source! (.src)| .help"
-status4 = f"Website now live! supebot.ddns.net 🎉| .help"
-status5 = f"Server Stats! | .help"
-status6 = f"DLCs! | .help"
-client.status = cycle([status1, status2, status3, status4, status5, status6])
+status4 = f"Server Stats! | .help"
+status5 = f"DLCs! | .help"
+client.status = cycle([status1, status2, status3, status4, status5])
 changer.start()
     
 @client.event
@@ -47,32 +48,51 @@ async def on_message(message):
     await client.process_commands(message)
 
 @client.command()
-async def uptime(ctx):
+async def stats(ctx):
+
     delta_uptime = datetime.utcnow() - client.launch_time
     hours, remainder = divmod(int(delta_uptime.total_seconds()), 3600)
     minutes, seconds = divmod(remainder, 60)
     days, hours = divmod(hours, 24)
+    cores = psutil.cpu_count()
 
-    uptimeembed = discord.Embed(color = 0x2f3136)
-    uptimeembed.add_field(name = "Uptime:", value = f"{days}d, {hours}h, {minutes}m, {seconds}s since last restart.")
-    await ctx.reply(embed=uptimeembed, mention_author = False)
+    
+    statsembed = discord.Embed(title="Bloop's Stats", color = 0x2f3136)
+    
+    statsembed.add_field(name = f"Language:", value = f"Python 3.9  <:python:848989130808754196>", inline = False)
+    
+    statsembed.add_field(name = f"Users:", value = f"{len(client.users):,}", inline = False)
+    
+    statsembed.add_field(name = f"Guilds:", value = f"{len(client.guilds)}", inline = False)
 
-@client.group(invoke_without_command=True)
+    statsembed.add_field(name = f'CPU:', value = f'```Cores: {cores}```')
+
+    statsembed.add_field(name = f"Uptime:", value = f"{hours}h, {minutes}m, {seconds}s.\n\n[Support Server](https://discord.gg/CUwrDgCB4W)", inline = False)
+    
+    statsembed.set_footer(text="Bloop v1.9 | Supelion#4275")
+    
+    await ctx.reply(embed=statsembed, mention_author=False)
+
+
+@client.command()
 async def help(ctx):
-    helpembed = discord.Embed(
+  helpembed = discord.Embed(
         title='Help', description='Made with <3 by Supelion.', color=discord.Color.blue())
     
-    helpembed.add_field(name = "My Prefix:", value = "``.``")
+  helpembed.add_field(name = "My Prefix:", value = "``.``")
     
-    helpembed.add_field(
-        name='<:minecraft:848988105943810095> Minecraft', value='``bw``, ``sw``, ``duels``, ``profile``, ``wdr``, ``server``,  ``socials``, ``skin``', inline=False)
-    helpembed.add_field(
-        name='<:misc:844235406877917234> Utility', value='``src``, ``support``, ``ping``, ``invite``, ``stats``, ``uptime``, ``downloads``', inline=False)
-    helpembed.set_thumbnail(
+  helpembed.add_field(
+        name='<:minecraft:848988105943810095> Minecraft', value='``bw``, ``sw``, ``duels``, ``profile``, ``wdr``, ``server``,  ``socials``, ``skin``, ``p``', inline=False)
+  
+  helpembed.add_field(
+        name='<:misc:844235406877917234> Utility', value='``src``, ``ping``, ``invite``, ``stats``, ``downloads``', inline=False)
+  
+  helpembed.set_thumbnail(
       url='https://media.discordapp.net/attachments/8350712o70117834773/853578246984433684/lol.png?width=480&height=480')
-    helpembed.set_footer(text="Bloop v1.7 | Supelion#4275")
+  
+  helpembed.set_footer(text="Bloop v1.9 | Supelion#4275")
 
-    await ctx.reply(embed=helpembed, mention_author = False)
+  await ctx.reply(embed=helpembed, mention_author = False)
 
 
 client.run(f"{token}")
