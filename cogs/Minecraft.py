@@ -38,7 +38,8 @@ class minecraft(commands.Cog):
         start = datetime.utcnow()
         if user is None:
             errorembed = discord.Embed(title = 'Invalid Command Usage!')
-            errorembed.add_field(name = 'Usage:', value = "``.bw {IGN}``")
+            errorembed.add_field(name = 'Usage:', value = "``.bw {IGN}``", inline = False)
+            errorembed.add_field(name = 'Aliases:', value = '``bw, bed, bedwarz, bedwars, bedworz, bedwar``', inline = False)
             errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
             await ctx.send(embed = errorembed)
         else:
@@ -55,48 +56,71 @@ class minecraft(commands.Cog):
                           bwdata = await bwdataraw.json()
                   
                   Wins = (bwdata["player"]["stats"]["Bedwars"]["wins_bedwars"])
-                  Levels = (bwdata["player"]["achievements"]["bedwars_level"])
-                  FinalDeaths = (bwdata["player"]["stats"]["Bedwars"]["final_deaths_bedwars"])
-                  FinalKills = (bwdata["player"]["stats"]["Bedwars"]["final_kills_bedwars"])
                   Kills = (bwdata["player"]["stats"]["Bedwars"]["kills_bedwars"])
                   Deaths = (bwdata["player"]["stats"]["Bedwars"]["deaths_bedwars"])
-                  Coins = (bwdata["player"]["stats"]["Bedwars"]["coins"])
+                  coins = (bwdata["player"]["stats"]["Bedwars"]["coins"])
+                  voiddeaths = (bwdata["player"]["stats"]["Bedwars"]["void_deaths_bedwars"])
+                  voidkills = (bwdata["player"]["stats"]["Bedwars"]["void_kills_bedwars"])
+                  games = (bwdata["player"]["stats"]["Bedwars"]["games_played_bedwars"])
+                  bedsbroken = bwdata["player"]["stats"]["Bedwars"]["beds_broken_bedwars"]
+                  bedslost = bwdata["player"]["stats"]["Bedwars"]["beds_lost_bedwars"]
+                  Losses = (bwdata["player"]["stats"]["Bedwars"]["losses_bedwars"])
+                  stars = (bwdata["player"]["achievements"]["bedwars_level"])
+                  FinalDeaths = (bwdata["player"]["stats"]["Bedwars"]["final_deaths_bedwars"])
+                  FinalKills = (bwdata["player"]["stats"]["Bedwars"]["final_kills_bedwars"])
                   winstreak = (bwdata["player"]["stats"]["Bedwars"]["winstreak"])
-                  FKDR = round(float(FinalKills) / float(FinalDeaths), 1) 
-                  IGN = (mojang_data['name'])
+                  FKDR = round(float(FinalKills) / float(FinalDeaths), 1)
+                  WLR = round(float(Wins) / float(Losses), 1)
+                  BBLR = round(float(bedsbroken) / float(bedslost), 1)
+                  KDR = round(float(Kills) / float(Deaths), 1)
+                  void_kdr = KDR = round(float(voidkills) / float(voiddeaths), 1)
+                  IGN = mojang_data["name"]
 
-                  bwembed = discord.Embed(title='Bedwars Stats', description=f'Overall | {IGN}', color=0x2f3136)
+                  bwembed = discord.Embed(title='Bedwars Stats <:bw:850964476109914112>', description=f'Overall | {IGN}', color=0x2f3136)
 
-                  bwembed.add_field(name='Stars', value=f'``{Levels:,}``', inline=True)
+                  bwembed.add_field(name='Stars', value=f'``{stars:,}✫``', inline=True)
+
+                  bwembed.add_field(name='Winstreak', value=f'``{winstreak:,}``', inline=True)
                   
-                  bwembed.add_field(name='Wins', value=f'``{Wins:,}``', inline=True)
+                  bwembed.add_field(name='Coins', value=f'``{coins:,}``', inline=True)
+                  
+                  bwembed.add_field(name='Final Kills', value=f'``{FinalKills:,}``', inline=True)
                   
                   bwembed.add_field(name='Final Deaths', value=f'``{FinalDeaths:,}``', inline=True)
                   
                   bwembed.add_field(name='FKDR', value=f'``{FKDR:,}``', inline=True)
                   
-                  bwembed.add_field(name='Coins', value=f'``{Coins:,}``', inline=True)
-                  
-                  bwembed.add_field(name='Final Kills', value=f'``{FinalKills:,}``', inline=True)
-                  
                   bwembed.add_field(name='Kills', value=f'``{Kills:,}``', inline=True)
                   
                   bwembed.add_field(name='Deaths', value=f'``{Deaths:,}``', inline=True)
-                  
-                  bwembed.add_field(name='Winstreak', value=f'``{winstreak:,}``', inline=True)
+
+                  bwembed.add_field(name = 'KDR', value=f'``{KDR:,}``')
+
+                  bwembed.add_field(name = 'Wins', value=f'``{Wins:,}``')
+
+                  bwembed.add_field(name = 'Losses', value=f'``{Losses:,}``')
+
+                  bwembed.add_field(name = 'WLR',  value = f'``{WLR:,}``')
+
+                  bwembed.add_field(name = 'Void Kills', value=f'``{voidkills:,}``')
+
+                  bwembed.add_field(name = 'Void Deaths', value = f'``{voiddeaths:,}``')
+
+                  bwembed.add_field(name = 'Void KDR', value = f'``{void_kdr:,}``')
 
                   response_time = datetime.utcnow() - start
                   hours, remainder = divmod(float(response_time.total_seconds()), 3600)
                   minutes, seconds = divmod(remainder, 60)
 
-                  bwembed.set_footer(text = f'Time taken to complete response: {seconds} s.')
+                  bwembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
 
                   await ctx.reply(embed=bwembed, mention_author=False)
-                except:
+                except Exception as e:
                     errorembed = discord.Embed()
                     errorembed.add_field(name = 'Error!', value = f'{mojang_data["name"]} has not played this gamemode!')
                     errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
                     await ctx.send(embed = errorembed)
+                    print(e)
     
     @commands.command(
       aliases = ["skywars", "skywar", "skywor", "skiwar", "skiwor"]
@@ -106,7 +130,8 @@ class minecraft(commands.Cog):
         start = datetime.utcnow()
         if user is None:
             errorembed = discord.Embed(title = 'Invalid Command Usage!')
-            errorembed.add_field(name = 'Usage:', value = "``.sw {IGN}``")
+            errorembed.add_field(name = 'Usage:', value = "``.sw {IGN}``", inline = False)
+            errorembed.add_field(name = 'Aliases:', value = '``sw, skywars, skywar, skywor, skiwar, skiwor``')
             errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
             await ctx.send(embed = errorembed)
         else:
@@ -137,9 +162,9 @@ class minecraft(commands.Cog):
                 IGN = str(mojang_data['name'])
                 SwLvl = round(swlvldata["stats"]["SkyWars"]["level"], 1)
 
-                swembed = discord.Embed(title='Skywars Stats', description=f'Overall | {IGN}', color=0x2f3136)
+                swembed = discord.Embed(title='Skywars Stats <:sw:850964475544731689>', description=f'Overall | {IGN}', color=0x2f3136)
 
-                swembed.add_field(name = 'Stars', value = f"``{SwLvl}``", inline = True)
+                swembed.add_field(name = 'Stars', value = f"``{SwLvl}✫``", inline = True)
 
                 swembed.add_field(name='Wins', value=f'``{SwWins:,}``', inline = True)
                 
@@ -161,7 +186,7 @@ class minecraft(commands.Cog):
                 hours, remainder = divmod(float(response_time.total_seconds()), 3600)
                 minutes, seconds = divmod(remainder, 60)
 
-                swembed.set_footer(text = f'Time taken to complete response: {seconds} s.')
+                swembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
 
                 await ctx.reply(embed=swembed, mention_author=False)
               except:
@@ -179,6 +204,7 @@ class minecraft(commands.Cog):
         if user is None:
             errorembed = discord.Embed(title = 'Invalid Command Usage!')
             errorembed.add_field(name = 'Usage:', value = "``.d {IGN}``")
+            errorembed.add_field(name = 'Aliases', value = '``d, duels, duel``')
             errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
             await ctx.send(embed = errorembed)
         else:
@@ -210,7 +236,7 @@ class minecraft(commands.Cog):
                   accuracy = round(float(melee_hits) / float(melee_swings), 1)
 
 
-                  duelsembed = discord.Embed(title = f'Duels Stats', description = f'Overall | {mojang_data["name"]}', color = 0x2f3136)
+                  duelsembed = discord.Embed(title = f'Duels Stats <:duels:850964475937816586>', description = f'Overall | {mojang_data["name"]}', color = 0x2f3136)
                   
                   duelsembed.add_field(name = f'Winstreak', value = f'``{ws:,}``', inline=True)
                   
@@ -240,7 +266,7 @@ class minecraft(commands.Cog):
                   hours, remainder = divmod(float(response_time.total_seconds()), 3600)
                   minutes, seconds = divmod(remainder, 60)
 
-                  duelsembed.set_footer(text = f'Time taken to complete response: {seconds} s.')
+                  duelsembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
                   
                   await ctx.reply(embed=duelsembed, mention_author=False)
               except:
@@ -272,12 +298,6 @@ class minecraft(commands.Cog):
                 await ctx.send(f"The user your provided is not valid! `{player}`", delete_after = 3)
             else:
               async with ctx.typing():
-                img = Image.open("bw.png")
-                draw = ImageDraw.Draw(img)
-                font = ImageFont.truetype("Minecraftia.ttf",
-                                          40)
-                fontbig = ImageFont.truetype("Minecraftia.ttf",
-                                             40)
 
                 async with aiohttp.ClientSession() as cs:
                       async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as apiraw:
@@ -302,27 +322,38 @@ class minecraft(commands.Cog):
                         guilddata = await guilddataraw.json()
 
                 if guilddata["guild"] == None:
-                  guild = "None" 
+                  guild = None
+                elif guilddata["guild"]["tag"] == None:
+                  guild = None
                 else:
-                  guild = guilddata["guild"]["name"]
+                  guild = f'[{guilddata["guild"]["tag"]}]'
 
                 if rank == "MVP_PLUS_PLUS":
-                  rank = "MVP++"
+                  rank = "[MVP++]"
                 elif rank == "MVP_PLUS":
-                  rank = "MVP+"
+                  rank = "[MVP+]"
                 elif rank == "VIP_PLUS":
-                  rank = "VIP+"
+                  rank = "[VIP+]"
                 elif rank == None:
-                  rank = "Non"
+                  rank = "[Non]"
                 elif rank == "YOUTUBER":
-                  rank = "YOUTUBE"
+                  rank = "[YOUTUBE]"
                 elif rank == "MODERATOR":
-                  rank = "MOD"
+                  rank = "[MOD]"
                 else:
-                  rank = profiledata["rank"]
+                  rank = f'[{profiledata["rank"]}]'
+
+                IGN = mojang_data["name"]
                 
                 if gamemode == "bedwars":
                   try:
+                    img = Image.open("bw.png")
+                    draw = ImageDraw.Draw(img)
+                    font = ImageFont.truetype("Minecraftia.ttf",
+                                              40)
+                    fontbig = ImageFont.truetype("Minecraftia.ttf",
+                                                50)
+
                     Wins = (api["player"]["stats"]["Bedwars"]["wins_bedwars"])
                     Kills = (api["player"]["stats"]["Bedwars"]["kills_bedwars"])
                     Deaths = (api["player"]["stats"]["Bedwars"]["deaths_bedwars"])
@@ -343,58 +374,40 @@ class minecraft(commands.Cog):
                     BBLR = round(float(bedsbroken) / float(bedslost), 1)
                     KDR = round(float(Kills) / float(Deaths), 1)
                     void_kdr = KDR = round(float(voidkills) / float(voiddeaths), 1)
-                    IGN = (mojang_data['name'])
-                    
-                    if rank == "VIP+":
-                      draw.text((200, 150), f"[VIP+] {IGN} [{guild}]", self.green, font=fontbig)
-                    elif rank == "VIP":
-                      draw.text((200, 150), f"[VIP] {IGN} [{guild}]", self.green, font=fontbig)
-                    elif rank == "MVP":
-                      draw.text((200, 150), f"[MVP] {IGN} [{guild}]", self.aqua, font=fontbig)
-                    elif rank == "MVP+":
-                      draw.text((200, 150), f"[MVP+] {IGN} [{guild}]", self.aqua, font=fontbig)
-                    elif rank == "MVP++":
-                      draw.text((200, 150), f"[MVP++] {IGN} [{guild}]", self.gold, font=fontbig)
-                    elif rank == "YOUTUBE":
-                      draw.text((200, 150), f"[YOUTUBE] {IGN} [{guild}]", self.light_red, font=fontbig)
-                    elif rank == "ADMIN":
-                      draw.text((200, 150), f"[ADMIN] {IGN} [{guild}]", self.red, font=fontbig)
-                    elif rank == "MOD":
-                      draw.text((200, 150), f"[MOD] {IGN} [{guild}]", self.dark_green, font=fontbig)
-                    else:
-                      draw.text((200, 150), f"[{rank}] {IGN} [{guild}]", self.orangey, font=fontbig)
 
-                    draw.text((920, 270), f"{Levels:,}", self.white, font=font)
-                    draw.text((470, 270), f"{winstreak:,}", self.white, font=font)
-                    draw.text((1350, 270), f"{coins:,}", self.white, font=font)
+                    draw.text((200, 150), f"{rank} {IGN}", self.orangey, font=fontbig)
+                    draw.text((750, 270), f"Stars: {Levels:,}", self.white, font=font)
+                    draw.text((200, 270), f"Winstreak: {winstreak:,}", self.white, font=font)
 
-                    draw.text((465, 396), f"{FinalKills:,}", self.white, font=font)
-                    draw.text((535, 466), f"{FinalDeaths:,}", self.white, font=font)
-                    draw.text((350, 536), f"{FKDR:,}", self.white, font=font)
+                    draw.text((200, 400), f"Final Kills: {FinalKills:,}", self.white, font=font)
+                    draw.text((200, 470), f"Final Deaths: {FinalDeaths:,}", self.white, font=font)
+                    draw.text((200, 540), f"FKDR: {FKDR:,}", self.white, font=font)
                     
-                    draw.text((880, 396), f"{Kills:,}", self.white, font=font)
-                    draw.text((950, 466), f"{Deaths:,}", self.white, font=font)
-                    draw.text((870, 536), f"{KDR:,}", self.white, font=font)
-                    
+                    draw.text((750, 400), f"Wins: {Wins:,}", self.white, font=font)
+                    draw.text((750, 470), f"Losses: {Losses:,}", self.white, font=font)
+                    draw.text((750, 540), f"WLR: {WLR:,}", self.white, font=font)
 
-                    draw.text((450, 797), f"{void_kdr:,}", self.white, font=font)
-                    draw.text((900, 800), f"{BBLR:,}", self.white, font=font)
-                    draw.text((1570, 800), f"{games:,}", self.white, font=font)
-                    
-                    draw.text((1320, 396), f"{Wins:,}", self.white, font=font)
-                    draw.text((1420, 466), f"{Losses:,}", self.white, font=font)
-                    draw.text((1320, 536), f"{WLR:,}", self.white, font=font)
+                    draw.text((200, 800), f"Coins: {coins:,}", self.white, font=font)
+                    draw.text((750, 800), f"BBLR: {BBLR:,}", self.white, font=font)
+
+                    draw.text((1200, 400), f"Void Kills: {voidkills:,}", self.white, font=font)
+                    draw.text((1200, 470), f"Void Deaths: {voiddeaths:,}", self.white, font=font)
+                    draw.text((1200, 540), f"Void KDR: {void_kdr:,}", self.white, font=font)
+
+                    draw.text((1200, 800), f"KDR: {KDR:,}", self.white, font=font)
+                    draw.text((1200, 270), f"Games Played: {games:,}", self.white, font=font)
 
                     with io.BytesIO() as image_binary:
                         img.save(image_binary, 'PNG')
                         image_binary.seek(0)
                         await ctx.reply(file=discord.File(fp=image_binary, filename='image.png'), mention_author = False)
 
-                  except:
+                  except Exception as e:
                     errorembed = discord.Embed()
                     errorembed.add_field(name = 'Error!', value = f'{mojang_data["name"]} has not played this gamemode!')
                     errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
                     await ctx.send(embed = errorembed)
+                    print(e)
                 
                 elif gamemode == "skywars":
                   try:
@@ -403,7 +416,7 @@ class minecraft(commands.Cog):
                     font = ImageFont.truetype("Minecraftia.ttf",
                                               40)
                     fontbig = ImageFont.truetype("Minecraftia.ttf",
-                                                40)
+                                                50)
                     
                     SwWins = (api["player"]["stats"]["SkyWars"]["wins"])
                     Heads = (api["player"]["stats"]["SkyWars"]["heads"])
@@ -414,29 +427,9 @@ class minecraft(commands.Cog):
                     SwCoins = (api["player"]["stats"]["SkyWars"]["coins"])
                     SwKDR = round(float(SwKills) / float(SwDeaths), 1)
                     SwWLR = round(float(SwWins) / float(SwLosses), 1)
-                    IGN = (mojang_data['name'])
                     SwLvl = round(swlvldata["stats"]["SkyWars"]["level"], 1)
 
-                    if rank == "VIP+":
-                      draw.text((200, 150), f"[VIP+] {IGN} [{guild}]", self.green, font=fontbig)
-                    elif rank == "VIP":
-                      draw.text((200, 150), f"[VIP] {IGN} [{guild}]", self.green, font=fontbig)
-                    elif rank == "MVP":
-                      draw.text((200, 150), f"[MVP] {IGN} [{guild}]", self.aqua, font=fontbig)
-                    elif rank == "MVP+":
-                      draw.text((200, 150), f"[MVP+] {IGN} [{guild}]", self.aqua, font=fontbig)
-                    elif rank == "MVP++":
-                      draw.text((200, 150), f"[MVP++] {IGN} [{guild}]", self.gold, font=fontbig)
-                    elif rank == "YOUTUBE":
-                      draw.text((200, 150), f"[YOUTUBE] {IGN} [{guild}]", self.light_red, font=fontbig)
-                    elif rank == "ADMIN":
-                      draw.text((200, 150), f"[ADMIN] {IGN} [{guild}]", self.red, font=fontbig)
-                    elif rank == "MOD":
-                      draw.text((200, 150), f"[MOD] {IGN} [{guild}]", self.dark_green, font=fontbig)
-                    else:
-                      draw.text((200, 150), f"[{rank}] {IGN} [{guild}]", self.orangey, font=fontbig)
-
-
+                    draw.text((200, 150), f"{rank} {IGN}", self.orangey, font=fontbig)
                     draw.text((800, 270), f"Stars: {SwLvl:,}", self.white, font=font)
                     draw.text((200, 270), f"Heads: {Heads:,}", self.white, font=font)
 
@@ -453,13 +446,13 @@ class minecraft(commands.Cog):
 
                     skin_img = Image.open(image_bytesio)
                     skin_img.thumbnail((500, 500))
-                    img.paste(skin_img, (1400, 400), mask = skin_img)
-                    
+                    img.paste(skin_img, (1400, 300), mask = skin_img)
 
                     with io.BytesIO() as image_binary:
                       img.save(image_binary, 'PNG')
                       image_binary.seek(0)
-                      await ctx.reply(file=discord.File(fp=image_binary, filename='image.png'), mention_author = False)
+                      await ctx.reply(file = discord.File(fp = image_binary, filename='image.png'), mention_author = False)
+                  
                   except:
                     errorembed = discord.Embed()
                     errorembed.add_field(name = 'Error!', value = f'{mojang_data["name"]} has not played this gamemode!')
@@ -473,7 +466,7 @@ class minecraft(commands.Cog):
                     font = ImageFont.truetype("Minecraftia.ttf",
                                               40)
                     fontbig = ImageFont.truetype("Minecraftia.ttf",
-                                                40)
+                                                50)
                     
                     duels = api["player"]["stats"]["Duels"]
 
@@ -487,43 +480,8 @@ class minecraft(commands.Cog):
                     WLR = round(float(wins) / float(losses), 1)
                     coins = (duels["coins"])
                     games = (duels["games_played_duels"])
-                    IGN = str(mojang_data['name'])
 
-                    if rank == "MVP_PLUS_PLUS":
-                      rank = "MVP++"
-                    elif rank == "MVP_PLUS":
-                      rank = "MVP+"
-                    elif rank == "VIP_PLUS":
-                      rank = "VIP+"
-                    elif rank == None:
-                      rank = "Non"
-                    elif rank == "YOUTUBER":
-                      rank = "YOUTUBE"
-                    elif rank == "MODERATOR":
-                      rank = "MOD"
-                    else:
-                      rank = profiledata["rank"]
-                    
-                    if rank == "VIP+":
-                      draw.text((200, 150), f"[VIP+] {IGN} [{guild}]", self.green, font=fontbig)
-                    elif rank == "VIP":
-                      draw.text((200, 150), f"[VIP] {IGN} [{guild}]", self.green, font=fontbig)
-                    elif rank == "MVP":
-                      draw.text((200, 150), f"[MVP] {IGN} [{guild}]", self.aqua, font=fontbig)
-                    elif rank == "MVP+":
-                      draw.text((200, 150), f"[MVP+] {IGN} [{guild}]", self.aqua, font=fontbig)
-                    elif rank == "MVP++":
-                      draw.text((200, 150), f"[MVP++] {IGN} [{guild}]", self.gold, font=fontbig)
-                    elif rank == "YOUTUBE":
-                      draw.text((200, 150), f"[YOUTUBE] {IGN} [{guild}]", self.light_red, font=fontbig)
-                    elif rank == "ADMIN":
-                      draw.text((200, 150), f"[ADMIN] {IGN} [{guild}]", self.red, font=fontbig)
-                    elif rank == "MOD":
-                      draw.text((200, 150), f"[MOD] {IGN} [{guild}]", self.dark_green, font=fontbig)
-                    else:
-                      draw.text((200, 150), f"[{rank}] {IGN} [{guild}]", self.orangey, font=fontbig)
-
-
+                    draw.text((200, 150), f"{rank} {IGN}", self.orangey, font=fontbig)
                     draw.text((800, 270), f"Games Played: {games:,}", self.white, font=font)
                     draw.text((200, 270), f"Coins: {coins:,}", self.white, font=font)
 
@@ -589,7 +547,7 @@ class minecraft(commands.Cog):
                     hours, remainder = divmod(float(response_time.total_seconds()), 3600)
                     minutes, seconds = divmod(remainder, 60)
 
-                    serverinfoembed.set_footer(text = f'Time taken to complete response: {seconds} s.')
+                    serverinfoembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
                     
                     await ctx.reply(embed=serverinfoembed, mention_author =  False)
 
@@ -598,7 +556,7 @@ class minecraft(commands.Cog):
             errorembed.add_field(name = 'Error!', value = f'{server} is not a valid server IP!')
             errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
             await ctx.send(embed = errorembed)
-      
+
     @commands.command(
       aliases = ["socials", "s", "connections"]
     )
@@ -608,6 +566,7 @@ class minecraft(commands.Cog):
         if user is None:
             errorembed = discord.Embed(title = 'Invalid Command Usage!')
             errorembed.add_field(name = 'Usage:', value = "``.s {username}``")
+            errorembed.add_field(name = 'Aliases:', value = '``socials, s, connections, social``')
             errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
             await ctx.send(embed = errorembed)
         else:
@@ -652,9 +611,6 @@ class minecraft(commands.Cog):
                         forums = "Not Linked"
                     else:
                         forums = socialinfojson["links"]["HYPIXEL"]
-
-
-                    
                     
                     socialembed = discord.Embed(title=f'Socials of {mojang_data["name"]}', color = 0x2f3136)
                     
@@ -674,7 +630,7 @@ class minecraft(commands.Cog):
                     hours, remainder = divmod(float(response_time.total_seconds()), 3600)
                     minutes, seconds = divmod(remainder, 60)
 
-                    socialembed.set_footer(text = f'Time taken to complete response: {seconds} s.')
+                    socialembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
                     
                     await ctx.reply(embed=socialembed, mention_author=False)
     
@@ -700,7 +656,7 @@ class minecraft(commands.Cog):
                   hours, remainder = divmod(float(response_time.total_seconds()), 3600)
                   minutes, seconds = divmod(remainder, 60)
 
-                  watchdogembed.set_footer(text = f'Time taken to complete response: {seconds} s.')
+                  watchdogembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
 
                   await ctx.reply(embed = watchdogembed, mention_author = False)
 
@@ -724,11 +680,61 @@ class minecraft(commands.Cog):
 
             if not mojang_data:
                 await ctx.send(f"The user your provided is not valid! `{user}`", delete_after=3)
+                
             else:
               embed = discord.Embed(title = 'UUID Converter', color = 0x2f3136)
+              
               embed.add_field(name = 'Username', value = f'``{mojang_data["name"]}``', inline = False)
+              
               embed.add_field(name = 'UUID', value = f'``{mojang_data["id"]}``', inline = False)
+              
+              response_time = datetime.utcnow() - start
+              hours, remainder = divmod(float(response_time.total_seconds()), 3600)
+              minutes, seconds = divmod(remainder, 60)
+
+              embed.set_footer(text = f'Time taken to complete request: {seconds} s.')
+              
               await ctx.send(embed = embed)
+    
+    @commands.command()
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def cape(self, ctx, user = None):
+        start = datetime.utcnow()
+        if user is None:
+            errorembed = discord.Embed(title = 'Invalid Command Usage!')
+            errorembed.add_field(name = 'Usage:', value = "``.profile {username}``")
+            errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+            await ctx.send(embed = errorembed)
+        else:
+            try:
+                async with aiohttp.ClientSession() as cs:
+                      async with cs.get(f'https://api.mojang.com/users/profiles/minecraft/{user}') as moj4ngdataraw:
+                        mojang_data = await moj4ngdataraw.json()
+            except:
+                await ctx.send(f"The user your provided is not valid! `{user}`", delete_after = 3)
+            else:
+              try:
+                async with ctx.typing():
+                  async with aiohttp.ClientSession() as cs:
+                    async with cs.get(f'http://s.optifine.net/capes/{mojang_data["name"]}.png') as cape:
+                      
+                      embed = discord.Embed(title = f'{mojang_data["name"]}\'s Cape:', color = 0x2f3136)
+                      
+                      embed.set_image(url=cape.url)
+                      
+                      response_time = datetime.utcnow() - start
+                      hours, remainder = divmod(float(response_time.total_seconds()), 3600)
+                      minutes, seconds = divmod(remainder, 60)
+
+                      embed.set_footer(text = f'Time taken to complete request: {seconds} s.')
+                      
+                      await ctx.reply(embed = embed, mention_author = False)
+              except Exception as e:
+                errorembed = discord.Embed()
+                errorembed.add_field(name = 'Error!', value = f'\n{mojang_data["name"]} does not have a optifine cape!')
+                errorembed.add_field(name = 'no', value = e, inline = False)
+                errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+                await ctx.send(embed = errorembed)
 
 
     @commands.command()
@@ -766,20 +772,19 @@ class minecraft(commands.Cog):
                     response_time = datetime.utcnow() - start
                     hours, remainder = divmod(float(response_time.total_seconds()), 3600)
                     minutes, seconds = divmod(remainder, 60)
+                    secs = round(seconds, 1)
 
-                    embed.set_footer(text = f'Time taken to complete response: {seconds} s.')
+                    embed.set_footer(text = f'Time taken to complete request: {secs} s.')
                     
                     await ctx.reply(embed = embed, mention_author = False)
-                  
-      
-    
+
     @commands.command()
     @commands.cooldown(1, 5,commands.BucketType.user)
     async def profile(self, ctx, user=None):
         start = datetime.utcnow()
         if user is None:
             errorembed = discord.Embed(title = 'Invalid Command Usage!')
-            errorembed.add_field(name = 'Usage:', value = "``.s {username}``")
+            errorembed.add_field(name = 'Usage:', value = "``.profile {username}``")
             errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
             await ctx.send(embed = errorembed)
         else:
@@ -841,11 +846,13 @@ class minecraft(commands.Cog):
 
                       profileembed.add_field(name = "Status:", value = f'{status}', inline=False)
 
+                      profileembed.add_field(name = "Version:", value = f'{profiledata["mc_version"]}')
+
                       response_time = datetime.utcnow() - start
                       hours, remainder = divmod(float(response_time.total_seconds()), 3600)
                       minutes, seconds = divmod(remainder, 60)
 
-                      profileembed.set_footer(text = f'Time taken to complete response: {seconds} s.')
+                      profileembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
                         
                       await ctx.reply(embed=profileembed, mention_author=False)
 

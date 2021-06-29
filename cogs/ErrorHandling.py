@@ -27,15 +27,24 @@ class CommandErrorHandler(commands.Cog):
 
         elif isinstance(error, commands.NoPrivateMessage):
             try:
-                await ctx.author.send(f'{ctx.command} can not be used in Private Messages.')
+                errorembed = discord.Embed(title = 'An Error Occured!')
+                errorembed.add_field(name = 'Cause:', value = f"You cannot use this command in DMs!")
+                errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+                await ctx.send(embed = errorembed)
             except discord.HTTPException:
                 pass
 
         elif isinstance(error, commands.errors.NotOwner):
-            await ctx.send(f'Only your mother and Supelion can use this comand!', delete_after=5)
+            errorembed = discord.Embed(title = 'An Error Occured!')
+            errorembed.add_field(name = 'Cause:', value = f"You are not the owner of this bot!")
+            errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+            await ctx.send(embed = errorembed)
 
         elif isinstance(error, discord.ext.commands.CommandOnCooldown):
-          await ctx.send(f"This command is on cooldown, please try again in `{error.retry_after:.2f}` seconds.")
+            errorembed = discord.Embed(title = 'An Error Occured!')
+            errorembed.add_field(name = 'Cause:', value = f"You are on cooldown, please try again in `{error.retry_after:.2f}`!")
+            errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+            await ctx.send(embed = errorembed)
 
         else:
             print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)

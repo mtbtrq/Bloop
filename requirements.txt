@@ -2,3 +2,6 @@ aiohttp
 requests
 pillow
 discord
+io
+json
+os
