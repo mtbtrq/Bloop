@@ -34,11 +34,12 @@ class minecraft(commands.Cog):
       aliases = ["bed", "bedwarz", "bedwars", "bedworz", "bedwar"]
     )
     @commands.cooldown(1, 5,commands.BucketType.user)
-    async def bw(self, ctx, user=None):
+    async def bw(self, ctx, user = None, mode = 'overall'):
         start = datetime.utcnow()
         if user is None:
             errorembed = discord.Embed(title = 'Invalid Command Usage!')
-            errorembed.add_field(name = 'Usage:', value = "``.bw {IGN}``", inline = False)
+            errorembed.add_field(name = 'Usage:', value = "``.bw {IGN} {mode}``", inline = False)
+            errorembed.set_footer(text = 'Mode can be: overall, solo, doubles, threes, fours')
             errorembed.add_field(name = 'Aliases:', value = '``bw, bed, bedwarz, bedwars, bedworz, bedwar``', inline = False)
             errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
             await ctx.send(embed = errorembed)
@@ -49,7 +50,7 @@ class minecraft(commands.Cog):
                         mojang_data = await moj4ngdataraw.json()
             except:
                 await ctx.send(f"The user your provided is not valid! `{user}`", delete_after = 3)
-            else:
+            if mode == 'overall':
                 try:
                   async with aiohttp.ClientSession() as cs:
                         async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as bwdataraw:
@@ -61,7 +62,6 @@ class minecraft(commands.Cog):
                   coins = (bwdata["player"]["stats"]["Bedwars"]["coins"])
                   voiddeaths = (bwdata["player"]["stats"]["Bedwars"]["void_deaths_bedwars"])
                   voidkills = (bwdata["player"]["stats"]["Bedwars"]["void_kills_bedwars"])
-                  games = (bwdata["player"]["stats"]["Bedwars"]["games_played_bedwars"])
                   bedsbroken = bwdata["player"]["stats"]["Bedwars"]["beds_broken_bedwars"]
                   bedslost = bwdata["player"]["stats"]["Bedwars"]["beds_lost_bedwars"]
                   Losses = (bwdata["player"]["stats"]["Bedwars"]["losses_bedwars"])
@@ -121,6 +121,302 @@ class minecraft(commands.Cog):
                     errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
                     await ctx.send(embed = errorembed)
                     print(e)
+
+            elif mode == "fours":
+                try:
+                  async with aiohttp.ClientSession() as cs:
+                        async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as bwdataraw:
+                          bwdata = await bwdataraw.json()
+                  
+                  Wins = (bwdata["player"]["stats"]["Bedwars"]["four_four_wins_bedwars"])
+                  Kills = (bwdata["player"]["stats"]["Bedwars"]["four_four_kills_bedwars"])
+                  Deaths = (bwdata["player"]["stats"]["Bedwars"]["four_four_deaths_bedwars"])
+                  coins = (bwdata["player"]["stats"]["Bedwars"]["coins"])
+                  voiddeaths = (bwdata["player"]["stats"]["Bedwars"]["four_four_void_final_deaths_bedwars"])
+                  voidkills = (bwdata["player"]["stats"]["Bedwars"]["four_four_void_kills_bedwars"])
+                  bedsbroken = bwdata["player"]["stats"]["Bedwars"]["four_four_beds_broken_bedwars"]
+                  bedslost = bwdata["player"]["stats"]["Bedwars"]["four_four_beds_lost_bedwars"]
+                  Losses = (bwdata["player"]["stats"]["Bedwars"]["four_four_losses_bedwars"])
+                  stars = (bwdata["player"]["achievements"]["bedwars_level"])
+                  FinalDeaths = (bwdata["player"]["stats"]["Bedwars"]["four_four_final_deaths_bedwars"])
+                  FinalKills = (bwdata["player"]["stats"]["Bedwars"]["four_four_final_kills_bedwars"])
+                  winstreak = (bwdata["player"]["stats"]["Bedwars"]["four_four_winstreak"])
+                  FKDR = round(float(FinalKills) / float(FinalDeaths), 1)
+                  WLR = round(float(Wins) / float(Losses), 1)
+                  BBLR = round(float(bedsbroken) / float(bedslost), 1)
+                  KDR = round(float(Kills) / float(Deaths), 1)
+                  void_kdr = KDR = round(float(voidkills) / float(voiddeaths), 1)
+                  IGN = mojang_data["name"]
+
+                  bwembed = discord.Embed(title='Bedwars Stats <:bw:850964476109914112>', description=f'Fours | {IGN}', color=0x2f3136)
+
+                  bwembed.add_field(name='Stars', value=f'``{stars:,}✫``', inline=True)
+
+                  bwembed.add_field(name='Winstreak', value=f'``{winstreak:,}``', inline=True)
+                  
+                  bwembed.add_field(name='Coins', value=f'``{coins:,}``', inline=True)
+                  
+                  bwembed.add_field(name='Final Kills', value=f'``{FinalKills:,}``', inline=True)
+                  
+                  bwembed.add_field(name='Final Deaths', value=f'``{FinalDeaths:,}``', inline=True)
+                  
+                  bwembed.add_field(name='FKDR', value=f'``{FKDR:,}``', inline=True)
+                  
+                  bwembed.add_field(name='Kills', value=f'``{Kills:,}``', inline=True)
+                  
+                  bwembed.add_field(name='Deaths', value=f'``{Deaths:,}``', inline=True)
+
+                  bwembed.add_field(name = 'KDR', value=f'``{KDR:,}``')
+
+                  bwembed.add_field(name = 'Wins', value=f'``{Wins:,}``')
+
+                  bwembed.add_field(name = 'Losses', value=f'``{Losses:,}``')
+
+                  bwembed.add_field(name = 'WLR',  value = f'``{WLR:,}``')
+
+                  bwembed.add_field(name = 'Void Kills', value=f'``{voidkills:,}``')
+
+                  bwembed.add_field(name = 'Void Deaths', value = f'``{voiddeaths:,}``')
+
+                  bwembed.add_field(name = 'Void KDR', value = f'``{void_kdr:,}``')
+
+                  response_time = datetime.utcnow() - start
+                  hours, remainder = divmod(float(response_time.total_seconds()), 3600)
+                  minutes, seconds = divmod(remainder, 60)
+
+                  bwembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
+
+                  await ctx.reply(embed=bwembed, mention_author=False)
+                except Exception as e:
+                    errorembed = discord.Embed()
+                    errorembed.add_field(name = 'Error!', value = f'{mojang_data["name"]} has not played this gamemode!')
+                    errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+                    await ctx.send(embed = errorembed)
+                    print(f'There was an error in command bw in fours thing: {e}')
+
+            elif mode == 'duos':
+                try:
+                  async with aiohttp.ClientSession() as cs:
+                    async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as bwdataraw:
+                      bwdata = await bwdataraw.json()
+                  
+                  Wins = (bwdata["player"]["stats"]["Bedwars"]["eight_two_wins_bedwars"])
+                  Kills = (bwdata["player"]["stats"]["Bedwars"]["eight_two_kills_bedwars"])
+                  Deaths = (bwdata["player"]["stats"]["Bedwars"]["eight_two_deaths_bedwars"])
+                  coins = (bwdata["player"]["stats"]["Bedwars"]["coins"])
+                  voiddeaths = (bwdata["player"]["stats"]["Bedwars"]["eight_two_void_final_deaths_bedwars"])
+                  voidkills = (bwdata["player"]["stats"]["Bedwars"]["eight_two_void_kills_bedwars"])
+                  bedsbroken = bwdata["player"]["stats"]["Bedwars"]["eight_two_beds_broken_bedwars"]
+                  bedslost = bwdata["player"]["stats"]["Bedwars"]["eight_two_beds_lost_bedwars"]
+                  Losses = (bwdata["player"]["stats"]["Bedwars"]["eight_two_losses_bedwars"])
+                  stars = (bwdata["player"]["achievements"]["bedwars_level"])
+                  FinalDeaths = (bwdata["player"]["stats"]["Bedwars"]["eight_two_final_deaths_bedwars"])
+                  FinalKills = (bwdata["player"]["stats"]["Bedwars"]["eight_two_final_kills_bedwars"])
+                  winstreak = (bwdata["player"]["stats"]["Bedwars"]["eight_two_winstreak"])
+                  FKDR = round(float(FinalKills) / float(FinalDeaths), 1)
+                  WLR = round(float(Wins) / float(Losses), 1)
+                  BBLR = round(float(bedsbroken) / float(bedslost), 1)
+                  KDR = round(float(Kills) / float(Deaths), 1)
+                  void_kdr = KDR = round(float(voidkills) / float(voiddeaths), 1)
+                  IGN = mojang_data["name"]
+
+                  bwembed = discord.Embed(title='Bedwars Stats <:bw:850964476109914112>', description=f'Doubles | {IGN}', color=0x2f3136)
+
+                  bwembed.add_field(name='Stars', value=f'``{stars:,}✫``', inline=True)
+
+                  bwembed.add_field(name='Winstreak', value=f'``{winstreak:,}``', inline=True)
+                  
+                  bwembed.add_field(name='Coins', value=f'``{coins:,}``', inline=True)
+                  
+                  bwembed.add_field(name='Final Kills', value=f'``{FinalKills:,}``', inline=True)
+                  
+                  bwembed.add_field(name='Final Deaths', value=f'``{FinalDeaths:,}``', inline=True)
+                  
+                  bwembed.add_field(name='FKDR', value=f'``{FKDR:,}``', inline=True)
+                  
+                  bwembed.add_field(name='Kills', value=f'``{Kills:,}``', inline=True)
+                  
+                  bwembed.add_field(name='Deaths', value=f'``{Deaths:,}``', inline=True)
+
+                  bwembed.add_field(name = 'KDR', value=f'``{KDR:,}``')
+
+                  bwembed.add_field(name = 'Wins', value=f'``{Wins:,}``')
+
+                  bwembed.add_field(name = 'Losses', value=f'``{Losses:,}``')
+
+                  bwembed.add_field(name = 'WLR',  value = f'``{WLR:,}``')
+
+                  bwembed.add_field(name = 'Void Kills', value=f'``{voidkills:,}``')
+
+                  bwembed.add_field(name = 'Void Deaths', value = f'``{voiddeaths:,}``')
+
+                  bwembed.add_field(name = 'Void KDR', value = f'``{void_kdr:,}``')
+
+                  response_time = datetime.utcnow() - start
+                  hours, remainder = divmod(float(response_time.total_seconds()), 3600)
+                  minutes, seconds = divmod(remainder, 60)
+
+                  bwembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
+
+                  await ctx.reply(embed=bwembed, mention_author=False)
+                except Exception as e:
+                    errorembed = discord.Embed()
+                    errorembed.add_field(name = 'Error!', value = f'{mojang_data["name"]} has not played this gamemode!')
+                    errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+                    await ctx.send(embed = errorembed)
+                    print(f'There was an error in command bw in doubles thing: {e}')
+              
+            elif mode == 'solo':
+                try:
+                  async with aiohttp.ClientSession() as cs:
+                    async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as bwdataraw:
+                      bwdata = await bwdataraw.json()
+                  
+                  Wins = (bwdata["player"]["stats"]["Bedwars"]["eight_one_wins_bedwars"])
+                  Kills = (bwdata["player"]["stats"]["Bedwars"]["eight_one_kills_bedwars"])
+                  Deaths = (bwdata["player"]["stats"]["Bedwars"]["eight_one_deaths_bedwars"])
+                  coins = (bwdata["player"]["stats"]["Bedwars"]["coins"])
+                  voiddeaths = (bwdata["player"]["stats"]["Bedwars"]["eight_one_void_final_deaths_bedwars"])
+                  voidkills = (bwdata["player"]["stats"]["Bedwars"]["eight_one_void_kills_bedwars"])
+                  bedsbroken = bwdata["player"]["stats"]["Bedwars"]["eight_one_beds_broken_bedwars"]
+                  bedslost = bwdata["player"]["stats"]["Bedwars"]["eight_one_beds_lost_bedwars"]
+                  Losses = (bwdata["player"]["stats"]["Bedwars"]["eight_one_losses_bedwars"])
+                  stars = (bwdata["player"]["achievements"]["bedwars_level"])
+                  FinalDeaths = (bwdata["player"]["stats"]["Bedwars"]["eight_one_final_deaths_bedwars"])
+                  FinalKills = (bwdata["player"]["stats"]["Bedwars"]["eight_one_final_kills_bedwars"])
+                  winstreak = (bwdata["player"]["stats"]["Bedwars"]["eight_one_winstreak"])
+                  FKDR = round(float(FinalKills) / float(FinalDeaths), 1)
+                  WLR = round(float(Wins) / float(Losses), 1)
+                  BBLR = round(float(bedsbroken) / float(bedslost), 1)
+                  KDR = round(float(Kills) / float(Deaths), 1)
+                  void_kdr = KDR = round(float(voidkills) / float(voiddeaths), 1)
+                  IGN = mojang_data["name"]
+
+                  bwembed = discord.Embed(title='Bedwars Stats <:bw:850964476109914112>', description=f'Solo | {IGN}', color=0x2f3136)
+
+                  bwembed.add_field(name='Stars', value=f'``{stars:,}✫``', inline=True)
+
+                  bwembed.add_field(name='Winstreak', value=f'``{winstreak:,}``', inline=True)
+                  
+                  bwembed.add_field(name='Coins', value=f'``{coins:,}``', inline=True)
+                  
+                  bwembed.add_field(name='Final Kills', value=f'``{FinalKills:,}``', inline=True)
+                  
+                  bwembed.add_field(name='Final Deaths', value=f'``{FinalDeaths:,}``', inline=True)
+                  
+                  bwembed.add_field(name='FKDR', value=f'``{FKDR:,}``', inline=True)
+                  
+                  bwembed.add_field(name='Kills', value=f'``{Kills:,}``', inline=True)
+                  
+                  bwembed.add_field(name='Deaths', value=f'``{Deaths:,}``', inline=True)
+
+                  bwembed.add_field(name = 'KDR', value=f'``{KDR:,}``')
+
+                  bwembed.add_field(name = 'Wins', value=f'``{Wins:,}``')
+
+                  bwembed.add_field(name = 'Losses', value=f'``{Losses:,}``')
+
+                  bwembed.add_field(name = 'WLR',  value = f'``{WLR:,}``')
+
+                  bwembed.add_field(name = 'Void Kills', value=f'``{voidkills:,}``')
+
+                  bwembed.add_field(name = 'Void Deaths', value = f'``{voiddeaths:,}``')
+
+                  bwembed.add_field(name = 'Void KDR', value = f'``{void_kdr:,}``')
+
+                  response_time = datetime.utcnow() - start
+                  hours, remainder = divmod(float(response_time.total_seconds()), 3600)
+                  minutes, seconds = divmod(remainder, 60)
+
+                  bwembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
+
+                  await ctx.reply(embed=bwembed, mention_author=False)
+                except Exception as e:
+                    errorembed = discord.Embed()
+                    errorembed.add_field(name = 'Error!', value = f'{mojang_data["name"]} has not played this gamemode!')
+                    errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+                    await ctx.send(embed = errorembed)
+                    print(f'There was an error in command bw in solos thing: {e}')
+              
+            elif mode == 'threes':
+                try:
+                  async with aiohttp.ClientSession() as cs:
+                    async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as bwdataraw:
+                      bwdata = await bwdataraw.json()
+                  
+                  Wins = (bwdata["player"]["stats"]["Bedwars"]["four_three_wins_bedwars"])
+                  Kills = (bwdata["player"]["stats"]["Bedwars"]["four_three_kills_bedwars"])
+                  Deaths = (bwdata["player"]["stats"]["Bedwars"]["four_three_deaths_bedwars"])
+                  coins = (bwdata["player"]["stats"]["Bedwars"]["coins"])
+                  voiddeaths = (bwdata["player"]["stats"]["Bedwars"]["four_three_void_final_deaths_bedwars"])
+                  voidkills = (bwdata["player"]["stats"]["Bedwars"]["four_three_void_kills_bedwars"])
+                  bedsbroken = bwdata["player"]["stats"]["Bedwars"]["four_three_beds_broken_bedwars"]
+                  bedslost = bwdata["player"]["stats"]["Bedwars"]["four_three_beds_lost_bedwars"]
+                  Losses = (bwdata["player"]["stats"]["Bedwars"]["four_three_losses_bedwars"])
+                  stars = (bwdata["player"]["achievements"]["bedwars_level"])
+                  FinalDeaths = (bwdata["player"]["stats"]["Bedwars"]["four_three_final_deaths_bedwars"])
+                  FinalKills = (bwdata["player"]["stats"]["Bedwars"]["four_three_final_kills_bedwars"])
+                  winstreak = (bwdata["player"]["stats"]["Bedwars"]["four_three_winstreak"])
+                  FKDR = round(float(FinalKills) / float(FinalDeaths), 1)
+                  WLR = round(float(Wins) / float(Losses), 1)
+                  BBLR = round(float(bedsbroken) / float(bedslost), 1)
+                  KDR = round(float(Kills) / float(Deaths), 1)
+                  void_kdr = KDR = round(float(voidkills) / float(voiddeaths), 1)
+                  IGN = mojang_data["name"]
+
+                  bwembed = discord.Embed(title='Bedwars Stats <:bw:850964476109914112>', description=f'Threes | {IGN}', color=0x2f3136)
+
+                  bwembed.add_field(name='Stars', value=f'``{stars:,}✫``', inline=True)
+
+                  bwembed.add_field(name='Winstreak', value=f'``{winstreak:,}``', inline=True)
+                  
+                  bwembed.add_field(name='Coins', value=f'``{coins:,}``', inline=True)
+                  
+                  bwembed.add_field(name='Final Kills', value=f'``{FinalKills:,}``', inline=True)
+                  
+                  bwembed.add_field(name='Final Deaths', value=f'``{FinalDeaths:,}``', inline=True)
+                  
+                  bwembed.add_field(name='FKDR', value=f'``{FKDR:,}``', inline=True)
+                  
+                  bwembed.add_field(name='Kills', value=f'``{Kills:,}``', inline=True)
+                  
+                  bwembed.add_field(name='Deaths', value=f'``{Deaths:,}``', inline=True)
+
+                  bwembed.add_field(name = 'KDR', value=f'``{KDR:,}``')
+
+                  bwembed.add_field(name = 'Wins', value=f'``{Wins:,}``')
+
+                  bwembed.add_field(name = 'Losses', value=f'``{Losses:,}``')
+
+                  bwembed.add_field(name = 'WLR',  value = f'``{WLR:,}``')
+
+                  bwembed.add_field(name = 'Void Kills', value=f'``{voidkills:,}``')
+
+                  bwembed.add_field(name = 'Void Deaths', value = f'``{voiddeaths:,}``')
+
+                  bwembed.add_field(name = 'Void KDR', value = f'``{void_kdr:,}``')
+
+                  response_time = datetime.utcnow() - start
+                  hours, remainder = divmod(float(response_time.total_seconds()), 3600)
+                  minutes, seconds = divmod(remainder, 60)
+
+                  bwembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
+
+                  await ctx.reply(embed=bwembed, mention_author=False)
+                except Exception as e:
+                    errorembed = discord.Embed()
+                    errorembed.add_field(name = 'Error!', value = f'{mojang_data["name"]} has not played this gamemode!')
+                    errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+                    await ctx.send(embed = errorembed)
+                    print(f'There was an error in command bw in threes thing: {e}')
+            else:
+                errorembed = discord.Embed(title = 'Invalid Command Usage!')
+                errorembed.add_field(name = 'Usage:', value = "``.bw {IGN} {mode}``", inline = False)
+                errorembed.set_footer(text = 'Mode can be: overall, solo, doubles, threes, fours')
+                errorembed.add_field(name = 'Aliases:', value = '``bw, bed, bedwarz, bedwars, bedworz, bedwar``', inline = False)
+                errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+                await ctx.send(embed = errorembed)
+
     
     @commands.command(
       aliases = ["skywars", "skywar", "skywor", "skiwar", "skiwor"]
@@ -518,7 +814,6 @@ class minecraft(commands.Cog):
                   errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
                   await ctx.send(embed = errorembed)
 
-
     @commands.command()
     @commands.cooldown(1, 5,commands.BucketType.user)
     async def server(self, ctx, server : str = None):
@@ -740,43 +1035,40 @@ class minecraft(commands.Cog):
     @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def skin(self, ctx, user = None):
-      start = datetime.utcnow()
-      if user is None:
-        errorembed = discord.Embed(title = 'Invalid Command Usage!', color = 0x2f3136)
-        errorembed.add_field(name = 'Usage:', value = "``.skin {username}``")
-        errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
-        await ctx.send(embed = errorembed)
-      else:
-            async with aiohttp.ClientSession() as cs:
-                async with cs.get(f'https://api.mojang.com/users/profiles/minecraft/{user}') as mojangdataraw:
-                    
-                    try:
-                      mojang_data = await mojangdataraw.json()
-                    except aiohttp.client_exceptions.ContentTypeError:
-                      pass
-
-            if not mojang_data:
-                await ctx.send(f"The user your provided is not valid! `{user}`", delete_after=3)
-            else:
-              async with ctx.typing():
+        start = datetime.utcnow()
+        if user is None:
+            errorembed = discord.Embed(title = 'Invalid Command Usage!')
+            errorembed.add_field(name = 'Usage:', value = "``.sw {IGN}``", inline = False)
+            errorembed.add_field(name = 'Aliases:', value = '``sw, skywars, skywar, skywor, skiwar, skiwor``')
+            errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+            await ctx.send(embed = errorembed)
+        else:
+            try:
                 async with aiohttp.ClientSession() as cs:
-                  async with cs.get(f'https://mc-heads.net/body/{mojang_data["id"]}/right') as skin:
-                    sk1n = await skin.read()
-                    
-                    myurl = str(skin.url)
-                    
-                    embed = discord.Embed(title = f'{mojang_data["name"]}\'s Skin:', color = 0x2f3136)
-                    
-                    embed.set_image(url=myurl)
-                    
-                    response_time = datetime.utcnow() - start
-                    hours, remainder = divmod(float(response_time.total_seconds()), 3600)
-                    minutes, seconds = divmod(remainder, 60)
-                    secs = round(seconds, 1)
+                      async with cs.get(f'https://api.mojang.com/users/profiles/minecraft/{user}') as mojangraw:
+                        mojang_data = await mojangraw.json()
+            except:
+                await ctx.send(f"The user your provided is not valid! `{user}`", delete_after = 3)
+            else:
+                async with ctx.typing():
+                  async with aiohttp.ClientSession() as cs:
+                    async with cs.get(f'https://mc-heads.net/body/{mojang_data["id"]}/right') as skin:
+                      sk1n = await skin.read()
+                      
+                      myurl = str(skin.url)
+                      
+                      embed = discord.Embed(title = f'{mojang_data["name"]}\'s Skin:', color = 0x2f3136)
+                      
+                      embed.set_image(url=myurl)
+                      
+                      response_time = datetime.utcnow() - start
+                      hours, remainder = divmod(float(response_time.total_seconds()), 3600)
+                      minutes, seconds = divmod(remainder, 60)
+                      secs = round(seconds, 1)
 
-                    embed.set_footer(text = f'Time taken to complete request: {secs} s.')
-                    
-                    await ctx.reply(embed = embed, mention_author = False)
+                      embed.set_footer(text = f'Time taken to complete request: {secs} s.')
+                      
+                      await ctx.reply(embed = embed, mention_author = False)
 
     @commands.command()
     @commands.cooldown(1, 5,commands.BucketType.user)
@@ -846,7 +1138,11 @@ class minecraft(commands.Cog):
 
                       profileembed.add_field(name = "Status:", value = f'{status}', inline=False)
 
-                      profileembed.add_field(name = "Version:", value = f'{profiledata["mc_version"]}')
+                      timeStamp = profiledata["last_logout"]
+                      print(timeStamp)
+                      lastLogout = datetime.fromtimestamp(timeStamp).strftime('%Y-%m-%d %H:%M:%S')
+                      
+                      profileembed.add_field(name = "Last Logout:", value = f'{lastLogout}')
 
                       response_time = datetime.utcnow() - start
                       hours, remainder = divmod(float(response_time.total_seconds()), 3600)

@@ -21,7 +21,7 @@ class Misc(commands.Cog):
     @commands.command()
     async def src(self, ctx):
       
-      srcembed = discord.Embed(title="Source Code", url = "https://github.com/Supelion/Bloop", description="Bloop's SRC can be found on GitHub by clicking the title of this embed.", color = 0x2f3136)
+      srcembed = discord.Embed(title="Source Code", url = "https://github.com/Supelion/Bloop", description="Bloop's SRC can be found on GitHub by clicking the title of this embed,\nor by [clicking here](http://tiny.cc/rfx2uz)", color = 0x2f3136)
       
       await ctx.reply(embed=srcembed, mention_author=False)
 
@@ -29,7 +29,7 @@ class Misc(commands.Cog):
     async def invite(self, ctx):
       invitembed = discord.Embed(color = 0x2f3136)
 
-      invitembed.add_field(name=f"Invite Link :link:", value = "https://discord.com/api/oauth2/authorize?client_id=835237831412547607&permissions=268762199&scope=bot")
+      invitembed.add_field(name=f"Invite Link :link:", value = "https://discord.com/api/oauth2/authorize?client_id=835237831412547607&permissions=378944&scope=bot")
       
       await ctx.reply(embed=invitembed, mention_author=False)
 
