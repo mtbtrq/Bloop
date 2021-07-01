@@ -34,12 +34,13 @@ class minecraft(commands.Cog):
       aliases = ["bed", "bedwarz", "bedwars", "bedworz", "bedwar"]
     )
     @commands.cooldown(1, 5,commands.BucketType.user)
-    async def bw(self, ctx, user = None, mode = 'overall'):
+    async def bw(self, ctx, user = None, gamemode = 'overall'):
         start = datetime.utcnow()
+        mode = gamemode.lower()
         if user is None:
             errorembed = discord.Embed(title = 'Invalid Command Usage!')
             errorembed.add_field(name = 'Usage:', value = "``.bw {IGN} {mode}``", inline = False)
-            errorembed.set_footer(text = 'Mode can be: overall, solo, doubles, threes, fours')
+            errorembed.set_footer(text = 'Valid Modes: Overall, Solo, Doubles, Threes, Fours')
             errorembed.add_field(name = 'Aliases:', value = '``bw, bed, bedwarz, bedwars, bedworz, bedwar``', inline = False)
             errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
             await ctx.send(embed = errorembed)
@@ -410,24 +411,26 @@ class minecraft(commands.Cog):
                     await ctx.send(embed = errorembed)
                     print(f'There was an error in command bw in threes thing: {e}')
             else:
-                errorembed = discord.Embed(title = 'Invalid Command Usage!')
-                errorembed.add_field(name = 'Usage:', value = "``.bw {IGN} {mode}``", inline = False)
-                errorembed.set_footer(text = 'Mode can be: overall, solo, doubles, threes, fours')
-                errorembed.add_field(name = 'Aliases:', value = '``bw, bed, bedwarz, bedwars, bedworz, bedwar``', inline = False)
-                errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
-                await ctx.send(embed = errorembed)
+              errorembed = discord.Embed(title = 'Invalid Command Usage!')
+              errorembed.add_field(name = 'Usage:', value = "``.bw {IGN} {mode}``", inline = False)
+              errorembed.set_footer(text = 'Valid Modes: Overall, Solo, Doubles, Threes, Fours')
+              errorembed.add_field(name = 'Aliases:', value = '``bw, bed, bedwarz, bedwars, bedworz, bedwar``', inline = False)
+              errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+              await ctx.send(embed = errorembed)
 
     
     @commands.command(
       aliases = ["skywars", "skywar", "skywor", "skiwar", "skiwor"]
     )
     @commands.cooldown(1, 5,commands.BucketType.user)
-    async def sw(self, ctx, user=None):
+    async def sw(self, ctx, user = None, *, gamemode = 'overall'):
         start = datetime.utcnow()
+        mode = gamemode.lower()
         if user is None:
             errorembed = discord.Embed(title = 'Invalid Command Usage!')
-            errorembed.add_field(name = 'Usage:', value = "``.sw {IGN}``", inline = False)
+            errorembed.add_field(name = 'Usage:', value = "``.sw {IGN} {mode}``", inline = False)
             errorembed.add_field(name = 'Aliases:', value = '``sw, skywars, skywar, skywor, skiwar, skiwor``')
+            errorembed.set_footer(text = 'Valid Modes: Solo Insane, Solo Normal, Teams Insane, Teams Normal and Ranked.')
             errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
             await ctx.send(embed = errorembed)
         else:
@@ -437,8 +440,8 @@ class minecraft(commands.Cog):
                         mojang_data = await mojangraw.json()
             except:
                 await ctx.send(f"The user your provided is not valid! `{user}`", delete_after = 3)
-            else:
-              try:
+        if mode == 'overall':
+            try:
                 async with aiohttp.ClientSession() as cs:
                       async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as swdataraw:
                         swdata = await swdataraw.json()
@@ -462,13 +465,15 @@ class minecraft(commands.Cog):
 
                 swembed.add_field(name = 'Stars', value = f"``{SwLvl}✫``", inline = True)
 
+                swembed.add_field(name='Coins', value=f'``{SwCoins:,}``', inline = True)
+
+                swembed.add_field(name='Heads', value=f'``{Heads:,}``', inline = True)
+
                 swembed.add_field(name='Wins', value=f'``{SwWins:,}``', inline = True)
                 
                 swembed.add_field(name='Losses', value=f'``{SwLosses:,}``', inline = True)
                 
                 swembed.add_field(name='WLR', value=f'``{SwWLR:,}``', inline = True)
-                
-                swembed.add_field(name='Heads', value=f'``{Heads:,}``', inline = True)
                 
                 swembed.add_field(name='Kills', value=f'``{SwKills:,}``', inline = True)
                 
@@ -476,7 +481,59 @@ class minecraft(commands.Cog):
                 
                 swembed.add_field(name='KDR', value=f'``{SwKDR:,}``', inline = True)
                 
+                response_time = datetime.utcnow() - start
+                hours, remainder = divmod(float(response_time.total_seconds()), 3600)
+                minutes, seconds = divmod(remainder, 60)
+
+                swembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
+
+                await ctx.reply(embed=swembed, mention_author=False)
+            except:
+                    errorembed = discord.Embed()
+                    errorembed.add_field(name = 'Error!', value = f'\n{IGN} has not played this gamemode!')
+                    errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+                    await ctx.send(embed = errorembed)
+
+        elif mode == 'solo_insane':
+            try:
+                async with aiohttp.ClientSession() as cs:
+                      async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as swdataraw:
+                        swdata = await swdataraw.json()
+
+                async with aiohttp.ClientSession() as cs:
+                      async with cs.get(f"https://api.slothpixel.me/api/players/{user}") as swlvldataraw:
+                          swlvldata = await swlvldataraw.json()
+                
+                SwWins = (swdata["player"]["stats"]["SkyWars"]["wins_solo_insane"])
+                Heads = (swdata["player"]["stats"]["SkyWars"]["heads"])
+                SwKills = (swdata["player"]["stats"]["SkyWars"]["kills_solo_insane"])
+                SwDeaths = (swdata["player"]["stats"]["SkyWars"]["deaths_solo_insane"])
+                SwLosses = (swdata["player"]["stats"]["SkyWars"]["losses_solo_insane"])
+                SwCoins = (swdata["player"]["stats"]["SkyWars"]["coins"])
+                SwKDR = round(float(SwKills) / float(SwDeaths), 1)
+                SwWLR = round(float(SwWins) / float(SwLosses), 1)
+                IGN = str(mojang_data['name'])
+                SwLvl = round(swlvldata["stats"]["SkyWars"]["level"], 1)
+
+                swembed = discord.Embed(title='Skywars Stats <:sw:850964475544731689>', description=f'Solo Insane | {IGN}', color=0x2f3136)
+
+                swembed.add_field(name = 'Stars', value = f"``{SwLvl}✫``", inline = True)
+
                 swembed.add_field(name='Coins', value=f'``{SwCoins:,}``', inline = True)
+
+                swembed.add_field(name='Heads', value=f'``{Heads:,}``', inline = True)
+
+                swembed.add_field(name='Wins', value=f'``{SwWins:,}``', inline = True)
+                
+                swembed.add_field(name='Losses', value=f'``{SwLosses:,}``', inline = True)
+                
+                swembed.add_field(name='WLR', value=f'``{SwWLR:,}``', inline = True)
+                
+                swembed.add_field(name='Kills', value=f'``{SwKills:,}``', inline = True)
+                
+                swembed.add_field(name='Deaths', value=f'``{SwDeaths:,}``', inline = True)
+                
+                swembed.add_field(name='KDR', value=f'``{SwKDR:,}``', inline = True)
 
                 response_time = datetime.utcnow() - start
                 hours, remainder = divmod(float(response_time.total_seconds()), 3600)
@@ -485,22 +542,252 @@ class minecraft(commands.Cog):
                 swembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
 
                 await ctx.reply(embed=swembed, mention_author=False)
-              except:
+            except:
                     errorembed = discord.Embed()
-                    errorembed.add_field(name = 'Error!', value = f'\n{mojang_data["name"]} has not played this gamemode!')
+                    errorembed.add_field(name = 'Error!', value = f'\n{IGN} has not played this gamemode!')
                     errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
                     await ctx.send(embed = errorembed)
+
+        elif mode == 'solo_normal':
+            try:
+                async with aiohttp.ClientSession() as cs:
+                      async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as swdataraw:
+                        swdata = await swdataraw.json()
+
+                async with aiohttp.ClientSession() as cs:
+                      async with cs.get(f"https://api.slothpixel.me/api/players/{user}") as swlvldataraw:
+                          swlvldata = await swlvldataraw.json()
+                
+                SwWins = (swdata["player"]["stats"]["SkyWars"]["wins_solo_normal"])
+                Heads = (swdata["player"]["stats"]["SkyWars"]["heads"])
+                SwKills = (swdata["player"]["stats"]["SkyWars"]["kills_solo_normal"])
+                SwDeaths = (swdata["player"]["stats"]["SkyWars"]["deaths_solo_normal"])
+                SwLosses = (swdata["player"]["stats"]["SkyWars"]["losses_solo_normal"])
+                SwCoins = (swdata["player"]["stats"]["SkyWars"]["coins"])
+                SwKDR = round(float(SwKills) / float(SwDeaths), 1)
+                SwWLR = round(float(SwWins) / float(SwLosses), 1)
+                IGN = str(mojang_data['name'])
+                SwLvl = round(swlvldata["stats"]["SkyWars"]["level"], 1)
+
+                swembed = discord.Embed(title='Skywars Stats <:sw:850964475544731689>', description=f'Solo Normal | {IGN}', color=0x2f3136)
+
+                swembed.add_field(name = 'Stars', value = f"``{SwLvl}✫``", inline = True)
+
+                swembed.add_field(name='Coins', value=f'``{SwCoins:,}``', inline = True)
+
+                swembed.add_field(name='Heads', value=f'``{Heads:,}``', inline = True)
+
+                swembed.add_field(name='Wins', value=f'``{SwWins:,}``', inline = True)
+                
+                swembed.add_field(name='Losses', value=f'``{SwLosses:,}``', inline = True)
+                
+                swembed.add_field(name='WLR', value=f'``{SwWLR:,}``', inline = True)
+                
+                swembed.add_field(name='Kills', value=f'``{SwKills:,}``', inline = True)
+                
+                swembed.add_field(name='Deaths', value=f'``{SwDeaths:,}``', inline = True)
+                
+                swembed.add_field(name='KDR', value=f'``{SwKDR:,}``', inline = True)
+
+                response_time = datetime.utcnow() - start
+                hours, remainder = divmod(float(response_time.total_seconds()), 3600)
+                minutes, seconds = divmod(remainder, 60)
+
+                swembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
+
+                await ctx.reply(embed=swembed, mention_author=False)
+            except:
+                    errorembed = discord.Embed()
+                    errorembed.add_field(name = 'Error!', value = f'\n{IGN} has not played this gamemode!')
+                    errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+                    await ctx.send(embed = errorembed)
+
+        elif mode == 'teams_normal':
+            try:
+                async with aiohttp.ClientSession() as cs:
+                      async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as swdataraw:
+                        swdata = await swdataraw.json()
+
+                async with aiohttp.ClientSession() as cs:
+                      async with cs.get(f"https://api.slothpixel.me/api/players/{user}") as swlvldataraw:
+                          swlvldata = await swlvldataraw.json()
+                
+                SwWins = (swdata["player"]["stats"]["SkyWars"]["wins_team_normal"])
+                Heads = (swdata["player"]["stats"]["SkyWars"]["heads"])
+                SwKills = (swdata["player"]["stats"]["SkyWars"]["kills_team_normal"])
+                SwDeaths = (swdata["player"]["stats"]["SkyWars"]["deaths_team_normal"])
+                SwLosses = (swdata["player"]["stats"]["SkyWars"]["losses_team_normal"])
+                SwCoins = (swdata["player"]["stats"]["SkyWars"]["coins"])
+                SwKDR = round(float(SwKills) / float(SwDeaths), 1)
+                SwWLR = round(float(SwWins) / float(SwLosses), 1)
+                IGN = str(mojang_data['name'])
+                SwLvl = round(swlvldata["stats"]["SkyWars"]["level"], 1)
+
+                swembed = discord.Embed(title='Skywars Stats <:sw:850964475544731689>', description=f'Teams Normal | {IGN}', color=0x2f3136)
+
+                swembed.add_field(name = 'Stars', value = f"``{SwLvl}✫``", inline = True)
+
+                swembed.add_field(name='Coins', value=f'``{SwCoins:,}``', inline = True)
+
+                swembed.add_field(name='Heads', value=f'``{Heads:,}``', inline = True)
+
+                swembed.add_field(name='Wins', value=f'``{SwWins:,}``', inline = True)
+                
+                swembed.add_field(name='Losses', value=f'``{SwLosses:,}``', inline = True)
+                
+                swembed.add_field(name='WLR', value=f'``{SwWLR:,}``', inline = True)
+                
+                swembed.add_field(name='Kills', value=f'``{SwKills:,}``', inline = True)
+                
+                swembed.add_field(name='Deaths', value=f'``{SwDeaths:,}``', inline = True)
+                
+                swembed.add_field(name='KDR', value=f'``{SwKDR:,}``', inline = True)
+
+                response_time = datetime.utcnow() - start
+                hours, remainder = divmod(float(response_time.total_seconds()), 3600)
+                minutes, seconds = divmod(remainder, 60)
+
+                swembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
+
+                await ctx.reply(embed=swembed, mention_author=False)
+            except Exception as e:
+                    errorembed = discord.Embed()
+                    errorembed.add_field(name = 'Error!', value = f'\n{IGN} has not played this gamemode!')
+                    errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+                    await ctx.send(embed = errorembed)
+                    print(e)
+
+        elif mode == 'teams_insane':
+            try:
+                async with aiohttp.ClientSession() as cs:
+                      async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as swdataraw:
+                        swdata = await swdataraw.json()
+
+                async with aiohttp.ClientSession() as cs:
+                      async with cs.get(f"https://api.slothpixel.me/api/players/{user}") as swlvldataraw:
+                          swlvldata = await swlvldataraw.json()
+                
+                SwWins = (swdata["player"]["stats"]["SkyWars"]["wins_team_insane"])
+                Heads = (swdata["player"]["stats"]["SkyWars"]["heads"])
+                SwKills = (swdata["player"]["stats"]["SkyWars"]["kills_team_insane"])
+                SwDeaths = (swdata["player"]["stats"]["SkyWars"]["deaths_team_insane"])
+                SwLosses = (swdata["player"]["stats"]["SkyWars"]["losses_team_insane"])
+                SwCoins = (swdata["player"]["stats"]["SkyWars"]["coins"])
+                SwKDR = round(float(SwKills) / float(SwDeaths), 1)
+                SwWLR = round(float(SwWins) / float(SwLosses), 1)
+                IGN = str(mojang_data['name'])
+                SwLvl = round(swlvldata["stats"]["SkyWars"]["level"], 1)
+
+                swembed = discord.Embed(title='Skywars Stats <:sw:850964475544731689>', description=f'Teams Insane | {IGN}', color=0x2f3136)
+
+                swembed.add_field(name = 'Stars', value = f"``{SwLvl}✫``", inline = True)
+
+                swembed.add_field(name='Coins', value=f'``{SwCoins:,}``', inline = True)
+
+                swembed.add_field(name='Heads', value=f'``{Heads:,}``', inline = True)
+
+                swembed.add_field(name='Wins', value=f'``{SwWins:,}``', inline = True)
+                
+                swembed.add_field(name='Losses', value=f'``{SwLosses:,}``', inline = True)
+                
+                swembed.add_field(name='WLR', value=f'``{SwWLR:,}``', inline = True)
+                
+                swembed.add_field(name='Kills', value=f'``{SwKills:,}``', inline = True)
+                
+                swembed.add_field(name='Deaths', value=f'``{SwDeaths:,}``', inline = True)
+                
+                swembed.add_field(name='KDR', value=f'``{SwKDR:,}``', inline = True)
+
+                response_time = datetime.utcnow() - start
+                hours, remainder = divmod(float(response_time.total_seconds()), 3600)
+                minutes, seconds = divmod(remainder, 60)
+
+                swembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
+
+                await ctx.reply(embed=swembed, mention_author=False)
+            except Exception as e:
+                    errorembed = discord.Embed()
+                    errorembed.add_field(name = 'Error!', value = f'\n{IGN} has not played this gamemode!')
+                    errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+                    await ctx.send(embed = errorembed)
+                    print(e)
+
+        elif mode == 'ranked':
+            try:
+                async with aiohttp.ClientSession() as cs:
+                      async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as swdataraw:
+                        swdata = await swdataraw.json()
+
+                async with aiohttp.ClientSession() as cs:
+                      async with cs.get(f"https://api.slothpixel.me/api/players/{user}") as swlvldataraw:
+                          swlvldata = await swlvldataraw.json()
+                
+                SwWins = (swdata["player"]["stats"]["SkyWars"]["wins_ranked"])
+                Heads = (swdata["player"]["stats"]["SkyWars"]["heads"])
+                SwKills = (swdata["player"]["stats"]["SkyWars"]["kills_ranked"])
+                SwDeaths = (swdata["player"]["stats"]["SkyWars"]["deaths_ranked"])
+                SwLosses = (swdata["player"]["stats"]["SkyWars"]["losses_ranked"])
+                SwCoins = (swdata["player"]["stats"]["SkyWars"]["coins"])
+                SwKDR = round(float(SwKills) / float(SwDeaths), 1)
+                SwWLR = round(float(SwWins) / float(SwLosses), 1)
+                IGN = str(mojang_data['name'])
+                SwLvl = round(swlvldata["stats"]["SkyWars"]["level"], 1)
+
+                swembed = discord.Embed(title='Skywars Stats <:sw:850964475544731689>', description=f'Ranked | {IGN}', color=0x2f3136)
+
+                swembed.add_field(name = 'Stars', value = f"``{SwLvl}✫``", inline = True)
+
+                swembed.add_field(name='Coins', value=f'``{SwCoins:,}``', inline = True)
+
+                swembed.add_field(name='Heads', value=f'``{Heads:,}``', inline = True)
+
+                swembed.add_field(name='Wins', value=f'``{SwWins:,}``', inline = True)
+                
+                swembed.add_field(name='Losses', value=f'``{SwLosses:,}``', inline = True)
+                
+                swembed.add_field(name='WLR', value=f'``{SwWLR:,}``', inline = True)
+                
+                swembed.add_field(name='Kills', value=f'``{SwKills:,}``', inline = True)
+                
+                swembed.add_field(name='Deaths', value=f'``{SwDeaths:,}``', inline = True)
+                
+                swembed.add_field(name='KDR', value=f'``{SwKDR:,}``', inline = True)
+
+                response_time = datetime.utcnow() - start
+                hours, remainder = divmod(float(response_time.total_seconds()), 3600)
+                minutes, seconds = divmod(remainder, 60)
+
+                swembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
+
+                await ctx.reply(embed=swembed, mention_author=False)
+            except Exception as e:
+                    errorembed = discord.Embed()
+                    errorembed.add_field(name = 'Error!', value = f'\n{IGN} has not played this gamemode!')
+                    errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+                    await ctx.send(embed = errorembed)
+                    print(e)
+                    
+        else:
+            errorembed = discord.Embed(title = 'Invalid Command Usage!')
+            errorembed.add_field(name = 'Usage:', value = "``.sw {IGN} {mode}``", inline = False)
+            errorembed.add_field(name = 'Aliases:', value = '``sw, skywars, skywar, skywor, skiwar, skiwor``')
+            errorembed.set_footer(text = 'Valid Modes: Solo Insane, Solo Normal, Teams Insane, Teams Normal and Ranked.')
+            errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+            await ctx.send(embed = errorembed)
+
 
     @commands.command(
       aliases = ["duels", "d"]
     )
     @commands.cooldown(1, 5,commands.BucketType.user)
-    async def duel(self, ctx, user=None):
+    async def duel(self, ctx, user=None, *, gamemode = 'overall'):
         start = datetime.utcnow()
+        mode = gamemode.lower()
         if user is None:
             errorembed = discord.Embed(title = 'Invalid Command Usage!')
             errorembed.add_field(name = 'Usage:', value = "``.d {IGN}``")
-            errorembed.add_field(name = 'Aliases', value = '``d, duels, duel``')
+            errorembed.add_field(name = 'Aliases', value = '``d, duels, duel``', inline = False)
+            errorembed.set_footer(text = 'Valid Modes: Bridge, Classic, UHC, Combo, SkyWars, Sumo, NoDebuff, Bow Duels, OP Duels')
             errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
             await ctx.send(embed = errorembed)
         else:
@@ -510,7 +797,7 @@ class minecraft(commands.Cog):
                         mojang_data = await moj4ngdataraw.json()
             except:
                 await ctx.send(f"The user your provided is not valid! `{user}`", delete_after = 3)
-            else:
+            if mode == 'overall':
               try:
                   async with aiohttp.ClientSession() as cs:
                         async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as duelsdataraw:
@@ -571,9 +858,487 @@ class minecraft(commands.Cog):
                 errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
                 await ctx.send(embed = errorembed)
 
+            elif mode == 'bridge':
+              try:
+                  async with aiohttp.ClientSession() as cs:
+                        async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as duelsdataraw:
+                          duelsdat4 = await duelsdataraw.json()
+                          duels = duelsdat4["player"]["stats"]["Duels"]
+                  
+                  
+                  ws = duels["current_bridge_winstreak"]
+                  coins = duels["coins"]
+                  wins = duels["bridge_duel_wins"]
+                  losses = duels["bridge_duel_losses"]
+                  kills = duels["bridge_kills"]
+                  goals = duels["bridge_duel_goals"]
+                  deaths = duels["bridge_deaths"]
+                  kdr = round(float(kills) / float(deaths), 1)
+                  wlr = round(float(wins) / float(losses), 1)
+
+
+                  duelsembed = discord.Embed(title = f'Duels Stats <:duels:850964475937816586>', description = f'Bridge Duels | {mojang_data["name"]}', color = 0x2f3136)
+                  
+                  duelsembed.add_field(name = f'Winstreak', value = f'``{ws:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f"Coins", value = f'``{coins:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f"Goals", value = f'``{goals:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Wins', value = f'``{wins:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Losses', value = f'``{losses:,}``', inline=True)
+
+                  duelsembed.add_field(name = f'WLR', value = f'``{wlr:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Kills', value = f'``{kills:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Deaths', value = f'``{deaths:,}``', inline=True)
+
+                  duelsembed.add_field(name = f'KDR', value = f'``{kdr:,}``', inline=True)
+
+                  response_time = datetime.utcnow() - start
+                  hours, remainder = divmod(float(response_time.total_seconds()), 3600)
+                  minutes, seconds = divmod(remainder, 60)
+
+                  duelsembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
+                  
+                  await ctx.reply(embed=duelsembed, mention_author=False)
+              except:
+                errorembed = discord.Embed()
+                errorembed.add_field(name = 'Error!', value = f'\n{mojang_data["name"]} has not played this gamemode!')
+                errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+                await ctx.send(embed = errorembed)
+
+            elif mode == 'classic':
+              try:
+                  async with aiohttp.ClientSession() as cs:
+                        async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as duelsdataraw:
+                          duelsdat4 = await duelsdataraw.json()
+                          duels = duelsdat4["player"]["stats"]["Duels"]
+                  
+                  
+                  ws = duels["current_bridge_winstreak"]
+                  coins = duels["coins"]
+                  wins = duels["classic_duel_wins"]
+                  losses = duels["classic_duel_losses"]
+                  kills = duels["classic_duel_kills"]
+                  games = duels["classic_duel_rounds_played"]
+                  deaths = duels["classic_duel_deaths"]
+                  kdr = round(float(kills) / float(deaths), 1)
+                  wlr = round(float(wins) / float(losses), 1)
+
+
+                  duelsembed = discord.Embed(title = f'Duels Stats <:duels:850964475937816586>', description = f'Classic Duels | {mojang_data["name"]}', color = 0x2f3136)
+                  
+                  duelsembed.add_field(name = f'Winstreak', value = f'``{ws:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f"Coins", value = f'``{coins:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f"Games Played", value = f'``{games:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Wins', value = f'``{wins:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Losses', value = f'``{losses:,}``', inline=True)
+
+                  duelsembed.add_field(name = f'WLR', value = f'``{wlr:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Kills', value = f'``{kills:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Deaths', value = f'``{deaths:,}``', inline=True)
+
+                  duelsembed.add_field(name = f'KDR', value = f'``{kdr:,}``', inline=True)
+
+                  response_time = datetime.utcnow() - start
+                  hours, remainder = divmod(float(response_time.total_seconds()), 3600)
+                  minutes, seconds = divmod(remainder, 60)
+
+                  duelsembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
+                  
+                  await ctx.reply(embed=duelsembed, mention_author=False)
+              except:
+                errorembed = discord.Embed()
+                errorembed.add_field(name = 'Error!', value = f'\n{mojang_data["name"]} has not played this gamemode!')
+                errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+                await ctx.send(embed = errorembed)
+
+            elif mode == 'uhc':
+              try:
+                  async with aiohttp.ClientSession() as cs:
+                        async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as duelsdataraw:
+                          duelsdat4 = await duelsdataraw.json()
+                          duels = duelsdat4["player"]["stats"]["Duels"]
+                  
+                  
+                  ws = duels["current_uhc_winstreak"]
+                  coins = duels["coins"]
+                  wins = duels["uhc_duel_wins"]
+                  losses = duels["uhc_duel_losses"]
+                  kills = duels["uhc_duel_kills"]
+                  games = duels["uhc_duel_rounds_played"]
+                  deaths = duels["uhc_duel_deaths"]
+                  kdr = round(float(kills) / float(deaths), 1)
+                  wlr = round(float(wins) / float(losses), 1)
+
+
+                  duelsembed = discord.Embed(title = f'Duels Stats <:duels:850964475937816586>', description = f'UHC Duels | {mojang_data["name"]}', color = 0x2f3136)
+                  
+                  duelsembed.add_field(name = f'Winstreak', value = f'``{ws:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f"Coins", value = f'``{coins:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f"Games Played", value = f'``{games:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Wins', value = f'``{wins:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Losses', value = f'``{losses:,}``', inline=True)
+
+                  duelsembed.add_field(name = f'WLR', value = f'``{wlr:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Kills', value = f'``{kills:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Deaths', value = f'``{deaths:,}``', inline=True)
+
+                  duelsembed.add_field(name = f'KDR', value = f'``{kdr:,}``', inline=True)
+
+                  response_time = datetime.utcnow() - start
+                  hours, remainder = divmod(float(response_time.total_seconds()), 3600)
+                  minutes, seconds = divmod(remainder, 60)
+
+                  duelsembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
+                  
+                  await ctx.reply(embed=duelsembed, mention_author=False)
+              except:
+                errorembed = discord.Embed()
+                errorembed.add_field(name = 'Error!', value = f'\n{mojang_data["name"]} has not played this gamemode!')
+                errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+                await ctx.send(embed = errorembed)
+
+            elif mode == 'combo':
+              try:
+                  async with aiohttp.ClientSession() as cs:
+                        async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as duelsdataraw:
+                          duelsdat4 = await duelsdataraw.json()
+                          duels = duelsdat4["player"]["stats"]["Duels"]
+                  
+                  
+                  ws = duels["current_combo_winstreak"]
+                  coins = duels["coins"]
+                  wins = duels["combo_duel_wins"]
+                  losses = duels["combo_duel_losses"]
+                  kills = duels["combo_duel_kills"]
+                  games = duels["combo_duel_rounds_played"]
+                  deaths = duels["combo_duel_deaths"]
+                  kdr = round(float(kills) / float(deaths), 1)
+                  wlr = round(float(wins) / float(losses), 1)
+
+
+                  duelsembed = discord.Embed(title = f'Duels Stats <:duels:850964475937816586>', description = f'Combo Duels | {mojang_data["name"]}', color = 0x2f3136)
+                  
+                  duelsembed.add_field(name = f'Winstreak', value = f'``{ws:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f"Coins", value = f'``{coins:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f"Games Played", value = f'``{games:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Wins', value = f'``{wins:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Losses', value = f'``{losses:,}``', inline=True)
+
+                  duelsembed.add_field(name = f'WLR', value = f'``{wlr:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Kills', value = f'``{kills:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Deaths', value = f'``{deaths:,}``', inline=True)
+
+                  duelsembed.add_field(name = f'KDR', value = f'``{kdr:,}``', inline=True)
+
+                  response_time = datetime.utcnow() - start
+                  hours, remainder = divmod(float(response_time.total_seconds()), 3600)
+                  minutes, seconds = divmod(remainder, 60)
+
+                  duelsembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
+                  
+                  await ctx.reply(embed=duelsembed, mention_author=False)
+              except:
+                errorembed = discord.Embed()
+                errorembed.add_field(name = 'Error!', value = f'\n{mojang_data["name"]} has not played this gamemode!')
+                errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+                await ctx.send(embed = errorembed)
+
+            elif mode == 'skywars':
+              try:
+                  async with aiohttp.ClientSession() as cs:
+                        async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as duelsdataraw:
+                          duelsdat4 = await duelsdataraw.json()
+                          duels = duelsdat4["player"]["stats"]["Duels"]
+                  
+                  
+                  ws = duels["current_skywars_winstreak"]
+                  coins = duels["coins"]
+                  wins = duels["sw_duel_wins"]
+                  losses = duels["sw_duel_losses"]
+                  kills = duels["sw_duel_kills"]
+                  games = duels["sw_duel_rounds_played"]
+                  deaths = duels["sw_duel_deaths"]
+                  kdr = round(float(kills) / float(deaths), 1)
+                  wlr = round(float(wins) / float(losses), 1)
+
+
+                  duelsembed = discord.Embed(title = f'Duels Stats <:duels:850964475937816586>', description = f'Skywars Duels | {mojang_data["name"]}', color = 0x2f3136)
+                  
+                  duelsembed.add_field(name = f'Winstreak', value = f'``{ws:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f"Coins", value = f'``{coins:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f"Games Played", value = f'``{games:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Wins', value = f'``{wins:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Losses', value = f'``{losses:,}``', inline=True)
+
+                  duelsembed.add_field(name = f'WLR', value = f'``{wlr:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Kills', value = f'``{kills:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Deaths', value = f'``{deaths:,}``', inline=True)
+
+                  duelsembed.add_field(name = f'KDR', value = f'``{kdr:,}``', inline=True)
+
+                  response_time = datetime.utcnow() - start
+                  hours, remainder = divmod(float(response_time.total_seconds()), 3600)
+                  minutes, seconds = divmod(remainder, 60)
+
+                  duelsembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
+                  
+                  await ctx.reply(embed=duelsembed, mention_author=False)
+              except:
+                errorembed = discord.Embed()
+                errorembed.add_field(name = 'Error!', value = f'\n{mojang_data["name"]} has not played this gamemode!')
+                errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+                await ctx.send(embed = errorembed)
+            
+            elif mode == 'sumo':
+              try:
+                  async with aiohttp.ClientSession() as cs:
+                        async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as duelsdataraw:
+                          duelsdat4 = await duelsdataraw.json()
+                          duels = duelsdat4["player"]["stats"]["Duels"]
+                  
+                  
+                  ws = duels["current_winstreak_mode_sumo_duel"]
+                  coins = duels["coins"]
+                  wins = duels["sumo_duel_wins"]
+                  losses = duels["sumo_duel_losses"]
+                  kills = duels["sumo_duel_kills"]
+                  games = duels["sumo_duel_rounds_played"]
+                  deaths = duels["sumo_duel_deaths"]
+                  kdr = round(float(kills) / float(deaths), 1)
+                  wlr = round(float(wins) / float(losses), 1)
+
+
+                  duelsembed = discord.Embed(title = f'Duels Stats <:duels:850964475937816586>', description = f'Sumo Duels | {mojang_data["name"]}', color = 0x2f3136)
+                  
+                  duelsembed.add_field(name = f'Winstreak', value = f'``{ws:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f"Coins", value = f'``{coins:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f"Games Played", value = f'``{games:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Wins', value = f'``{wins:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Losses', value = f'``{losses:,}``', inline=True)
+
+                  duelsembed.add_field(name = f'WLR', value = f'``{wlr:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Kills', value = f'``{kills:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Deaths', value = f'``{deaths:,}``', inline=True)
+
+                  duelsembed.add_field(name = f'KDR', value = f'``{kdr:,}``', inline=True)
+
+                  response_time = datetime.utcnow() - start
+                  hours, remainder = divmod(float(response_time.total_seconds()), 3600)
+                  minutes, seconds = divmod(remainder, 60)
+
+                  duelsembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
+                  
+                  await ctx.reply(embed=duelsembed, mention_author=False)
+              except:
+                errorembed = discord.Embed()
+                errorembed.add_field(name = 'Error!', value = f'\n{mojang_data["name"]} has not played this gamemode!')
+                errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+                await ctx.send(embed = errorembed)
+
+            elif mode == 'nodebuff':
+              try:
+                  async with aiohttp.ClientSession() as cs:
+                        async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as duelsdataraw:
+                          duelsdat4 = await duelsdataraw.json()
+                          duels = duelsdat4["player"]["stats"]["Duels"]
+                  
+                  
+                  ws = duels["current_no_debuff_winstreak"]
+                  coins = duels["coins"]
+                  wins = duels["potion_duel_wins"]
+                  losses = duels["potion_duel_losses"]
+                  kills = duels["potion_duel_kills"]
+                  games = duels["potion_duel_rounds_played"]
+                  deaths = duels["potion_duel_deaths"]
+                  kdr = round(float(kills) / float(deaths), 1)
+                  wlr = round(float(wins) / float(losses), 1)
+
+
+                  duelsembed = discord.Embed(title = f'Duels Stats <:duels:850964475937816586>', description = f'Potion Duels | {mojang_data["name"]}', color = 0x2f3136)
+                  
+                  duelsembed.add_field(name = f'Winstreak', value = f'``{ws:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f"Coins", value = f'``{coins:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f"Games Played", value = f'``{games:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Wins', value = f'``{wins:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Losses', value = f'``{losses:,}``', inline=True)
+
+                  duelsembed.add_field(name = f'WLR', value = f'``{wlr:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Kills', value = f'``{kills:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Deaths', value = f'``{deaths:,}``', inline=True)
+
+                  duelsembed.add_field(name = f'KDR', value = f'``{kdr:,}``', inline=True)
+
+                  response_time = datetime.utcnow() - start
+                  hours, remainder = divmod(float(response_time.total_seconds()), 3600)
+                  minutes, seconds = divmod(remainder, 60)
+
+                  duelsembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
+                  
+                  await ctx.reply(embed=duelsembed, mention_author=False)
+              except:
+                errorembed = discord.Embed()
+                errorembed.add_field(name = 'Error!', value = f'\n{mojang_data["name"]} has not played this gamemode!')
+                errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+                await ctx.send(embed = errorembed)
+
+            elif mode == 'bow duels':
+              try:
+                  async with aiohttp.ClientSession() as cs:
+                        async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as duelsdataraw:
+                          duelsdat4 = await duelsdataraw.json()
+                          duels = duelsdat4["player"]["stats"]["Duels"]
+                  
+                  
+                  ws = duels["current_winstreak_mode_bow_duel"]
+                  coins = duels["coins"]
+                  wins = duels["bow_duel_wins"]
+                  losses = duels["bow_duel_losses"]
+                  kills = duels["bow_duel_kills"]
+                  games = duels["bow_duel_rounds_played"]
+                  deaths = duels["bow_duel_deaths"]
+                  kdr = round(float(kills) / float(deaths), 1)
+                  wlr = round(float(wins) / float(losses), 1)
+
+
+                  duelsembed = discord.Embed(title = f'Duels Stats <:duels:850964475937816586>', description = f'Bow Duels | {mojang_data["name"]}', color = 0x2f3136)
+                  
+                  duelsembed.add_field(name = f'Winstreak', value = f'``{ws:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f"Coins", value = f'``{coins:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f"Games Played", value = f'``{games:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Wins', value = f'``{wins:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Losses', value = f'``{losses:,}``', inline=True)
+
+                  duelsembed.add_field(name = f'WLR', value = f'``{wlr:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Kills', value = f'``{kills:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Deaths', value = f'``{deaths:,}``', inline=True)
+
+                  duelsembed.add_field(name = f'KDR', value = f'``{kdr:,}``', inline=True)
+
+                  response_time = datetime.utcnow() - start
+                  hours, remainder = divmod(float(response_time.total_seconds()), 3600)
+                  minutes, seconds = divmod(remainder, 60)
+
+                  duelsembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
+                  
+                  await ctx.reply(embed=duelsembed, mention_author=False)
+              except:
+                errorembed = discord.Embed()
+                errorembed.add_field(name = 'Error!', value = f'\n{mojang_data["name"]} has not played this gamemode!')
+                errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+                await ctx.send(embed = errorembed)
+
+            elif mode == 'op duels':
+              try:
+                  async with aiohttp.ClientSession() as cs:
+                        async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as duelsdataraw:
+                          duelsdat4 = await duelsdataraw.json()
+                          duels = duelsdat4["player"]["stats"]["Duels"]
+                  
+                  
+                  ws = duels["current_winstreak_mode_op_duel"]
+                  coins = duels["coins"]
+                  wins = duels["op_duel_wins"]
+                  losses = duels["op_duel_losses"]
+                  kills = duels["op_duel_kills"]
+                  games = duels["op_duel_rounds_played"]
+                  deaths = duels["op_duel_deaths"]
+                  kdr = round(float(kills) / float(deaths), 1)
+                  wlr = round(float(wins) / float(losses), 1)
+
+
+                  duelsembed = discord.Embed(title = f'Duels Stats <:duels:850964475937816586>', description = f'OP Duels | {mojang_data["name"]}', color = 0x2f3136)
+                  
+                  duelsembed.add_field(name = f'Winstreak', value = f'``{ws:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f"Coins", value = f'``{coins:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f"Games Played", value = f'``{games:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Wins', value = f'``{wins:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Losses', value = f'``{losses:,}``', inline=True)
+
+                  duelsembed.add_field(name = f'WLR', value = f'``{wlr:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Kills', value = f'``{kills:,}``', inline=True)
+                  
+                  duelsembed.add_field(name = f'Deaths', value = f'``{deaths:,}``', inline=True)
+
+                  duelsembed.add_field(name = f'KDR', value = f'``{kdr:,}``', inline=True)
+
+                  response_time = datetime.utcnow() - start
+                  hours, remainder = divmod(float(response_time.total_seconds()), 3600)
+                  minutes, seconds = divmod(remainder, 60)
+
+                  duelsembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
+                  
+                  await ctx.reply(embed=duelsembed, mention_author=False)
+              except:
+                errorembed = discord.Embed()
+                errorembed.add_field(name = 'Error!', value = f'\n{mojang_data["name"]} has not played this gamemode!')
+                errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+                await ctx.send(embed = errorembed)
+
+            else:
+              errorembed = discord.Embed(title = 'Invalid Command Usage!')
+              errorembed.add_field(name = 'Usage:', value = "``.d {IGN}``")
+              errorembed.add_field(name = 'Aliases', value = '``d, duels, duel``', inline = False)
+              errorembed.set_footer(text = 'Valid Modes: Bridge, Classic, UHC, Combo, SkyWars, Sumo, NoDebuff, Bow Duels, OP Duels')
+              errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+              await ctx.send(embed = errorembed)
+              
+
     @commands.command()
     @commands.cooldown(1, 5,commands.BucketType.user)
-    async def p(self, ctx, gamemode = None, player = None):
+    async def p(self, ctx, mode = None, player = None):
+        gamemode = mode.lower()
         if player is None:
             errorembed = discord.Embed(title = 'Invalid Command Usage!')
             errorembed.add_field(name = 'Usage:', value = "``.p {gamemode} {IGN}``")
@@ -612,17 +1377,6 @@ class minecraft(commands.Cog):
                 async with aiohttp.ClientSession() as cs:
                     async with cs.get(f"https://api.slothpixel.me/api/players/{player}") as swlvldataraw:
                         swlvldata = await swlvldataraw.json()
-
-                async with aiohttp.ClientSession() as cs:
-                      async with cs.get(f'https://api.hypixel.net/guild?key={hypixelapikey}&player={mojang_data["id"]}') as guilddataraw:
-                        guilddata = await guilddataraw.json()
-
-                if guilddata["guild"] == None:
-                  guild = None
-                elif guilddata["guild"]["tag"] == None:
-                  guild = None
-                else:
-                  guild = f'[{guilddata["guild"]["tag"]}]'
 
                 if rank == "MVP_PLUS_PLUS":
                   rank = "[MVP++]"
@@ -671,7 +1425,25 @@ class minecraft(commands.Cog):
                     KDR = round(float(Kills) / float(Deaths), 1)
                     void_kdr = KDR = round(float(voidkills) / float(voiddeaths), 1)
 
-                    draw.text((200, 150), f"{rank} {IGN}", self.orangey, font=fontbig)
+                    if rank == "VIP+":
+                      draw.text((200, 150), f"VIP+ {IGN}", self.green, font=fontbig)
+                    elif rank == "VIP":
+                      draw.text((200, 150), f"VIP {IGN}", self.green, font=fontbig)
+                    elif rank == "MVP":
+                      draw.text((200, 150), f"MVP {IGN}", self.aqua, font=fontbig)
+                    elif rank == "MVP+":
+                      draw.text((200, 150), f"MVP+ {IGN}", self.aqua, font=fontbig)
+                    elif rank == "MVP++":
+                      draw.text((200, 150), f"MVP++ {IGN}", self.gold, font=fontbig)
+                    elif rank == "YOUTUBE":
+                      draw.text((200, 150), f"YOUTUBE {IGN}", self.light_red, font=fontbig)
+                    elif rank == "ADMIN":
+                      draw.text((200, 150), f"ADMIN {IGN}", self.red, font=fontbig)
+                    elif rank == "MOD":
+                      draw.text((200, 150), f"MOD {IGN}", self.dark_green, font=fontbig)
+                    else:
+                      draw.text((200, 150), f"{rank} {IGN}", self.orangey, font=fontbig)
+
                     draw.text((750, 270), f"Stars: {Levels:,}", self.white, font=font)
                     draw.text((200, 270), f"Winstreak: {winstreak:,}", self.white, font=font)
 
@@ -725,7 +1497,25 @@ class minecraft(commands.Cog):
                     SwWLR = round(float(SwWins) / float(SwLosses), 1)
                     SwLvl = round(swlvldata["stats"]["SkyWars"]["level"], 1)
 
-                    draw.text((200, 150), f"{rank} {IGN}", self.orangey, font=fontbig)
+                    if rank == "VIP+":
+                      draw.text((200, 150), f"VIP+ {IGN}", self.green, font=fontbig)
+                    elif rank == "VIP":
+                      draw.text((200, 150), f"VIP {IGN}", self.green, font=fontbig)
+                    elif rank == "MVP":
+                      draw.text((200, 150), f"MVP {IGN}", self.aqua, font=fontbig)
+                    elif rank == "MVP+":
+                      draw.text((200, 150), f"MVP+ {IGN}", self.aqua, font=fontbig)
+                    elif rank == "MVP++":
+                      draw.text((200, 150), f"MVP++ {IGN}", self.gold, font=fontbig)
+                    elif rank == "YOUTUBE":
+                      draw.text((200, 150), f"YOUTUBE {IGN}", self.light_red, font=fontbig)
+                    elif rank == "ADMIN":
+                      draw.text((200, 150), f"ADMIN {IGN}", self.red, font=fontbig)
+                    elif rank == "MOD":
+                      draw.text((200, 150), f"MOD {IGN}", self.dark_green, font=fontbig)
+                    else:
+                      draw.text((200, 150), f"{rank} {IGN}", self.orangey, font=fontbig)
+
                     draw.text((800, 270), f"Stars: {SwLvl:,}", self.white, font=font)
                     draw.text((200, 270), f"Heads: {Heads:,}", self.white, font=font)
 
@@ -777,7 +1567,25 @@ class minecraft(commands.Cog):
                     coins = (duels["coins"])
                     games = (duels["games_played_duels"])
 
-                    draw.text((200, 150), f"{rank} {IGN}", self.orangey, font=fontbig)
+                    if rank == "VIP+":
+                      draw.text((200, 150), f"VIP+ {IGN}", self.green, font=fontbig)
+                    elif rank == "VIP":
+                      draw.text((200, 150), f"VIP {IGN}", self.green, font=fontbig)
+                    elif rank == "MVP":
+                      draw.text((200, 150), f"MVP {IGN}", self.aqua, font=fontbig)
+                    elif rank == "MVP+":
+                      draw.text((200, 150), f"MVP+ {IGN}", self.aqua, font=fontbig)
+                    elif rank == "MVP++":
+                      draw.text((200, 150), f"MVP++ {IGN}", self.gold, font=fontbig)
+                    elif rank == "YOUTUBE":
+                      draw.text((200, 150), f"YOUTUBE {IGN}", self.light_red, font=fontbig)
+                    elif rank == "ADMIN":
+                      draw.text((200, 150), f"ADMIN {IGN}", self.red, font=fontbig)
+                    elif rank == "MOD":
+                      draw.text((200, 150), f"MOD {IGN}", self.dark_green, font=fontbig)
+                    else:
+                      draw.text((200, 150), f"{rank} {IGN}", self.orangey, font=fontbig)
+
                     draw.text((800, 270), f"Games Played: {games:,}", self.white, font=font)
                     draw.text((200, 270), f"Coins: {coins:,}", self.white, font=font)
 
@@ -1137,12 +1945,6 @@ class minecraft(commands.Cog):
                       profileembed.add_field(name = "Guild:", value = f'{guild}', inline=False)
 
                       profileembed.add_field(name = "Status:", value = f'{status}', inline=False)
-
-                      timeStamp = profiledata["last_logout"]
-                      print(timeStamp)
-                      lastLogout = datetime.fromtimestamp(timeStamp).strftime('%Y-%m-%d %H:%M:%S')
-                      
-                      profileembed.add_field(name = "Last Logout:", value = f'{lastLogout}')
 
                       response_time = datetime.utcnow() - start
                       hours, remainder = divmod(float(response_time.total_seconds()), 3600)
