@@ -34,6 +34,9 @@ class CommandErrorHandler(commands.Cog):
             except discord.HTTPException:
                 pass
 
+        elif isinstance(error, commands.MissingPermissions):
+            return await ctx.send("I dont have permission to do that", delete_after=8)
+
         elif isinstance(error, commands.errors.NotOwner):
             errorembed = discord.Embed(title = 'An Error Occured!')
             errorembed.add_field(name = 'Cause:', value = f"You are not the owner of this bot!")

@@ -72,7 +72,7 @@ class minecraft(commands.Cog):
                   winstreak = (bwdata["player"]["stats"]["Bedwars"]["winstreak"])
                   FKDR = round(float(FinalKills) / float(FinalDeaths), 1)
                   WLR = round(float(Wins) / float(Losses), 1)
-                  BBLR = round(float(bedsbroken) / float(bedslost), 1)
+                  BBLR = round(float(bedsbroken) / float(bedslost), 2)
                   KDR = round(float(Kills) / float(Deaths), 1)
                   void_kdr = KDR = round(float(voidkills) / float(voiddeaths), 1)
                   IGN = mojang_data["name"]
@@ -83,7 +83,7 @@ class minecraft(commands.Cog):
 
                   bwembed.add_field(name='Winstreak', value=f'``{winstreak:,}``', inline=True)
                   
-                  bwembed.add_field(name='Coins', value=f'``{coins:,}``', inline=True)
+                  bwembed.add_field(name='BBLR', value=f'``{BBLR:,}``', inline=True)
                   
                   bwembed.add_field(name='Final Kills', value=f'``{FinalKills:,}``', inline=True)
                   
@@ -144,7 +144,7 @@ class minecraft(commands.Cog):
                   winstreak = (bwdata["player"]["stats"]["Bedwars"]["four_four_winstreak"])
                   FKDR = round(float(FinalKills) / float(FinalDeaths), 1)
                   WLR = round(float(Wins) / float(Losses), 1)
-                  BBLR = round(float(bedsbroken) / float(bedslost), 1)
+                  BBLR = round(float(bedsbroken) / float(bedslost), 2)
                   KDR = round(float(Kills) / float(Deaths), 1)
                   void_kdr = KDR = round(float(voidkills) / float(voiddeaths), 1)
                   IGN = mojang_data["name"]
@@ -155,7 +155,7 @@ class minecraft(commands.Cog):
 
                   bwembed.add_field(name='Winstreak', value=f'``{winstreak:,}``', inline=True)
                   
-                  bwembed.add_field(name='Coins', value=f'``{coins:,}``', inline=True)
+                  bwembed.add_field(name='BBLR', value=f'``{BBLR:,}``', inline=True)
                   
                   bwembed.add_field(name='Final Kills', value=f'``{FinalKills:,}``', inline=True)
                   
@@ -195,7 +195,7 @@ class minecraft(commands.Cog):
                     await ctx.send(embed = errorembed)
                     print(f'There was an error in command bw in fours thing: {e}')
 
-            elif mode == 'duos':
+            elif mode == 'doubles':
                 try:
                   async with aiohttp.ClientSession() as cs:
                     async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as bwdataraw:
@@ -216,7 +216,7 @@ class minecraft(commands.Cog):
                   winstreak = (bwdata["player"]["stats"]["Bedwars"]["eight_two_winstreak"])
                   FKDR = round(float(FinalKills) / float(FinalDeaths), 1)
                   WLR = round(float(Wins) / float(Losses), 1)
-                  BBLR = round(float(bedsbroken) / float(bedslost), 1)
+                  BBLR = round(float(bedsbroken) / float(bedslost), 2)
                   KDR = round(float(Kills) / float(Deaths), 1)
                   void_kdr = KDR = round(float(voidkills) / float(voiddeaths), 1)
                   IGN = mojang_data["name"]
@@ -227,7 +227,7 @@ class minecraft(commands.Cog):
 
                   bwembed.add_field(name='Winstreak', value=f'``{winstreak:,}``', inline=True)
                   
-                  bwembed.add_field(name='Coins', value=f'``{coins:,}``', inline=True)
+                  bwembed.add_field(name='BBLR', value=f'``{BBLR:,}``', inline=True)
                   
                   bwembed.add_field(name='Final Kills', value=f'``{FinalKills:,}``', inline=True)
                   
@@ -288,7 +288,7 @@ class minecraft(commands.Cog):
                   winstreak = (bwdata["player"]["stats"]["Bedwars"]["eight_one_winstreak"])
                   FKDR = round(float(FinalKills) / float(FinalDeaths), 1)
                   WLR = round(float(Wins) / float(Losses), 1)
-                  BBLR = round(float(bedsbroken) / float(bedslost), 1)
+                  BBLR = round(float(bedsbroken) / float(bedslost), 2)
                   KDR = round(float(Kills) / float(Deaths), 1)
                   void_kdr = KDR = round(float(voidkills) / float(voiddeaths), 1)
                   IGN = mojang_data["name"]
@@ -299,7 +299,7 @@ class minecraft(commands.Cog):
 
                   bwembed.add_field(name='Winstreak', value=f'``{winstreak:,}``', inline=True)
                   
-                  bwembed.add_field(name='Coins', value=f'``{coins:,}``', inline=True)
+                  bwembed.add_field(name='BBLR', value=f'``{BBLR:,}``', inline=True)
                   
                   bwembed.add_field(name='Final Kills', value=f'``{FinalKills:,}``', inline=True)
                   
@@ -360,7 +360,7 @@ class minecraft(commands.Cog):
                   winstreak = (bwdata["player"]["stats"]["Bedwars"]["four_three_winstreak"])
                   FKDR = round(float(FinalKills) / float(FinalDeaths), 1)
                   WLR = round(float(Wins) / float(Losses), 1)
-                  BBLR = round(float(bedsbroken) / float(bedslost), 1)
+                  BBLR = round(float(bedsbroken) / float(bedslost), 2)
                   KDR = round(float(Kills) / float(Deaths), 1)
                   void_kdr = KDR = round(float(voidkills) / float(voiddeaths), 1)
                   IGN = mojang_data["name"]
@@ -371,7 +371,7 @@ class minecraft(commands.Cog):
 
                   bwembed.add_field(name='Winstreak', value=f'``{winstreak:,}``', inline=True)
                   
-                  bwembed.add_field(name='Coins', value=f'``{coins:,}``', inline=True)
+                  bwembed.add_field(name='BBLR', value=f'``{BBLR:,}``', inline=True)
                   
                   bwembed.add_field(name='Final Kills', value=f'``{FinalKills:,}``', inline=True)
                   
@@ -1334,6 +1334,229 @@ class minecraft(commands.Cog):
               errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
               await ctx.send(embed = errorembed)
               
+    @commands.command()
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def compare(self, ctx, player1 : str = None, player2 : str = None):
+      if player1 is None:
+        errorembed = discord.Embed(title = 'Invalid Command Usage!')
+        errorembed.add_field(name = 'Usage:', value = "``.compare {Player 1} {Player 2}``")
+        errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+        await ctx.send(embed = errorembed)
+        return
+      if player2 is None:
+        errorembed = discord.Embed(title = 'Invalid Command Usage!')
+        errorembed.add_field(name = 'Usage:', value = "``.compare {Player 1} {Player 2}``")
+        errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+        await ctx.send(embed = errorembed)
+        return
+
+      try:
+        async with aiohttp.ClientSession() as cs:
+              async with cs.get(f'https://api.mojang.com/users/profiles/minecraft/{player1}') as mojang1:
+                mojangplayer1 = await mojang1.json()
+
+        async with aiohttp.ClientSession() as cs:
+          async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojangplayer1['id']}") as apiraw:
+            player1api = await apiraw.json()
+      
+      except:
+        errorembed = discord.Embed()
+        errorembed.add_field(name = 'Error!', value = "Invalid Player 1 username")
+        errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+        await ctx.send(embed = errorembed)
+      
+      try:
+        async with aiohttp.ClientSession() as cs:
+              async with cs.get(f'https://api.mojang.com/users/profiles/minecraft/{player2}') as mojang2:
+                mojangplayer2 = await mojang2.json()
+
+        async with aiohttp.ClientSession() as cs:
+          async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojangplayer2['id']}") as apiraw:
+            player2api = await apiraw.json()
+
+        async with aiohttp.ClientSession() as cs:
+          async with cs.get(f'https://i.imgur.com/jA86X4R.png') as crownraw:
+            crown_read = await crownraw.read()
+            crown_image_bytesio = io.BytesIO(crown_read)
+      
+      except:
+        errorembed = discord.Embed()
+        errorembed.add_field(name = 'Error!', value = "Invalid Player 2 username")
+        errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+        await ctx.send(embed = errorembed)
+      
+      async with ctx.typing():
+        
+        oWins = (player1api["player"]["stats"]["Bedwars"]["wins_bedwars"])
+        oKills = (player1api["player"]["stats"]["Bedwars"]["kills_bedwars"])
+        oDeaths = (player1api["player"]["stats"]["Bedwars"]["deaths_bedwars"])
+        ovoiddeaths = (player1api["player"]["stats"]["Bedwars"]["void_deaths_bedwars"])
+        ovoidkills = (player1api["player"]["stats"]["Bedwars"]["void_kills_bedwars"])
+        obedsbroken = player1api["player"]["stats"]["Bedwars"]["beds_broken_bedwars"]
+        obedslost = player1api["player"]["stats"]["Bedwars"]["beds_lost_bedwars"]
+        oLosses = (player1api["player"]["stats"]["Bedwars"]["losses_bedwars"])
+        ostars = int(player1api["player"]["achievements"]["bedwars_level"])
+        oFinalDeaths = (player1api["player"]["stats"]["Bedwars"]["final_deaths_bedwars"])
+        oFinalKills = (player1api["player"]["stats"]["Bedwars"]["final_kills_bedwars"])
+        oFKDR = round(float(oFinalKills) / float(oFinalDeaths), 1)
+        oWLR = round(float(oWins) / float(oLosses), 1)
+        oBBLR = round(float(obedsbroken) / float(obedslost), 1)
+        oKDR = round(float(oKills) / float(oDeaths), 1)
+        ovoid_kdr = KDR = round(float(ovoidkills) / float(ovoiddeaths), 1)
+
+        tWins = (player2api["player"]["stats"]["Bedwars"]["wins_bedwars"])
+        tKills = (player2api["player"]["stats"]["Bedwars"]["kills_bedwars"])
+        tDeaths =(player2api["player"]["stats"]["Bedwars"]["deaths_bedwars"])
+        tvoiddeaths = (player2api["player"]["stats"]["Bedwars"]["void_deaths_bedwars"])
+        tvoidkills = (player2api["player"]["stats"]["Bedwars"]["void_kills_bedwars"])
+        tbedsbroken = (player2api["player"]["stats"]["Bedwars"]["beds_broken_bedwars"])
+        tbedslost = (player2api["player"]["stats"]["Bedwars"]["beds_lost_bedwars"])
+        tLosses = (player2api["player"]["stats"]["Bedwars"]["losses_bedwars"])
+        tstars = int(player2api["player"]["achievements"]["bedwars_level"])
+        tFinalDeaths = (player2api["player"]["stats"]["Bedwars"]["final_deaths_bedwars"])
+        tFinalKills = (player2api["player"]["stats"]["Bedwars"]["final_kills_bedwars"])
+        tFKDR = round(float(tFinalKills) / float(tFinalDeaths), 1)
+        tWLR = round(float(tWins) / float(tLosses), 1)
+        tBBLR = round(float(tbedsbroken) / float(tbedslost), 1)
+        tKDR = round(float(tKills) / float(tDeaths), 1)
+        tvoid_kdr = KDR = round(float(tvoidkills) / float(tvoiddeaths), 1)
+
+        player1points = 0
+        player2points = 0
+
+        player1ign = mojangplayer1["name"]
+        player2ign = mojangplayer2["name"]
+        img = Image.open("overall.png")
+        draw = ImageDraw.Draw(img)
+        font = ImageFont.truetype("Minecraftia.ttf",
+                                  40)
+        fontbig = ImageFont.truetype("Minecraftia.ttf",
+                                      50)
+
+        draw.text((200, 200), f"{player1ign}", self.white, font=fontbig)
+        draw.text((1200, 200), f"{player2ign}", self.white, font=fontbig)
+        
+        if oFinalKills > tFinalKills:
+          draw.text((200, 400), f"Final Kills: {oFinalKills:,}", self.green, font=font)
+          draw.text((1200, 400), f"Final Kills: {tFinalKills:,}", self.light_red, font=font)
+          player1points += 1
+
+        elif oFinalKills < tFinalKills:
+          draw.text((200, 400), f"Final Kills: {oFinalKills:,}", self.light_red, font=font)
+          draw.text((1200, 400), f"Final Kills: {tFinalKills:,}", self.green, font=font)
+          player2points += 1
+
+        else:
+          draw.text((200, 400), f"Final Kills: {oFinalKills:,}", self.white, font=font)
+          draw.text((1200, 400), f"Final Kills: {tFinalKills:,}", self.white, font=font)
+
+        if oFinalDeaths > tFinalDeaths:
+          draw.text((200, 470), f"Final Deaths: {oFinalDeaths:,}", self.light_red, font=font)
+          draw.text((1200, 470), f"Final Deaths: {tFinalDeaths:,}", self.green, font=font)
+          player2points += 1 # Yes this is intentional
+
+        elif oFinalDeaths < tFinalDeaths:
+          draw.text((200, 470), f"Final Deaths: {oFinalDeaths:,}", self.green, font=font)
+          draw.text((1200, 470), f"Final Deaths: {tFinalDeaths:,}", self.light_red, font=font)
+          player1points += 1 # Yes this is intentional
+
+        else:
+          draw.text((200, 470), f"Final Deaths: {oFinalDeaths:,}", self.white, font=font)
+          draw.text((1200, 470), f"Final Deaths: {tFinalDeaths:,}", self.white, font=font)
+        
+        if oFKDR > tFKDR:
+          draw.text((200, 540), f"FKDR: {oFKDR:,}", self.green, font=font)
+          draw.text((1200, 540), f"FKDR: {tFKDR:,}", self.light_red, font=font)
+          player1points += 1
+
+        elif oFKDR < tFKDR:
+          draw.text((200, 540), f"FKDR: {oFKDR:,}", self.light_red, font=font)
+          draw.text((1200, 540), f"FKDR: {tFKDR:,}", self.green, font=font)
+          player2points += 1
+
+        else:
+          draw.text((200, 540), f"FKDR: {oFKDR:,}", self.white, font=font)
+          draw.text((1200, 540), f"FKDR: {tFKDR:,}", self.white, font=font)
+
+        if oWins > tWins:
+          draw.text((200, 610), f"Wins: {oWins:,}", self.green, font=font)
+          draw.text((1200, 610), f"Wins: {tWins:,}", self.light_red, font=font)
+          player1points += 1
+
+        elif oWins < tWins:
+          draw.text((200, 610), f"Wins: {oWins:,}", self.light_red, font=font)
+          draw.text((1200, 610), f"Wins: {tWins:,}", self.green, font=font)
+          player2points += 1
+
+        else:
+          draw.text((200, 610), f"Wins: {oWins:,}", self.white, font=font)
+          draw.text((1200, 610), f"Wins: {tWins:,}", self.white, font=font)
+
+        if oLosses > tLosses:
+          draw.text((200, 680), f"Losses: {oLosses:,}", self.light_red, font=font)
+          draw.text((1200, 680), f"Losses: {tLosses:,}", self.green, font=font)
+          player2points += 1
+
+        elif oLosses < tLosses:
+          draw.text((200, 680), f"Losses: {oLosses:,}", self.green, font=font)
+          draw.text((1200, 680), f"Losses: {tLosses:,}", self.light_red, font=font)
+          player1points += 1
+
+        else:
+          draw.text((200, 680), f"Losses: {oLosses:,}", self.white, font=font)
+          draw.text((1200, 680), f"Losses: {tLosses:,}", self.white, font=font)
+
+        if oWLR > tWLR:
+          draw.text((200, 750), f"WLR: {oWLR:,}", self.green, font=font)
+          draw.text((1200, 750), f"WLR: {tWLR:,}", self.light_red, font=font)
+          player1points += 1
+
+        elif oWLR < tWLR:
+          draw.text((200, 750), f"WLR: {oWLR:,}", self.light_red, font=font)
+          draw.text((1200, 750), f"WLR: {tWLR:,}", self.green, font=font)
+          player2points += 1
+
+        else:
+          draw.text((200, 750), f"WLR: {oWLR:,}", self.white, font=font)
+          draw.text((1200, 750), f"WLR: {tWLR:,}", self.white, font=font)
+
+        if ostars > tstars:
+          draw.text((200, 330), f"Stars: {ostars:,}", self.green, font=font)
+          draw.text((1200, 330), f"Stars: {tstars:,}", self.light_red, font=font)
+          player1points += 1
+        
+        elif ostars > tstars:
+          draw.text((200, 330), f"Stars: {ostars:,}", self.light_red, font=font)
+          draw.text((1200, 330), f"Stars: {tstars:,}", self.green, font=font)
+          player2points += 1
+        
+        else:
+          draw.text((200, 330), f"Stars: {ostars:,}", self.white, font=font)
+          draw.text((1200, 330), f"Stars: {tstars:,}", self.white, font=font)
+
+        if player1points > player2points:
+          crown_img = Image.open(crown_image_bytesio)
+          crown_img.thumbnail((100, 100))
+          img.paste(crown_img, (190, 130), mask = crown_img)
+
+        elif player1points < player2points:
+          crown_img = Image.open(crown_image_bytesio)
+          crown_img.thumbnail((100, 100))
+          img.paste(crown_img, (1190, 130), mask = crown_img)
+
+        else:
+          crown_img = Image.open(crown_image_bytesio)
+          crown_img.thumbnail((100, 100))
+          img.paste(crown_img, (190, 130), mask = crown_img)
+          
+          crown_img = Image.open(crown_image_bytesio)
+          crown_img.thumbnail((100, 100))
+          img.paste(crown_img, (1190, 130), mask = crown_img)
+
+        with io.BytesIO() as image_binary:
+            img.save(image_binary, 'PNG')
+            image_binary.seek(0)
+            await ctx.reply(file=discord.File(fp=image_binary, filename='image.png'), mention_author = False)
 
     @commands.command()
     @commands.cooldown(1, 5,commands.BucketType.user)
@@ -1428,7 +1651,7 @@ class minecraft(commands.Cog):
                     if rank == "VIP+":
                       draw.text((200, 150), f"VIP+ {IGN}", self.green, font=fontbig)
                     elif rank == "VIP":
-                      draw.text((200, 150), f"VIP {IGN}", self.green, font=fontbig)
+                      draw.text((200, 150), f"VIP {IGN}", self.green, font=fontbig) 
                     elif rank == "MVP":
                       draw.text((200, 150), f"MVP {IGN}", self.aqua, font=fontbig)
                     elif rank == "MVP+":
@@ -1622,6 +1845,56 @@ class minecraft(commands.Cog):
                   errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
                   await ctx.send(embed = errorembed)
 
+    @commands.command(
+      aliases = ["a"]
+    )
+    @commands.cooldown(1, 5,commands.BucketType.user)
+    async def achievement(self, ctx, item : str = None, title : str = None, *, text : str = None):
+      start = datetime.utcnow()
+      if item is None:
+        errorembed = discord.Embed(title = 'Invalid Command Usage!')
+        errorembed.add_field(name = 'Usage:', value = "``.achievement {item} {title} {text}``")
+        errorembed.set_footer(text = 'Gamemode can be bedwars, skywars or duels')
+        errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+        await ctx.send(embed = errorembed)
+      if title is None:
+        errorembed = discord.Embed(title = 'Invalid Command Usage!')
+        errorembed.add_field(name = 'Usage:', value = "``.achievement {item} {title} {text}``")
+        errorembed.set_footer(text = 'Gamemode can be bedwars, skywars or duels')
+        errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+        await ctx.send(embed = errorembed)
+      if text is None:
+        errorembed = discord.Embed(title = 'Invalid Command Usage!')
+        errorembed.add_field(name = 'Usage:', value = "``.achievement {item} {title} {text}``")
+        errorembed.set_footer(text = 'Gamemode can be bedwars, skywars or duels')
+        errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+        await ctx.send(embed = errorembed)
+      else:
+        try:
+          async with ctx.typing():
+            async with aiohttp.ClientSession() as cs:
+              async with cs.get(f'https://api.obsidion-dev.com/api/v1/images/advancement?item={item}&title={title}&text={text}&title_color=%23defa3c&text_color=%23ffffff') as achievementRaw:
+
+                url = str(achievementRaw.url)
+
+                embed = discord.Embed(title = 'Achievement Maker')
+                embed.set_image(url = f'{url}')
+                
+                response_time = datetime.utcnow() - start
+                hours, remainder = divmod(float(response_time.total_seconds()), 3600)
+                minutes, seconds = divmod(remainder, 60)
+
+                embed.set_footer(text = f'Time taken to complete request: {seconds} s.')
+                
+                await ctx.reply(embed = embed, mention_author = False)
+
+        except Exception as e:
+          errorembed = discord.Embed(title = 'Error!')
+          errorembed.add_field(name = 'Something went wrong!', value = f"{e}")
+          errorembed.set_footer(text = 'Be sure to only use one word as the title!')
+          errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+          await ctx.send(embed = errorembed)
+
     @commands.command()
     @commands.cooldown(1, 5,commands.BucketType.user)
     async def server(self, ctx, server : str = None):
@@ -1641,6 +1914,8 @@ class minecraft(commands.Cog):
                     serverinfoembed = discord.Embed(title = "Server Status", description = f"{server}", color = 0x2f3136)
                       
                     serverinfoembed.add_field(name = "Online:", value = f'{serverjson["players"]["online"]}/{serverjson["players"]["max"]}', inline = False)
+
+                    serverinfoembed.set_thumbnail(url = f"https://api.obsidion-dev.com/api/v1/server/javaicon?server={server}")
                       
                     serverinfoembed.add_field(name = "Version:", value = f'{serverjson["version"]}', inline = False)
                       
@@ -1861,7 +2136,6 @@ class minecraft(commands.Cog):
                 async with ctx.typing():
                   async with aiohttp.ClientSession() as cs:
                     async with cs.get(f'https://mc-heads.net/body/{mojang_data["id"]}/right') as skin:
-                      sk1n = await skin.read()
                       
                       myurl = str(skin.url)
                       

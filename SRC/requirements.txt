@@ -5,3 +5,5 @@ discord
 io
 sys
 traceback
+dpymenus
+colorama

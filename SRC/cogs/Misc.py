@@ -29,7 +29,7 @@ class Misc(commands.Cog):
     async def invite(self, ctx):
       invitembed = discord.Embed(color = 0x2f3136)
 
-      invitembed.add_field(name=f"Invite Link :link:", value = "https://discord.com/api/oauth2/authorize?client_id=835237831412547607&permissions=378944&scope=bot")
+      invitembed.add_field(name=f"Invite Link :link:", value = "https://discord.com/api/oauth2/authorize?client_id=835237831412547607&permissions=2147862592&scope=bot")
       
       await ctx.reply(embed=invitembed, mention_author=False)
 

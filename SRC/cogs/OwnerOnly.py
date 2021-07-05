@@ -16,6 +16,12 @@ class owner(commands.Cog):
     @commands.is_owner()
     async def cringe(self, ctx):
       await ctx.send('https://tenor.com/view/dies-of-cringe-cringe-gif-20747133')
+
+    @commands.command()
+    @commands.is_owner()
+    async def say(self, ctx, *, msg):
+      await ctx.message.delete()
+      await ctx.send(f'{msg}')
       
     @commands.command()
     @commands.is_owner()
@@ -92,7 +98,7 @@ class owner(commands.Cog):
         color = 0xa60000
       )
       
-      ownerhelpembed.add_field(name = "Misc:", value = " ``opinion``, ``bruh``, ``cringe``, ``gg``, ``yes``, ``nice``, ``wtf``", inline = False)
+      ownerhelpembed.add_field(name = "Misc:", value = " ``opinion``, ``bruh``, ``cringe``, ``gg``, ``yes``, ``nice``, ``wtf``, ``say``", inline = False)
       
       ownerhelpembed.add_field(name = "Math", value = "``add``, ``sub``, ``mult``, ``div``")
       
