@@ -88,7 +88,7 @@ async def help(ctx, pageName = 'none'):
             
         helpembed.add_field(name = "My Prefix:", value = "``.``")
             
-        helpembed.add_field(name='<:minecraft:848988105943810095> Minecraft', value ='``bw`` • ``sw`` • ``duels`` • ``profile`` • ``wdr`` • ``server``\n\n``socials`` • ``skin`` • ``p`` • ``uuid`` • ``compare``\n ``achievement``', inline=False)
+        helpembed.add_field(name='<:minecraft:848988105943810095> Minecraft', value ='``bw`` • ``sw`` • ``duels`` • ``profile`` • ``wdr`` • ``server``\n\n``socials`` • ``skin`` • ``p`` • ``uuid`` • ``compare``\n\n``achievement``', inline=False)
         
         helpembed.set_thumbnail(url='https://media.discordapp.net/attachments/8350712o70117834773/853578246984433684/lol.png?width=480&height=480')
         
