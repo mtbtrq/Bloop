@@ -1,5 +1,3 @@
-Bloop
-Hypixel Stats Bot.
 Bloop is a Hypixel stats bot that makes use of the Hypixel API and return the stats of a specified player.
 
 Screenshots:
