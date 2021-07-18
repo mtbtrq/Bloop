@@ -2,17 +2,18 @@ import json
 import aiohttp
 import io
 from datetime import datetime
-from io import BytesIO
-from discord.ext import commands
+
+import time
 
 import discord
 from discord.ext import commands
+
 from PIL import Image
 from PIL import ImageFont
 from PIL import ImageDraw
 
 with open('./config.json') as jsonload:
-    config = json.load(jsonload)
+  config = json.load(jsonload)
 
 hypixelapikey = config.get('hypixelapikey')
 
@@ -33,34 +34,37 @@ class minecraft(commands.Cog):
     @commands.command(
       aliases = ["bed", "bedwarz", "bedwars", "bedworz", "bedwar"]
     )
-    @commands.cooldown(1, 5,commands.BucketType.user)
-    async def bw(self, ctx, user = None, gamemode = 'overall'):
+    @commands.cooldown(1, 2,commands.BucketType.user)
+    async def bw(self, ctx, user : str = None, gamemode : str = 'overall'):
         start = datetime.utcnow()
         mode = gamemode.lower()
         if user is None:
-            errorembed = discord.Embed(title = 'Invalid Command Usage!')
+            errorembed = discord.Embed(title = 'Bedwars')
             errorembed.add_field(name = 'Usage:', value = "``.bw {IGN} {mode}``", inline = False)
-            errorembed.set_footer(text = 'Valid Modes: Overall, Solo, Doubles, Threes, Fours')
+            errorembed.add_field(name = '❔', value = 'Returns the BedWars stats of a specified player.', inline = False)
             errorembed.add_field(name = 'Aliases:', value = '``bw, bed, bedwarz, bedwars, bedworz, bedwar``', inline = False)
+            errorembed.set_footer(text = 'Valid Modes: Overall, Solo, Doubles, Threes, Fours')
             errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
             await ctx.send(embed = errorembed)
         else:
             try:
                 async with aiohttp.ClientSession() as cs:
-                      async with cs.get(f'https://api.mojang.com/users/profiles/minecraft/{user}') as moj4ngdataraw:
-                        mojang_data = await moj4ngdataraw.json()
+                  async with cs.get(f'https://api.mojang.com/users/profiles/minecraft/{user}') as moj4ngdataraw:
+                    mojang_data = await moj4ngdataraw.json()
             except:
-                await ctx.send(f"The user your provided is not valid! `{user}`", delete_after = 3)
+                await ctx.send(f"The user your provided is not valid! `{user}`")
+
+            IGN = mojang_data["name"]
+
             if mode == 'overall':
                 try:
                   async with aiohttp.ClientSession() as cs:
-                        async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as bwdataraw:
-                          bwdata = await bwdataraw.json()
+                    async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as bwdataraw:
+                      bwdata = await bwdataraw.json()
                   
                   Wins = (bwdata["player"]["stats"]["Bedwars"]["wins_bedwars"])
-                  Kills = (bwdata["player"]["stats"]["Bedwars"]["kills_bedwars"])
-                  Deaths = (bwdata["player"]["stats"]["Bedwars"]["deaths_bedwars"])
-                  coins = (bwdata["player"]["stats"]["Bedwars"]["coins"])
+                  kills = (bwdata["player"]["stats"]["Bedwars"]["kills_bedwars"])
+                  deaths = (bwdata["player"]["stats"]["Bedwars"]["deaths_bedwars"])
                   voiddeaths = (bwdata["player"]["stats"]["Bedwars"]["void_deaths_bedwars"])
                   voidkills = (bwdata["player"]["stats"]["Bedwars"]["void_kills_bedwars"])
                   bedsbroken = bwdata["player"]["stats"]["Bedwars"]["beds_broken_bedwars"]
@@ -72,10 +76,9 @@ class minecraft(commands.Cog):
                   winstreak = (bwdata["player"]["stats"]["Bedwars"]["winstreak"])
                   FKDR = round(float(FinalKills) / float(FinalDeaths), 1)
                   WLR = round(float(Wins) / float(Losses), 1)
-                  BBLR = round(float(bedsbroken) / float(bedslost), 2)
-                  KDR = round(float(Kills) / float(Deaths), 1)
-                  void_kdr = KDR = round(float(voidkills) / float(voiddeaths), 1)
-                  IGN = mojang_data["name"]
+                  BBLR = round(float(bedsbroken) / float(bedslost), 1)
+                  KDR = round(float(kills) / float(deaths), 1)
+                  void_kdr = round(float(voidkills) / float(voiddeaths), 1)
 
                   bwembed = discord.Embed(title='Bedwars Stats <:bw:850964476109914112>', description=f'Overall | {IGN}', color=0x2f3136)
 
@@ -91,9 +94,9 @@ class minecraft(commands.Cog):
                   
                   bwembed.add_field(name='FKDR', value=f'``{FKDR:,}``', inline=True)
                   
-                  bwembed.add_field(name='Kills', value=f'``{Kills:,}``', inline=True)
+                  bwembed.add_field(name='Kills', value=f'``{kills:,}``', inline=True)
                   
-                  bwembed.add_field(name='Deaths', value=f'``{Deaths:,}``', inline=True)
+                  bwembed.add_field(name='Deaths', value=f'``{deaths:,}``', inline=True)
 
                   bwembed.add_field(name = 'KDR', value=f'``{KDR:,}``')
 
@@ -121,13 +124,13 @@ class minecraft(commands.Cog):
                     errorembed.add_field(name = 'Error!', value = f'{mojang_data["name"]} has not played this gamemode!')
                     errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
                     await ctx.send(embed = errorembed)
-                    print(e)
+                    print("Error in bw overall command: " + str(e))
 
             elif mode == "fours":
                 try:
                   async with aiohttp.ClientSession() as cs:
-                        async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as bwdataraw:
-                          bwdata = await bwdataraw.json()
+                    async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as bwdataraw:
+                      bwdata = await bwdataraw.json()
                   
                   Wins = (bwdata["player"]["stats"]["Bedwars"]["four_four_wins_bedwars"])
                   Kills = (bwdata["player"]["stats"]["Bedwars"]["four_four_kills_bedwars"])
@@ -144,10 +147,9 @@ class minecraft(commands.Cog):
                   winstreak = (bwdata["player"]["stats"]["Bedwars"]["four_four_winstreak"])
                   FKDR = round(float(FinalKills) / float(FinalDeaths), 1)
                   WLR = round(float(Wins) / float(Losses), 1)
-                  BBLR = round(float(bedsbroken) / float(bedslost), 2)
+                  BBLR = round(float(bedsbroken) / float(bedslost), 1)
                   KDR = round(float(Kills) / float(Deaths), 1)
-                  void_kdr = KDR = round(float(voidkills) / float(voiddeaths), 1)
-                  IGN = mojang_data["name"]
+                  void_kdr = round(float(voidkills) / float(voiddeaths), 1)
 
                   bwembed = discord.Embed(title='Bedwars Stats <:bw:850964476109914112>', description=f'Fours | {IGN}', color=0x2f3136)
 
@@ -193,7 +195,7 @@ class minecraft(commands.Cog):
                     errorembed.add_field(name = 'Error!', value = f'{mojang_data["name"]} has not played this gamemode!')
                     errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
                     await ctx.send(embed = errorembed)
-                    print(f'There was an error in command bw in fours thing: {e}')
+                    print(f'There was an error in command bw in fours: {e}')
 
             elif mode == 'doubles':
                 try:
@@ -204,7 +206,6 @@ class minecraft(commands.Cog):
                   Wins = (bwdata["player"]["stats"]["Bedwars"]["eight_two_wins_bedwars"])
                   Kills = (bwdata["player"]["stats"]["Bedwars"]["eight_two_kills_bedwars"])
                   Deaths = (bwdata["player"]["stats"]["Bedwars"]["eight_two_deaths_bedwars"])
-                  coins = (bwdata["player"]["stats"]["Bedwars"]["coins"])
                   voiddeaths = (bwdata["player"]["stats"]["Bedwars"]["eight_two_void_final_deaths_bedwars"])
                   voidkills = (bwdata["player"]["stats"]["Bedwars"]["eight_two_void_kills_bedwars"])
                   bedsbroken = bwdata["player"]["stats"]["Bedwars"]["eight_two_beds_broken_bedwars"]
@@ -216,10 +217,9 @@ class minecraft(commands.Cog):
                   winstreak = (bwdata["player"]["stats"]["Bedwars"]["eight_two_winstreak"])
                   FKDR = round(float(FinalKills) / float(FinalDeaths), 1)
                   WLR = round(float(Wins) / float(Losses), 1)
-                  BBLR = round(float(bedsbroken) / float(bedslost), 2)
+                  BBLR = round(float(bedsbroken) / float(bedslost), 1)
                   KDR = round(float(Kills) / float(Deaths), 1)
-                  void_kdr = KDR = round(float(voidkills) / float(voiddeaths), 1)
-                  IGN = mojang_data["name"]
+                  void_kdr = round(float(voidkills) / float(voiddeaths), 1)
 
                   bwembed = discord.Embed(title='Bedwars Stats <:bw:850964476109914112>', description=f'Doubles | {IGN}', color=0x2f3136)
 
@@ -265,7 +265,7 @@ class minecraft(commands.Cog):
                     errorembed.add_field(name = 'Error!', value = f'{mojang_data["name"]} has not played this gamemode!')
                     errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
                     await ctx.send(embed = errorembed)
-                    print(f'There was an error in command bw in doubles thing: {e}')
+                    print(f'There was an error in command bw in doubles: {e}')
               
             elif mode == 'solo':
                 try:
@@ -288,10 +288,9 @@ class minecraft(commands.Cog):
                   winstreak = (bwdata["player"]["stats"]["Bedwars"]["eight_one_winstreak"])
                   FKDR = round(float(FinalKills) / float(FinalDeaths), 1)
                   WLR = round(float(Wins) / float(Losses), 1)
-                  BBLR = round(float(bedsbroken) / float(bedslost), 2)
+                  BBLR = round(float(bedsbroken) / float(bedslost), 1)
                   KDR = round(float(Kills) / float(Deaths), 1)
-                  void_kdr = KDR = round(float(voidkills) / float(voiddeaths), 1)
-                  IGN = mojang_data["name"]
+                  void_kdr = round(float(voidkills) / float(voiddeaths), 1)
 
                   bwembed = discord.Embed(title='Bedwars Stats <:bw:850964476109914112>', description=f'Solo | {IGN}', color=0x2f3136)
 
@@ -337,7 +336,7 @@ class minecraft(commands.Cog):
                     errorembed.add_field(name = 'Error!', value = f'{mojang_data["name"]} has not played this gamemode!')
                     errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
                     await ctx.send(embed = errorembed)
-                    print(f'There was an error in command bw in solos thing: {e}')
+                    print(f'There was an error in command bw in solos: {e}')
               
             elif mode == 'threes':
                 try:
@@ -360,10 +359,9 @@ class minecraft(commands.Cog):
                   winstreak = (bwdata["player"]["stats"]["Bedwars"]["four_three_winstreak"])
                   FKDR = round(float(FinalKills) / float(FinalDeaths), 1)
                   WLR = round(float(Wins) / float(Losses), 1)
-                  BBLR = round(float(bedsbroken) / float(bedslost), 2)
+                  BBLR = round(float(bedsbroken) / float(bedslost), 1)
                   KDR = round(float(Kills) / float(Deaths), 1)
-                  void_kdr = KDR = round(float(voidkills) / float(voiddeaths), 1)
-                  IGN = mojang_data["name"]
+                  void_kdr = round(float(voidkills) / float(voiddeaths), 1)
 
                   bwembed = discord.Embed(title='Bedwars Stats <:bw:850964476109914112>', description=f'Threes | {IGN}', color=0x2f3136)
 
@@ -409,7 +407,7 @@ class minecraft(commands.Cog):
                     errorembed.add_field(name = 'Error!', value = f'{mojang_data["name"]} has not played this gamemode!')
                     errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
                     await ctx.send(embed = errorembed)
-                    print(f'There was an error in command bw in threes thing: {e}')
+                    print(f'There was an error in command bw in threes: {e}')
             else:
               errorembed = discord.Embed(title = 'Invalid Command Usage!')
               errorembed.add_field(name = 'Usage:', value = "``.bw {IGN} {mode}``", inline = False)
@@ -419,16 +417,15 @@ class minecraft(commands.Cog):
               await ctx.send(embed = errorembed)
 
     
-    @commands.command(
-      aliases = ["skywars", "skywar", "skywor", "skiwar", "skiwor"]
-    )
-    @commands.cooldown(1, 5,commands.BucketType.user)
-    async def sw(self, ctx, user = None, *, gamemode = 'overall'):
+    @commands.command(aliases = ["skywars", "skywar", "skywor", "skiwar", "skiwor"])
+    @commands.cooldown(1, 2,commands.BucketType.user)
+    async def sw(self, ctx, user : str = None, *, gamemode : str = 'overall'):
         start = datetime.utcnow()
         mode = gamemode.lower()
         if user is None:
-            errorembed = discord.Embed(title = 'Invalid Command Usage!')
+            errorembed = discord.Embed(title = 'Skywars')
             errorembed.add_field(name = 'Usage:', value = "``.sw {IGN} {mode}``", inline = False)
+            errorembed.add_field(name = '❔', value = 'Returns the SkyWars stats of a specified player.', inline = False)
             errorembed.add_field(name = 'Aliases:', value = '``sw, skywars, skywar, skywor, skiwar, skiwor``')
             errorembed.set_footer(text = 'Valid Modes: Solo Insane, Solo Normal, Teams Insane, Teams Normal and Ranked.')
             errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
@@ -436,19 +433,22 @@ class minecraft(commands.Cog):
         else:
             try:
                 async with aiohttp.ClientSession() as cs:
-                      async with cs.get(f'https://api.mojang.com/users/profiles/minecraft/{user}') as mojangraw:
-                        mojang_data = await mojangraw.json()
+                  async with cs.get(f'https://api.mojang.com/users/profiles/minecraft/{user}') as moj4ngdataraw:
+                    mojang_data = await moj4ngdataraw.json()
             except:
-                await ctx.send(f"The user your provided is not valid! `{user}`", delete_after = 3)
+                await ctx.send(f"The user your provided is not valid! `{user}`")
+        
+        IGN = str(mojang_data['name'])
+
         if mode == 'overall':
             try:
                 async with aiohttp.ClientSession() as cs:
-                      async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as swdataraw:
-                        swdata = await swdataraw.json()
+                  async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as swdataraw:
+                    swdata = await swdataraw.json()
 
                 async with aiohttp.ClientSession() as cs:
-                      async with cs.get(f"https://api.slothpixel.me/api/players/{user}") as swlvldataraw:
-                          swlvldata = await swlvldataraw.json()
+                  async with cs.get(f"https://api.slothpixel.me/api/players/{user}") as swlvldataraw:
+                    swlvldata = await swlvldataraw.json()
                 
                 SwWins = (swdata["player"]["stats"]["SkyWars"]["wins"])
                 Heads = (swdata["player"]["stats"]["SkyWars"]["heads"])
@@ -458,7 +458,6 @@ class minecraft(commands.Cog):
                 SwCoins = (swdata["player"]["stats"]["SkyWars"]["coins"])
                 SwKDR = round(float(SwKills) / float(SwDeaths), 1)
                 SwWLR = round(float(SwWins) / float(SwLosses), 1)
-                IGN = str(mojang_data['name'])
                 SwLvl = round(swlvldata["stats"]["SkyWars"]["level"], 1)
 
                 swembed = discord.Embed(title='Skywars Stats <:sw:850964475544731689>', description=f'Overall | {IGN}', color=0x2f3136)
@@ -488,13 +487,14 @@ class minecraft(commands.Cog):
                 swembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
 
                 await ctx.reply(embed=swembed, mention_author=False)
-            except:
+            except Exception as e:
                     errorembed = discord.Embed()
                     errorembed.add_field(name = 'Error!', value = f'\n{IGN} has not played this gamemode!')
                     errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
                     await ctx.send(embed = errorembed)
+                    print(f"Error in Skywars Command in Overall: {e}")
 
-        elif mode == 'solo_insane':
+        elif mode == 'solo insane':
             try:
                 async with aiohttp.ClientSession() as cs:
                       async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as swdataraw:
@@ -512,7 +512,6 @@ class minecraft(commands.Cog):
                 SwCoins = (swdata["player"]["stats"]["SkyWars"]["coins"])
                 SwKDR = round(float(SwKills) / float(SwDeaths), 1)
                 SwWLR = round(float(SwWins) / float(SwLosses), 1)
-                IGN = str(mojang_data['name'])
                 SwLvl = round(swlvldata["stats"]["SkyWars"]["level"], 1)
 
                 swembed = discord.Embed(title='Skywars Stats <:sw:850964475544731689>', description=f'Solo Insane | {IGN}', color=0x2f3136)
@@ -542,13 +541,14 @@ class minecraft(commands.Cog):
                 swembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
 
                 await ctx.reply(embed=swembed, mention_author=False)
-            except:
+            except Exception as e:
                     errorembed = discord.Embed()
                     errorembed.add_field(name = 'Error!', value = f'\n{IGN} has not played this gamemode!')
                     errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
                     await ctx.send(embed = errorembed)
+                    print(f"Error in Skywars Command in Solo Insane: {e}")
 
-        elif mode == 'solo_normal':
+        elif mode == 'solo normal':
             try:
                 async with aiohttp.ClientSession() as cs:
                       async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as swdataraw:
@@ -566,7 +566,6 @@ class minecraft(commands.Cog):
                 SwCoins = (swdata["player"]["stats"]["SkyWars"]["coins"])
                 SwKDR = round(float(SwKills) / float(SwDeaths), 1)
                 SwWLR = round(float(SwWins) / float(SwLosses), 1)
-                IGN = str(mojang_data['name'])
                 SwLvl = round(swlvldata["stats"]["SkyWars"]["level"], 1)
 
                 swembed = discord.Embed(title='Skywars Stats <:sw:850964475544731689>', description=f'Solo Normal | {IGN}', color=0x2f3136)
@@ -596,13 +595,14 @@ class minecraft(commands.Cog):
                 swembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
 
                 await ctx.reply(embed=swembed, mention_author=False)
-            except:
+            except Exception as e:
                     errorembed = discord.Embed()
                     errorembed.add_field(name = 'Error!', value = f'\n{IGN} has not played this gamemode!')
                     errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
                     await ctx.send(embed = errorembed)
+                    print(f"Error in Skywars Command in Solo Normal: {e}")
 
-        elif mode == 'teams_normal':
+        elif mode == 'teams normal':
             try:
                 async with aiohttp.ClientSession() as cs:
                       async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as swdataraw:
@@ -620,7 +620,6 @@ class minecraft(commands.Cog):
                 SwCoins = (swdata["player"]["stats"]["SkyWars"]["coins"])
                 SwKDR = round(float(SwKills) / float(SwDeaths), 1)
                 SwWLR = round(float(SwWins) / float(SwLosses), 1)
-                IGN = str(mojang_data['name'])
                 SwLvl = round(swlvldata["stats"]["SkyWars"]["level"], 1)
 
                 swembed = discord.Embed(title='Skywars Stats <:sw:850964475544731689>', description=f'Teams Normal | {IGN}', color=0x2f3136)
@@ -655,9 +654,9 @@ class minecraft(commands.Cog):
                     errorembed.add_field(name = 'Error!', value = f'\n{IGN} has not played this gamemode!')
                     errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
                     await ctx.send(embed = errorembed)
-                    print(e)
+                    print(f"Error in Skywars Command in Teams Normal: {e}")
 
-        elif mode == 'teams_insane':
+        elif mode == 'teams insane':
             try:
                 async with aiohttp.ClientSession() as cs:
                       async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as swdataraw:
@@ -675,7 +674,6 @@ class minecraft(commands.Cog):
                 SwCoins = (swdata["player"]["stats"]["SkyWars"]["coins"])
                 SwKDR = round(float(SwKills) / float(SwDeaths), 1)
                 SwWLR = round(float(SwWins) / float(SwLosses), 1)
-                IGN = str(mojang_data['name'])
                 SwLvl = round(swlvldata["stats"]["SkyWars"]["level"], 1)
 
                 swembed = discord.Embed(title='Skywars Stats <:sw:850964475544731689>', description=f'Teams Insane | {IGN}', color=0x2f3136)
@@ -710,7 +708,7 @@ class minecraft(commands.Cog):
                     errorembed.add_field(name = 'Error!', value = f'\n{IGN} has not played this gamemode!')
                     errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
                     await ctx.send(embed = errorembed)
-                    print(e)
+                    print(f"Error in Skywars Command in Teams Insane: {e}")
 
         elif mode == 'ranked':
             try:
@@ -730,7 +728,6 @@ class minecraft(commands.Cog):
                 SwCoins = (swdata["player"]["stats"]["SkyWars"]["coins"])
                 SwKDR = round(float(SwKills) / float(SwDeaths), 1)
                 SwWLR = round(float(SwWins) / float(SwLosses), 1)
-                IGN = str(mojang_data['name'])
                 SwLvl = round(swlvldata["stats"]["SkyWars"]["level"], 1)
 
                 swembed = discord.Embed(title='Skywars Stats <:sw:850964475544731689>', description=f'Ranked | {IGN}', color=0x2f3136)
@@ -765,7 +762,7 @@ class minecraft(commands.Cog):
                     errorembed.add_field(name = 'Error!', value = f'\n{IGN} has not played this gamemode!')
                     errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
                     await ctx.send(embed = errorembed)
-                    print(e)
+                    print(f"Error in Skywars Command in Ranked: {e}")
                     
         else:
             errorembed = discord.Embed(title = 'Invalid Command Usage!')
@@ -776,16 +773,15 @@ class minecraft(commands.Cog):
             await ctx.send(embed = errorembed)
 
 
-    @commands.command(
-      aliases = ["duels", "d"]
-    )
-    @commands.cooldown(1, 5,commands.BucketType.user)
-    async def duel(self, ctx, user=None, *, gamemode = 'overall'):
+    @commands.command(aliases = ["duels", "d"])
+    @commands.cooldown(1, 2,commands.BucketType.user)
+    async def duel(self, ctx, user : str = None, *, gamemode : str = 'overall'):
         start = datetime.utcnow()
         mode = gamemode.lower()
         if user is None:
-            errorembed = discord.Embed(title = 'Invalid Command Usage!')
+            errorembed = discord.Embed(title = 'Duels')
             errorembed.add_field(name = 'Usage:', value = "``.d {IGN}``")
+            errorembed.add_field(name = '❔', value = 'Returns the Duels Stats of a specified player.', inline = False)
             errorembed.add_field(name = 'Aliases', value = '``d, duels, duel``', inline = False)
             errorembed.set_footer(text = 'Valid Modes: Bridge, Classic, UHC, Combo, SkyWars, Sumo, NoDebuff, Bow Duels, OP Duels')
             errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
@@ -793,10 +789,13 @@ class minecraft(commands.Cog):
         else:
             try:
                 async with aiohttp.ClientSession() as cs:
-                      async with cs.get(f'https://api.mojang.com/users/profiles/minecraft/{user}') as moj4ngdataraw:
-                        mojang_data = await moj4ngdataraw.json()
+                  async with cs.get(f'https://api.mojang.com/users/profiles/minecraft/{user}') as moj4ngdataraw:
+                    mojang_data = await moj4ngdataraw.json()
             except:
-                await ctx.send(f"The user your provided is not valid! `{user}`", delete_after = 3)
+                await ctx.send(f"The user your provided is not valid! `{user}`")
+
+            IGN = str(mojang_data["name"])
+
             if mode == 'overall':
               try:
                   async with aiohttp.ClientSession() as cs:
@@ -852,11 +851,12 @@ class minecraft(commands.Cog):
                   duelsembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
                   
                   await ctx.reply(embed=duelsembed, mention_author=False)
-              except:
+              except Exception as e:
                 errorembed = discord.Embed()
-                errorembed.add_field(name = 'Error!', value = f'\n{mojang_data["name"]} has not played this gamemode!')
+                errorembed.add_field(name = 'Error!', value = f'{IGN} has not played this gamemode!')
                 errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
                 await ctx.send(embed = errorembed)
+                print(f"Error in Duels Command in Overall: {e}")
 
             elif mode == 'bridge':
               try:
@@ -904,18 +904,20 @@ class minecraft(commands.Cog):
                   duelsembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
                   
                   await ctx.reply(embed=duelsembed, mention_author=False)
-              except:
+              
+              except Exception as e:
                 errorembed = discord.Embed()
-                errorembed.add_field(name = 'Error!', value = f'\n{mojang_data["name"]} has not played this gamemode!')
+                errorembed.add_field(name = 'Error!', value = f'{IGN} has not played this gamemode!')
                 errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
                 await ctx.send(embed = errorembed)
+                print(f"Error in Duels Command in Bridge: {e}")
 
             elif mode == 'classic':
               try:
                   async with aiohttp.ClientSession() as cs:
-                        async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as duelsdataraw:
-                          duelsdat4 = await duelsdataraw.json()
-                          duels = duelsdat4["player"]["stats"]["Duels"]
+                    async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as duelsdataraw:
+                      duelsdat4 = await duelsdataraw.json()
+                      duels = duelsdat4["player"]["stats"]["Duels"]
                   
                   
                   ws = duels["current_bridge_winstreak"]
@@ -956,11 +958,12 @@ class minecraft(commands.Cog):
                   duelsembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
                   
                   await ctx.reply(embed=duelsembed, mention_author=False)
-              except:
+              except Exception as e:
                 errorembed = discord.Embed()
-                errorembed.add_field(name = 'Error!', value = f'\n{mojang_data["name"]} has not played this gamemode!')
+                errorembed.add_field(name = 'Error!', value = f'{IGN} has not played this gamemode!')
                 errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
                 await ctx.send(embed = errorembed)
+                print(f"Error in Duels Command in Classic: {e}")
 
             elif mode == 'uhc':
               try:
@@ -1008,18 +1011,19 @@ class minecraft(commands.Cog):
                   duelsembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
                   
                   await ctx.reply(embed=duelsembed, mention_author=False)
-              except:
+              except Exception as e:
                 errorembed = discord.Embed()
-                errorembed.add_field(name = 'Error!', value = f'\n{mojang_data["name"]} has not played this gamemode!')
+                errorembed.add_field(name = 'Error!', value = f'{IGN} has not played this gamemode!')
                 errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
                 await ctx.send(embed = errorembed)
+                print(f"Error in Duels Command in UHC: {e}")
 
             elif mode == 'combo':
               try:
                   async with aiohttp.ClientSession() as cs:
-                        async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as duelsdataraw:
-                          duelsdat4 = await duelsdataraw.json()
-                          duels = duelsdat4["player"]["stats"]["Duels"]
+                    async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as duelsdataraw:
+                      duelsdat4 = await duelsdataraw.json()
+                      duels = duelsdat4["player"]["stats"]["Duels"]
                   
                   
                   ws = duels["current_combo_winstreak"]
@@ -1060,18 +1064,19 @@ class minecraft(commands.Cog):
                   duelsembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
                   
                   await ctx.reply(embed=duelsembed, mention_author=False)
-              except:
+              except Exception as e:
                 errorembed = discord.Embed()
                 errorembed.add_field(name = 'Error!', value = f'\n{mojang_data["name"]} has not played this gamemode!')
                 errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
                 await ctx.send(embed = errorembed)
+                print(f"Error in Duels Command in Combo: {e}")
 
             elif mode == 'skywars':
               try:
                   async with aiohttp.ClientSession() as cs:
-                        async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as duelsdataraw:
-                          duelsdat4 = await duelsdataraw.json()
-                          duels = duelsdat4["player"]["stats"]["Duels"]
+                    async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as duelsdataraw:
+                      duelsdat4 = await duelsdataraw.json()
+                      duels = duelsdat4["player"]["stats"]["Duels"]
                   
                   
                   ws = duels["current_skywars_winstreak"]
@@ -1112,18 +1117,19 @@ class minecraft(commands.Cog):
                   duelsembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
                   
                   await ctx.reply(embed=duelsembed, mention_author=False)
-              except:
+              except Exception as e:
                 errorembed = discord.Embed()
                 errorembed.add_field(name = 'Error!', value = f'\n{mojang_data["name"]} has not played this gamemode!')
                 errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
                 await ctx.send(embed = errorembed)
+                print(f"Error in Duels Command in Skywars: {e}")
             
             elif mode == 'sumo':
               try:
                   async with aiohttp.ClientSession() as cs:
-                        async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as duelsdataraw:
-                          duelsdat4 = await duelsdataraw.json()
-                          duels = duelsdat4["player"]["stats"]["Duels"]
+                    async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as duelsdataraw:
+                      duelsdat4 = await duelsdataraw.json()
+                      duels = duelsdat4["player"]["stats"]["Duels"]
                   
                   
                   ws = duels["current_winstreak_mode_sumo_duel"]
@@ -1164,18 +1170,19 @@ class minecraft(commands.Cog):
                   duelsembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
                   
                   await ctx.reply(embed=duelsembed, mention_author=False)
-              except:
+              except Exception as e:
                 errorembed = discord.Embed()
                 errorembed.add_field(name = 'Error!', value = f'\n{mojang_data["name"]} has not played this gamemode!')
                 errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
                 await ctx.send(embed = errorembed)
+                print(f"Error in Duels Command in Sumo: {e}")
 
             elif mode == 'nodebuff':
               try:
                   async with aiohttp.ClientSession() as cs:
-                        async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as duelsdataraw:
-                          duelsdat4 = await duelsdataraw.json()
-                          duels = duelsdat4["player"]["stats"]["Duels"]
+                    async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as duelsdataraw:
+                      duelsdat4 = await duelsdataraw.json()
+                      duels = duelsdat4["player"]["stats"]["Duels"]
                   
                   
                   ws = duels["current_no_debuff_winstreak"]
@@ -1216,11 +1223,12 @@ class minecraft(commands.Cog):
                   duelsembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
                   
                   await ctx.reply(embed=duelsembed, mention_author=False)
-              except:
+              except Exception as e:
                 errorembed = discord.Embed()
                 errorembed.add_field(name = 'Error!', value = f'\n{mojang_data["name"]} has not played this gamemode!')
                 errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
                 await ctx.send(embed = errorembed)
+                print(f"Error in Duels Command in Nodebuff: {e}")
 
             elif mode == 'bow duels':
               try:
@@ -1268,11 +1276,12 @@ class minecraft(commands.Cog):
                   duelsembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
                   
                   await ctx.reply(embed=duelsembed, mention_author=False)
-              except:
+              except Exception as e:
                 errorembed = discord.Embed()
                 errorembed.add_field(name = 'Error!', value = f'\n{mojang_data["name"]} has not played this gamemode!')
                 errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
                 await ctx.send(embed = errorembed)
+                print(f"Error in Duels Command in Bow Duels: {e}")
 
             elif mode == 'op duels':
               try:
@@ -1320,11 +1329,12 @@ class minecraft(commands.Cog):
                   duelsembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
                   
                   await ctx.reply(embed=duelsembed, mention_author=False)
-              except:
+              except Exception as e:
                 errorembed = discord.Embed()
                 errorembed.add_field(name = 'Error!', value = f'\n{mojang_data["name"]} has not played this gamemode!')
                 errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
                 await ctx.send(embed = errorembed)
+                print(f"Error in Duels Command in Overall: {e}")
 
             else:
               errorembed = discord.Embed(title = 'Invalid Command Usage!')
@@ -1338,14 +1348,16 @@ class minecraft(commands.Cog):
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def compare(self, ctx, player1 : str = None, player2 : str = None):
       if player1 is None:
-        errorembed = discord.Embed(title = 'Invalid Command Usage!')
+        errorembed = discord.Embed(title = 'Compare')
         errorembed.add_field(name = 'Usage:', value = "``.compare {Player 1} {Player 2}``")
+        errorembed.add_field(name = '❔', value = 'Compares two players\' BedWars stats.', inline = False)
         errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
         await ctx.send(embed = errorembed)
         return
       if player2 is None:
-        errorembed = discord.Embed(title = 'Invalid Command Usage!')
+        errorembed = discord.Embed(title = 'Compare')
         errorembed.add_field(name = 'Usage:', value = "``.compare {Player 1} {Player 2}``")
+        errorembed.add_field(name = '❔', value = 'Compares two players\' BedWars stats.', inline = False)
         errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
         await ctx.send(embed = errorembed)
         return
@@ -1388,38 +1400,22 @@ class minecraft(commands.Cog):
       async with ctx.typing():
         
         oWins = (player1api["player"]["stats"]["Bedwars"]["wins_bedwars"])
-        oKills = (player1api["player"]["stats"]["Bedwars"]["kills_bedwars"])
-        oDeaths = (player1api["player"]["stats"]["Bedwars"]["deaths_bedwars"])
-        ovoiddeaths = (player1api["player"]["stats"]["Bedwars"]["void_deaths_bedwars"])
-        ovoidkills = (player1api["player"]["stats"]["Bedwars"]["void_kills_bedwars"])
-        obedsbroken = player1api["player"]["stats"]["Bedwars"]["beds_broken_bedwars"]
-        obedslost = player1api["player"]["stats"]["Bedwars"]["beds_lost_bedwars"]
         oLosses = (player1api["player"]["stats"]["Bedwars"]["losses_bedwars"])
         ostars = int(player1api["player"]["achievements"]["bedwars_level"])
         oFinalDeaths = (player1api["player"]["stats"]["Bedwars"]["final_deaths_bedwars"])
         oFinalKills = (player1api["player"]["stats"]["Bedwars"]["final_kills_bedwars"])
         oFKDR = round(float(oFinalKills) / float(oFinalDeaths), 1)
         oWLR = round(float(oWins) / float(oLosses), 1)
-        oBBLR = round(float(obedsbroken) / float(obedslost), 1)
-        oKDR = round(float(oKills) / float(oDeaths), 1)
-        ovoid_kdr = KDR = round(float(ovoidkills) / float(ovoiddeaths), 1)
+        oIndex = round(ostars * oFKDR * oFKDR / 10)
 
         tWins = (player2api["player"]["stats"]["Bedwars"]["wins_bedwars"])
-        tKills = (player2api["player"]["stats"]["Bedwars"]["kills_bedwars"])
-        tDeaths =(player2api["player"]["stats"]["Bedwars"]["deaths_bedwars"])
-        tvoiddeaths = (player2api["player"]["stats"]["Bedwars"]["void_deaths_bedwars"])
-        tvoidkills = (player2api["player"]["stats"]["Bedwars"]["void_kills_bedwars"])
-        tbedsbroken = (player2api["player"]["stats"]["Bedwars"]["beds_broken_bedwars"])
-        tbedslost = (player2api["player"]["stats"]["Bedwars"]["beds_lost_bedwars"])
         tLosses = (player2api["player"]["stats"]["Bedwars"]["losses_bedwars"])
         tstars = int(player2api["player"]["achievements"]["bedwars_level"])
         tFinalDeaths = (player2api["player"]["stats"]["Bedwars"]["final_deaths_bedwars"])
         tFinalKills = (player2api["player"]["stats"]["Bedwars"]["final_kills_bedwars"])
         tFKDR = round(float(tFinalKills) / float(tFinalDeaths), 1)
         tWLR = round(float(tWins) / float(tLosses), 1)
-        tBBLR = round(float(tbedsbroken) / float(tbedslost), 1)
-        tKDR = round(float(tKills) / float(tDeaths), 1)
-        tvoid_kdr = KDR = round(float(tvoidkills) / float(tvoiddeaths), 1)
+        tIndex = round(tstars * tFKDR * tFKDR / 10)
 
         player1points = 0
         player2points = 0
@@ -1432,7 +1428,7 @@ class minecraft(commands.Cog):
                                   40)
         fontbig = ImageFont.truetype("Minecraftia.ttf",
                                       50)
-
+                                      
         draw.text((200, 200), f"{player1ign}", self.white, font=fontbig)
         draw.text((1200, 200), f"{player2ign}", self.white, font=fontbig)
         
@@ -1520,6 +1516,20 @@ class minecraft(commands.Cog):
           draw.text((200, 750), f"WLR: {oWLR:,}", self.white, font=font)
           draw.text((1200, 750), f"WLR: {tWLR:,}", self.white, font=font)
 
+        if oIndex > tIndex:
+          draw.text((200, 820), f"Treat Index: {oIndex:,}", self.green, font=font)
+          draw.text((1200, 820), f"Threat Index: {tIndex:,}", self.light_red, font=font)
+          player1points += 1
+        
+        elif oIndex < tIndex:
+          draw.text((200, 820), f"Threat Index: {oIndex:,}", self.light_red, font=font)
+          draw.text((1200, 820), f"Threat Index: {tIndex:,}", self.green, font=font)
+          player2points += 1
+
+        else:
+          draw.text((200, 820), f"Threat Index: {oIndex:,}", self.white, font=font)
+          draw.text((1200, 820), f"Threat Index: {tIndex:,}", self.white, font=font)
+
         if ostars > tstars:
           draw.text((200, 330), f"Stars: {ostars:,}", self.green, font=font)
           draw.text((1200, 330), f"Stars: {tstars:,}", self.light_red, font=font)
@@ -1534,43 +1544,26 @@ class minecraft(commands.Cog):
           draw.text((200, 330), f"Stars: {ostars:,}", self.white, font=font)
           draw.text((1200, 330), f"Stars: {tstars:,}", self.white, font=font)
 
-        if player1points > player2points:
-          crown_img = Image.open(crown_image_bytesio)
-          crown_img.thumbnail((100, 100))
-          img.paste(crown_img, (190, 130), mask = crown_img)
-
-        elif player1points < player2points:
-          crown_img = Image.open(crown_image_bytesio)
-          crown_img.thumbnail((100, 100))
-          img.paste(crown_img, (1190, 130), mask = crown_img)
-
-        else:
-          crown_img = Image.open(crown_image_bytesio)
-          crown_img.thumbnail((100, 100))
-          img.paste(crown_img, (190, 130), mask = crown_img)
-          
-          crown_img = Image.open(crown_image_bytesio)
-          crown_img.thumbnail((100, 100))
-          img.paste(crown_img, (1190, 130), mask = crown_img)
-
         with io.BytesIO() as image_binary:
             img.save(image_binary, 'PNG')
             image_binary.seek(0)
             await ctx.reply(file=discord.File(fp=image_binary, filename='image.png'), mention_author = False)
 
     @commands.command()
-    @commands.cooldown(1, 5,commands.BucketType.user)
-    async def p(self, ctx, mode = None, player = None):
+    @commands.cooldown(1, 2,commands.BucketType.user)
+    async def p(self, ctx, mode : str = None, player : str = None):
         gamemode = mode.lower()
         if player is None:
-            errorembed = discord.Embed(title = 'Invalid Command Usage!')
+            errorembed = discord.Embed(title = 'Pictured Stats')
             errorembed.add_field(name = 'Usage:', value = "``.p {gamemode} {IGN}``")
+            errorembed.add_field(name = '❔', value = 'Returns the SkyWars / BedWars / Duels stats of a specified player in picture format.', inline = False)
             errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
             errorembed.set_footer(text = 'Gamemode can be bedwars, skywars or duels')
             await ctx.send(embed = errorembed)
         elif gamemode is None:
-            errorembed = discord.Embed(title = 'Invalid Command Usage!')
+            errorembed = discord.Embed(title = 'Pictured Stats')
             errorembed.add_field(name = 'Usage:', value = "``.p {gamemode} {IGN}``")
+            errorembed.add_field(name = '❔', value = 'Returns the SkyWars / BedWars / Duels stats of a specified player in picture format.', inline = False)
             errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
             await ctx.send(embed = errorembed)
         else:
@@ -1579,7 +1572,7 @@ class minecraft(commands.Cog):
                       async with cs.get(f'https://api.mojang.com/users/profiles/minecraft/{player}') as moj4ngdataraw:
                         mojang_data = await moj4ngdataraw.json()
             except:
-                await ctx.send(f"The user your provided is not valid! `{player}`", delete_after = 3)
+                await ctx.send(f"The user your provided is not valid! `{player}`")
             else:
               async with ctx.typing():
 
@@ -1846,26 +1839,29 @@ class minecraft(commands.Cog):
                   await ctx.send(embed = errorembed)
 
     @commands.command(
-      aliases = ["a"]
+      aliases = ["a", "ach"]
     )
-    @commands.cooldown(1, 5,commands.BucketType.user)
+    @commands.cooldown(1, 2,commands.BucketType.user)
     async def achievement(self, ctx, item : str = None, title : str = None, *, text : str = None):
       start = datetime.utcnow()
       if item is None:
-        errorembed = discord.Embed(title = 'Invalid Command Usage!')
+        errorembed = discord.Embed(title = 'Achievement')
         errorembed.add_field(name = 'Usage:', value = "``.achievement {item} {title} {text}``")
+        errorembed.add_field(name = '❔', value = 'Generates a image of a minecraft achievement using parameters provided by the user.', inline = False)
         errorembed.set_footer(text = 'Gamemode can be bedwars, skywars or duels')
         errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
         await ctx.send(embed = errorembed)
-      if title is None:
-        errorembed = discord.Embed(title = 'Invalid Command Usage!')
+      elif title is None:
+        errorembed = discord.Embed(title = 'Achievement')
         errorembed.add_field(name = 'Usage:', value = "``.achievement {item} {title} {text}``")
+        errorembed.add_field(name = '❔', value = 'Generates a image of a minecraft achievement using parameters provided by the user.', inline = False)
         errorembed.set_footer(text = 'Gamemode can be bedwars, skywars or duels')
         errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
         await ctx.send(embed = errorembed)
-      if text is None:
-        errorembed = discord.Embed(title = 'Invalid Command Usage!')
+      elif text is None:
+        errorembed = discord.Embed(title = 'Achievement')
         errorembed.add_field(name = 'Usage:', value = "``.achievement {item} {title} {text}``")
+        errorembed.add_field(name = '❔', value = 'Generates a image of a minecraft achievement using parameters provided by the user.', inline = False)
         errorembed.set_footer(text = 'Gamemode can be bedwars, skywars or duels')
         errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
         await ctx.send(embed = errorembed)
@@ -1894,14 +1890,16 @@ class minecraft(commands.Cog):
           errorembed.set_footer(text = 'Be sure to only use one word as the title!')
           errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
           await ctx.send(embed = errorembed)
+                
 
     @commands.command()
-    @commands.cooldown(1, 5,commands.BucketType.user)
+    @commands.cooldown(1, 2,commands.BucketType.user)
     async def server(self, ctx, server : str = None):
         start = datetime.utcnow()
         if server is None:
-            errorembed = discord.Embed(title = 'Invalid Command Usage!')
+            errorembed = discord.Embed(title = 'Server')
             errorembed.add_field(name = 'Usage:', value = "``.server {server ip}``")
+            errorembed.add_field(name = '❔', value = 'Returns the server status of a specified server IP.', inline = False)
             errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
             await ctx.send(embed = errorembed)
         else:
@@ -1938,12 +1936,13 @@ class minecraft(commands.Cog):
     @commands.command(
       aliases = ["socials", "s", "connections"]
     )
-    @commands.cooldown(1, 5,commands.BucketType.user)
-    async def social(self, ctx, user=None):
+    @commands.cooldown(1, 2,commands.BucketType.user)
+    async def social(self, ctx, user : str = None):
         start = datetime.utcnow()
         if user is None:
-            errorembed = discord.Embed(title = 'Invalid Command Usage!')
+            errorembed = discord.Embed(title = 'Socials')
             errorembed.add_field(name = 'Usage:', value = "``.s {username}``")
+            errorembed.add_field(name = '❔', value = 'Returns the socials linked to a player\'s minecraft account on Hypixel.', inline = False)
             errorembed.add_field(name = 'Aliases:', value = '``socials, s, connections, social``')
             errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
             await ctx.send(embed = errorembed)
@@ -1953,7 +1952,7 @@ class minecraft(commands.Cog):
                       async with cs.get(f'https://api.mojang.com/users/profiles/minecraft/{user}') as moj4ngdataraw:
                         mojang_data = await moj4ngdataraw.json()
             except:
-                await ctx.send(f"The user your provided is not valid! `{user}`", delete_after = 3)
+                await ctx.send(f"The user your provided is not valid! `{user}`")
             else:
               async with ctx.typing():
                     async with aiohttp.ClientSession() as cs:
@@ -2019,16 +2018,16 @@ class minecraft(commands.Cog):
     async def watchdog(self, ctx):
       start = datetime.utcnow()
       async with aiohttp.ClientSession() as cs:
-                async with cs.get(f'https://api.slothpixel.me/api/bans') as watchdograw:
+                async with cs.get(f'https://api.hypixel.net/punishmentstats?key={hypixelapikey}') as watchdograw:
                   watchdog = await watchdograw.json()
 
                   watchdogembed = discord.Embed(title = "Watchdog Bans", color = 0x2f3136)
                   
-                  watchdogembed.add_field(name = "Last Minute:", value = f'{watchdog["watchdog"]["last_minute"]:,}', inline = False)
+                  watchdogembed.add_field(name = "Last Minute:", value = f'{watchdog["watchdog_lastMinute"]:,}', inline = False)
                   
-                  watchdogembed.add_field(name = "Daily:", value = f'{watchdog["watchdog"]["daily"]:,}', inline = False)
+                  watchdogembed.add_field(name = "Daily:", value = f'{watchdog["watchdog_rollingDaily"]:,}', inline = False)
                   
-                  watchdogembed.add_field(name = "Total:", value = f'{watchdog["watchdog"]["total"]:,}', inline = False)
+                  watchdogembed.add_field(name = "Total:", value = f'{watchdog["watchdog_total"]:,}', inline = False)
 
                   response_time = datetime.utcnow() - start
                   hours, remainder = divmod(float(response_time.total_seconds()), 3600)
@@ -2038,49 +2037,61 @@ class minecraft(commands.Cog):
 
                   await ctx.reply(embed = watchdogembed, mention_author = False)
 
+    """ WIP
     @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.user)
-    async def uuid(self, ctx, user = None):
+    async def leaderboards(self, ctx):
+      async with aiohttp.ClientSession() as cs:
+        async with cs.get(f'https://api.hypixel.net/leaderboards?key={hypixelapikey}') as lbsRaw:
+            lb = await lbsRaw.json()
+
+            embed = discord.Embed(title = "Bedwars Leaderboards")
+    """
+
+    @commands.command()
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def uuid(self, ctx, user : str = None):
       start = datetime.utcnow()
       if user is None:
-        errorembed = discord.Embed(title = 'Invalid Command Usage!')
+        errorembed = discord.Embed(title = 'UUID')
         errorembed.add_field(name = 'Usage:', value = "``.uuid {username}``")
+        errorembed.add_field(name = '❔', value = 'Returns the UUID of a specified player.', inline = False)
         errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
         await ctx.send(embed = errorembed)
       else:
-            async with aiohttp.ClientSession() as cs:
-                async with cs.get(f'https://api.mojang.com/users/profiles/minecraft/{user}') as mojangdataraw:
-                    
-                    try:
-                      mojang_data = await mojangdataraw.json()
-                    except aiohttp.client_exceptions.ContentTypeError:
-                      pass
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get(f'https://api.mojang.com/users/profiles/minecraft/{user}') as mojangdataraw:
+              try:
+                mojang_data = await mojangdataraw.json()
+              except aiohttp.client_exceptions.ContentTypeError:
+                pass
 
-            if not mojang_data:
+              except:
                 await ctx.send(f"The user your provided is not valid! `{user}`", delete_after=3)
+            
+              else:
+                embed = discord.Embed(title = 'UUID Converter', color = 0x2f3136)
                 
-            else:
-              embed = discord.Embed(title = 'UUID Converter', color = 0x2f3136)
-              
-              embed.add_field(name = 'Username', value = f'``{mojang_data["name"]}``', inline = False)
-              
-              embed.add_field(name = 'UUID', value = f'``{mojang_data["id"]}``', inline = False)
-              
-              response_time = datetime.utcnow() - start
-              hours, remainder = divmod(float(response_time.total_seconds()), 3600)
-              minutes, seconds = divmod(remainder, 60)
+                embed.add_field(name = 'Username', value = f'``{mojang_data["name"]}``', inline = False)
+                
+                embed.add_field(name = 'UUID', value = f'``{mojang_data["id"]}``', inline = False)
+                
+                response_time = datetime.utcnow() - start
+                hours, remainder = divmod(float(response_time.total_seconds()), 3600)
+                minutes, seconds = divmod(remainder, 60)
 
-              embed.set_footer(text = f'Time taken to complete request: {seconds} s.')
-              
-              await ctx.send(embed = embed)
-    
+                embed.set_footer(text = f'Time taken to complete request: {seconds} s.')
+                
+                await ctx.send(embed = embed)
+
     @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.user)
-    async def cape(self, ctx, user = None):
+    async def cape(self, ctx, user : str = None):
         start = datetime.utcnow()
         if user is None:
-            errorembed = discord.Embed(title = 'Invalid Command Usage!')
+            errorembed = discord.Embed(title = 'Cape')
             errorembed.add_field(name = 'Usage:', value = "``.profile {username}``")
+            errorembed.add_field(name = '❔', value = 'Returns the optifine cape of a player.', inline = False)
             errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
             await ctx.send(embed = errorembed)
         else:
@@ -2089,7 +2100,7 @@ class minecraft(commands.Cog):
                       async with cs.get(f'https://api.mojang.com/users/profiles/minecraft/{user}') as moj4ngdataraw:
                         mojang_data = await moj4ngdataraw.json()
             except:
-                await ctx.send(f"The user your provided is not valid! `{user}`", delete_after = 3)
+                await ctx.send(f"The user your provided is not valid! `{user}`")
             else:
               try:
                 async with ctx.typing():
@@ -2110,28 +2121,26 @@ class minecraft(commands.Cog):
               except Exception as e:
                 errorembed = discord.Embed()
                 errorembed.add_field(name = 'Error!', value = f'\n{mojang_data["name"]} does not have a optifine cape!')
-                errorembed.add_field(name = 'no', value = e, inline = False)
                 errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
                 await ctx.send(embed = errorembed)
 
-
     @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.user)
-    async def skin(self, ctx, user = None):
+    async def skin(self, ctx, user : str = None):
         start = datetime.utcnow()
         if user is None:
-            errorembed = discord.Embed(title = 'Invalid Command Usage!')
-            errorembed.add_field(name = 'Usage:', value = "``.sw {IGN}``", inline = False)
-            errorembed.add_field(name = 'Aliases:', value = '``sw, skywars, skywar, skywor, skiwar, skiwor``')
+            errorembed = discord.Embed(title = 'Skin')
+            errorembed.add_field(name = 'Usage:', value = "``.skin {IGN}``", inline = False)
+            errorembed.add_field(name = '❔', value = 'Returns the minecraft skin of a specified player.', inline = False)
             errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
             await ctx.send(embed = errorembed)
         else:
             try:
                 async with aiohttp.ClientSession() as cs:
-                      async with cs.get(f'https://api.mojang.com/users/profiles/minecraft/{user}') as mojangraw:
-                        mojang_data = await mojangraw.json()
+                      async with cs.get(f'https://api.mojang.com/users/profiles/minecraft/{user}') as moj4ngdataraw:
+                        mojang_data = await moj4ngdataraw.json()
             except:
-                await ctx.send(f"The user your provided is not valid! `{user}`", delete_after = 3)
+                await ctx.send(f"The user your provided is not valid! `{user}`")
             else:
                 async with ctx.typing():
                   async with aiohttp.ClientSession() as cs:
@@ -2142,6 +2151,8 @@ class minecraft(commands.Cog):
                       embed = discord.Embed(title = f'{mojang_data["name"]}\'s Skin:', color = 0x2f3136)
                       
                       embed.set_image(url=myurl)
+
+                      embed.add_field(name = 'Links', value = f'[NameMC](https://namemc.com/profile/{mojang_data["name"]})\n[Crafty.gg](https://crafty.gg/players/{mojang_data["name"]})')
                       
                       response_time = datetime.utcnow() - start
                       hours, remainder = divmod(float(response_time.total_seconds()), 3600)
@@ -2153,12 +2164,13 @@ class minecraft(commands.Cog):
                       await ctx.reply(embed = embed, mention_author = False)
 
     @commands.command()
-    @commands.cooldown(1, 5,commands.BucketType.user)
-    async def profile(self, ctx, user=None):
+    @commands.cooldown(1, 2,commands.BucketType.user)
+    async def profile(self, ctx, user : str = None):
         start = datetime.utcnow()
         if user is None:
-            errorembed = discord.Embed(title = 'Invalid Command Usage!')
+            errorembed = discord.Embed(title = 'Profile')
             errorembed.add_field(name = 'Usage:', value = "``.profile {username}``")
+            errorembed.add_field(name = '❔', value = 'Returns the user\'s general Hypixel stats.', inline = False)
             errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
             await ctx.send(embed = errorembed)
         else:
@@ -2167,13 +2179,13 @@ class minecraft(commands.Cog):
                       async with cs.get(f'https://api.mojang.com/users/profiles/minecraft/{user}') as moj4ngdataraw:
                         mojang_data = await moj4ngdataraw.json()
             except:
-                await ctx.send(f"The user your provided is not valid! `{user}`", delete_after = 3)
+                await ctx.send(f"The user your provided is not valid! `{user}`")
             else:
               async with ctx.typing():
                       async with aiohttp.ClientSession() as cs:
                         async with cs.get(f"https://api.slothpixel.me/api/players/{user}") as profiledataraw:
                           profiledata = await profiledataraw.json()
-                      rank = profiledata["rank"]
+                          rank = profiledata["rank"]
                       
                       async with aiohttp.ClientSession() as cs:
                         async with cs.get(f'https://api.hypixel.net/guild?key={hypixelapikey}&player={mojang_data["id"]}') as guilddataraw:
@@ -2188,7 +2200,16 @@ class minecraft(commands.Cog):
                         status = "Offline <:offline:850325400180883487>"
                       else:
                         status = "Online <:online:850325400605425684>"
-                        
+
+                      first_login = int(profiledata["first_login"])
+                      first_login /= 1000
+
+                      firstLogin = datetime.utcfromtimestamp(first_login).strftime('%Y-%m-%d %H:%M:%S')
+
+                      last_logout = int(profiledata["last_logout"])
+                      last_logout /= 1000
+
+                      lastLogout = datetime.utcfromtimestamp(last_logout).strftime('%Y-%m-%d %H:%M:%S')
 
                       if rank == "MVP_PLUS_PLUS":
                         rank = "MVP++"
@@ -2197,6 +2218,8 @@ class minecraft(commands.Cog):
                       elif rank == "VIP_PLUS":
                         rank = "VIP+"
                       elif rank == None:
+                        rank = "Non"
+                      elif rank == "NONE":
                         rank = "Non"
                       elif rank == "YOUTUBER":
                         rank = "YOUTUBE"
@@ -2208,17 +2231,21 @@ class minecraft(commands.Cog):
                       
                       profileembed = discord.Embed(title=f'Profile of [{rank}] {profiledata["username"]}', color = 0x2f3136)
                       
-                      profileembed.add_field(name="Karma:", value=f'{profiledata["karma"]:,}', inline=False)
+                      profileembed.add_field(name="Karma:", value=f'{profiledata["karma"]:,}', inline = False)
                       
-                      profileembed.add_field(name="Network Level:", value=f'{profiledata["level"]}', inline=False)
+                      profileembed.add_field(name="Network Level:", value=f'{profiledata["level"]}', inline = False)
                       
-                      profileembed.add_field(name="Quests completed:", value=f'{profiledata["quests_completed"]:,}', inline=False)
+                      profileembed.add_field(name="Quests completed:", value=f'{profiledata["quests_completed"]:,}', inline = False)
                       
-                      profileembed.add_field(name="Most Recent Game:", value=f'{profiledata["last_game"]}', inline=False)
+                      profileembed.add_field(name="Most Recent Game:", value=f'{profiledata["last_game"]}', inline = False)
 
-                      profileembed.add_field(name = "Guild:", value = f'{guild}', inline=False)
+                      profileembed.add_field(name="First Login:", value=f'{firstLogin}', inline = False)
+                      
+                      profileembed.add_field(name="Last Logout:", value=f'{lastLogout}', inline = False)
 
-                      profileembed.add_field(name = "Status:", value = f'{status}', inline=False)
+                      profileembed.add_field(name = "Guild:", value = f'{guild}', inline = False)
+
+                      profileembed.add_field(name = "Status:", value = f'{status}', inline = False)
 
                       response_time = datetime.utcnow() - start
                       hours, remainder = divmod(float(response_time.total_seconds()), 3600)

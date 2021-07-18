@@ -1,9 +1,0 @@
-aiohttp
-requests
-pillow
-discord
-io
-sys
-traceback
-dpymenus
-colorama

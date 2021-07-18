@@ -26,10 +26,23 @@ class Misc(commands.Cog):
       await ctx.reply(embed=srcembed, mention_author=False)
 
     @commands.command()
+    @commands.cooldown(1, 500,commands.BucketType.user)
+    async def suggest(self, ctx, *, message):
+      embed = discord.Embed()
+      embed.add_field(name = "Suggestion added!", value = f"{message}")
+      
+      await ctx.reply(embed = embed, mention_author = False)
+
+      channel = self.client.get_channel(837363032321294367)
+      lolembed = discord.Embed(title = "New Suggestion")
+      lolembed.add_field(name = f"From: {ctx.author}", value = f"Suggestion: {message}")
+      await channel.send(embed = lolembed)
+
+    @commands.command()
     async def invite(self, ctx):
       invitembed = discord.Embed(color = 0x2f3136)
 
-      invitembed.add_field(name=f"Invite Link :link:", value = "https://discord.com/api/oauth2/authorize?client_id=835237831412547607&permissions=2147862592&scope=bot")
+      invitembed.add_field(name=f"Invite Link :link:", value = "https://bit.ly/bloopBot")
       
       await ctx.reply(embed=invitembed, mention_author=False)
 
