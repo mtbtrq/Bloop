@@ -1,16 +1,16 @@
-import discord
 import os
 import json
-from colorama import Fore
+
 from datetime import datetime
 from itertools import cycle
+
+import discord
 from discord.ext import commands, tasks
 
 intents = discord.Intents.default()
 intents.members = True
 client = commands.Bot(command_prefix = '!', case_insensitive = True, help_command=None, intents=intents)
 client.launch_time = datetime.utcnow()
-
 
 for filename in os.listdir('./cogs'):
     if filename.endswith('.py'):
@@ -25,7 +25,7 @@ token = config.get('token')
 async def on_ready():
     user = client.get_user(467962329435471878)
     await user.send("I'm online. <:online:850325400605425684>")
-    print(f"{Fore.RED}I'm ready!")
+    print(f"I'm ready!")
 
 @tasks.loop(minutes=5)
 async def changer():
@@ -56,11 +56,12 @@ async def stats(ctx):
     
     statsembed.add_field(name = f"Guilds:", value = f"{len(client.guilds)}", inline = False)
 
-    statsembed.add_field(name = f"Uptime:", value = f"{hours}h, {minutes}m, {seconds}s.\n\n[Support Server](https://discord.gg/CUwrDgCB4W)", inline = False)
+    statsembed.add_field(name = f"Uptime:", value = f"{hours}h, {minutes}m, {seconds}s.\n\n[Support Website](bitl.ly/bloopBot)", inline = False)
     
     statsembed.set_footer(text="Bloop v2.3 | Supelion#4275")
     
     await ctx.reply(embed=statsembed, mention_author=False)
+    print("The Stats Command was executed!")
 
 @client.command()
 async def help(ctx):
@@ -78,6 +79,7 @@ async def help(ctx):
     helpembed.set_footer(text="Bloop v2.3 | Supelion#4275")
 
     await ctx.reply(embed=helpembed, mention_author = False)
+    print("The Help Command was executed!")
 
 
 client.run(f"{token}")

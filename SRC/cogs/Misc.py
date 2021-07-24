@@ -17,6 +17,7 @@ class Misc(commands.Cog):
       pingembed.add_field(name = "Pong!", value = f"{ping} ms")
       
       await ctx.reply(embed=pingembed, mention_author=False)
+      print("The Ping Command was executed!")
 
     @commands.command()
     async def src(self, ctx):
@@ -24,6 +25,7 @@ class Misc(commands.Cog):
       srcembed = discord.Embed(title="Source Code", url = "https://github.com/Supelion/Bloop", description="Bloop's SRC can be found on GitHub by clicking the title of this embed,\nor by [clicking here](http://tiny.cc/rfx2uz)", color = 0x2f3136)
       
       await ctx.reply(embed=srcembed, mention_author=False)
+      print("The SRC Command was executed!")
 
     @commands.command()
     @commands.cooldown(1, 500,commands.BucketType.user)
@@ -32,6 +34,7 @@ class Misc(commands.Cog):
       embed.add_field(name = "Suggestion added!", value = f"{message}")
       
       await ctx.reply(embed = embed, mention_author = False)
+      print("The Suggest Command was executed!")
 
       channel = self.client.get_channel(837363032321294367)
       lolembed = discord.Embed(title = "New Suggestion")
@@ -45,6 +48,7 @@ class Misc(commands.Cog):
       invitembed.add_field(name=f"Invite Link :link:", value = "https://bit.ly/bloopBot")
       
       await ctx.reply(embed=invitembed, mention_author=False)
+      print("The Skin Command was executed!")
 
   
 def setup(client):

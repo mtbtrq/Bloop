@@ -1,7 +1,11 @@
 import json
 import aiohttp
 import io
+import asyncio
+import tracemalloc
 from datetime import datetime
+
+from utils import hywrap
 
 import time
 
@@ -20,22 +24,21 @@ hypixelapikey = config.get('hypixelapikey')
 class minecraft(commands.Cog):
 
     def __init__(self, client):
-        self.client = client
-        self.orangey = 246, 76, 114
-        self.white = 255, 255, 255
-        self.green = 34, 227, 82
-        self.red = 255, 0, 34
-        self.dark_green = 0, 170, 0
-        self.gold = 255, 170, 0
-        self.red = 170, 0, 0
-        self.aqua = 85, 255, 255
-        self.light_red = 255, 85, 85
+      self.client = client
+      self.orangey = 246, 76, 114
+      self.white = 255, 255, 255
+      self.green = 34, 227, 82
+      self.red = 255, 0, 34
+      self.dark_green = 0, 170, 0
+      self.gold = 255, 170, 0
+      self.red = 170, 0, 0
+      self.aqua = 85, 255, 255
+      self.light_red = 255, 85, 85
 
-    @commands.command(
-      aliases = ["bed", "bedwarz", "bedwars", "bedworz", "bedwar"]
-    )
+    @commands.command(aliases = ["bed", "bedwarz", "bedwars", "bedworz", "bedwar"])
     @commands.cooldown(1, 2,commands.BucketType.user)
     async def bw(self, ctx, user : str = None, gamemode : str = 'overall'):
+        print("The BW Command was executed!")
         start = datetime.utcnow()
         mode = gamemode.lower()
         if user is None:
@@ -58,27 +61,40 @@ class minecraft(commands.Cog):
 
             if mode == 'overall':
                 try:
-                  async with aiohttp.ClientSession() as cs:
-                    async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as bwdataraw:
-                      bwdata = await bwdataraw.json()
+                  bwdata = await hywrap.bedwars(mojang_data["id"], hypixelapikey)
+                  profiledata = await hywrap.player(mojang_data["id"], hypixelapikey)
+
+                  wins = 0
+                  Kills = 0
+                  deaths = 0
+                  deathsVoid = 0
+                  killsVoid = 0
+                  brokenBeds = 0
+                  lostBeds = 0
+                  losses = 0
+                  stars = 0
+                  DeathsFinal = 0
+                  KillsFinal = 0
+                  winstreak = 0
+
+                  wins += int(bwdata["wins_bedwars"])
+                  Kills += int(bwdata["kills_bedwars"])
+                  deaths += int(bwdata["deaths_bedwars"])
+                  deathsVoid += int(bwdata["void_deaths_bedwars"])
+                  killsVoid += int(bwdata["void_kills_bedwars"])
+                  brokenBeds += int(bwdata["beds_broken_bedwars"])
+                  lostBeds += int(bwdata["beds_lost_bedwars"])
+                  losses += int(bwdata["losses_bedwars"])
+                  stars += int(profiledata["player"]["achievements"]["bedwars_level"])
+                  DeathsFinal += int(bwdata["final_deaths_bedwars"])
+                  KillsFinal += int(bwdata["final_kills_bedwars"])
+                  winstreak += int(bwdata["winstreak"])
                   
-                  Wins = (bwdata["player"]["stats"]["Bedwars"]["wins_bedwars"])
-                  kills = (bwdata["player"]["stats"]["Bedwars"]["kills_bedwars"])
-                  deaths = (bwdata["player"]["stats"]["Bedwars"]["deaths_bedwars"])
-                  voiddeaths = (bwdata["player"]["stats"]["Bedwars"]["void_deaths_bedwars"])
-                  voidkills = (bwdata["player"]["stats"]["Bedwars"]["void_kills_bedwars"])
-                  bedsbroken = bwdata["player"]["stats"]["Bedwars"]["beds_broken_bedwars"]
-                  bedslost = bwdata["player"]["stats"]["Bedwars"]["beds_lost_bedwars"]
-                  Losses = (bwdata["player"]["stats"]["Bedwars"]["losses_bedwars"])
-                  stars = (bwdata["player"]["achievements"]["bedwars_level"])
-                  FinalDeaths = (bwdata["player"]["stats"]["Bedwars"]["final_deaths_bedwars"])
-                  FinalKills = (bwdata["player"]["stats"]["Bedwars"]["final_kills_bedwars"])
-                  winstreak = (bwdata["player"]["stats"]["Bedwars"]["winstreak"])
-                  FKDR = round(float(FinalKills) / float(FinalDeaths), 1)
-                  WLR = round(float(Wins) / float(Losses), 1)
-                  BBLR = round(float(bedsbroken) / float(bedslost), 1)
-                  KDR = round(float(kills) / float(deaths), 1)
-                  void_kdr = round(float(voidkills) / float(voiddeaths), 1)
+                  FKDR = round(float(KillsFinal) / float(DeathsFinal), 1)
+                  WLR = round(float(wins) / float(losses), 1)
+                  BBLR = round(float(brokenBeds) / float(lostBeds), 1)
+                  KDR = round(float(Kills) / float(deaths), 1)
+                  void_kdr = round(float(killsVoid) / float(deathsVoid), 1)
 
                   bwembed = discord.Embed(title='Bedwars Stats <:bw:850964476109914112>', description=f'Overall | {IGN}', color=0x2f3136)
 
@@ -88,33 +104,34 @@ class minecraft(commands.Cog):
                   
                   bwembed.add_field(name='BBLR', value=f'``{BBLR:,}``', inline=True)
                   
-                  bwembed.add_field(name='Final Kills', value=f'``{FinalKills:,}``', inline=True)
+                  bwembed.add_field(name='Final Kills', value=f'``{KillsFinal:,}``', inline=True)
                   
-                  bwembed.add_field(name='Final Deaths', value=f'``{FinalDeaths:,}``', inline=True)
+                  bwembed.add_field(name='Final Deaths', value=f'``{DeathsFinal:,}``', inline=True)
                   
                   bwembed.add_field(name='FKDR', value=f'``{FKDR:,}``', inline=True)
                   
-                  bwembed.add_field(name='Kills', value=f'``{kills:,}``', inline=True)
+                  bwembed.add_field(name='Kills', value=f'``{Kills:,}``', inline=True)
                   
                   bwembed.add_field(name='Deaths', value=f'``{deaths:,}``', inline=True)
 
                   bwembed.add_field(name = 'KDR', value=f'``{KDR:,}``')
 
-                  bwembed.add_field(name = 'Wins', value=f'``{Wins:,}``')
+                  bwembed.add_field(name = 'Wins', value=f'``{wins:,}``')
 
-                  bwembed.add_field(name = 'Losses', value=f'``{Losses:,}``')
+                  bwembed.add_field(name = 'Losses', value=f'``{losses:,}``')
 
                   bwembed.add_field(name = 'WLR',  value = f'``{WLR:,}``')
 
-                  bwembed.add_field(name = 'Void Kills', value=f'``{voidkills:,}``')
+                  bwembed.add_field(name = 'Void Kills', value=f'``{killsVoid:,}``')
 
-                  bwembed.add_field(name = 'Void Deaths', value = f'``{voiddeaths:,}``')
+                  bwembed.add_field(name = 'Void Deaths', value = f'``{deathsVoid:,}``')
 
                   bwembed.add_field(name = 'Void KDR', value = f'``{void_kdr:,}``')
 
                   response_time = datetime.utcnow() - start
                   hours, remainder = divmod(float(response_time.total_seconds()), 3600)
-                  minutes, seconds = divmod(remainder, 60)
+                  minutes, secS = divmod(remainder, 60)
+                  seconds = round(secS, 1)
 
                   bwembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
 
@@ -128,23 +145,21 @@ class minecraft(commands.Cog):
 
             elif mode == "fours":
                 try:
-                  async with aiohttp.ClientSession() as cs:
-                    async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as bwdataraw:
-                      bwdata = await bwdataraw.json()
+                  bwdata = await hywrap.bedwars(mojang_data["id"], hypixelapikey)
+                  profiledata = await hywrap.player(mojang_data["id"], hypixelapikey)
                   
-                  Wins = (bwdata["player"]["stats"]["Bedwars"]["four_four_wins_bedwars"])
-                  Kills = (bwdata["player"]["stats"]["Bedwars"]["four_four_kills_bedwars"])
-                  Deaths = (bwdata["player"]["stats"]["Bedwars"]["four_four_deaths_bedwars"])
-                  coins = (bwdata["player"]["stats"]["Bedwars"]["coins"])
-                  voiddeaths = (bwdata["player"]["stats"]["Bedwars"]["four_four_void_final_deaths_bedwars"])
-                  voidkills = (bwdata["player"]["stats"]["Bedwars"]["four_four_void_kills_bedwars"])
-                  bedsbroken = bwdata["player"]["stats"]["Bedwars"]["four_four_beds_broken_bedwars"]
-                  bedslost = bwdata["player"]["stats"]["Bedwars"]["four_four_beds_lost_bedwars"]
-                  Losses = (bwdata["player"]["stats"]["Bedwars"]["four_four_losses_bedwars"])
-                  stars = (bwdata["player"]["achievements"]["bedwars_level"])
-                  FinalDeaths = (bwdata["player"]["stats"]["Bedwars"]["four_four_final_deaths_bedwars"])
-                  FinalKills = (bwdata["player"]["stats"]["Bedwars"]["four_four_final_kills_bedwars"])
-                  winstreak = (bwdata["player"]["stats"]["Bedwars"]["four_four_winstreak"])
+                  Wins = (bwdata["four_four_wins_bedwars"])
+                  Kills = (bwdata["four_four_kills_bedwars"])
+                  Deaths = (bwdata["four_four_deaths_bedwars"])
+                  voiddeaths = (bwdata["four_four_void_final_deaths_bedwars"])
+                  voidkills = (bwdata["four_four_void_kills_bedwars"])
+                  bedsbroken = bwdata["four_four_beds_broken_bedwars"]
+                  bedslost = bwdata["four_four_beds_lost_bedwars"]
+                  Losses = (bwdata["four_four_losses_bedwars"])
+                  stars = (profiledata["player"]["achievements"]["bedwars_level"])
+                  FinalDeaths = (bwdata["four_four_final_deaths_bedwars"])
+                  FinalKills = (bwdata["four_four_final_kills_bedwars"])
+                  winstreak = (bwdata["four_four_winstreak"])
                   FKDR = round(float(FinalKills) / float(FinalDeaths), 1)
                   WLR = round(float(Wins) / float(Losses), 1)
                   BBLR = round(float(bedsbroken) / float(bedslost), 1)
@@ -185,7 +200,8 @@ class minecraft(commands.Cog):
 
                   response_time = datetime.utcnow() - start
                   hours, remainder = divmod(float(response_time.total_seconds()), 3600)
-                  minutes, seconds = divmod(remainder, 60)
+                  minutes, secS = divmod(remainder, 60)
+                  seconds = round(secS, 1)
 
                   bwembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
 
@@ -199,22 +215,21 @@ class minecraft(commands.Cog):
 
             elif mode == 'doubles':
                 try:
-                  async with aiohttp.ClientSession() as cs:
-                    async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as bwdataraw:
-                      bwdata = await bwdataraw.json()
+                  bwdata = await hywrap.bedwars(mojang_data["id"], hypixelapikey)
+                  profiledata = await hywrap.player(mojang_data["id"], hypixelapikey)
                   
-                  Wins = (bwdata["player"]["stats"]["Bedwars"]["eight_two_wins_bedwars"])
-                  Kills = (bwdata["player"]["stats"]["Bedwars"]["eight_two_kills_bedwars"])
-                  Deaths = (bwdata["player"]["stats"]["Bedwars"]["eight_two_deaths_bedwars"])
-                  voiddeaths = (bwdata["player"]["stats"]["Bedwars"]["eight_two_void_final_deaths_bedwars"])
-                  voidkills = (bwdata["player"]["stats"]["Bedwars"]["eight_two_void_kills_bedwars"])
-                  bedsbroken = bwdata["player"]["stats"]["Bedwars"]["eight_two_beds_broken_bedwars"]
-                  bedslost = bwdata["player"]["stats"]["Bedwars"]["eight_two_beds_lost_bedwars"]
-                  Losses = (bwdata["player"]["stats"]["Bedwars"]["eight_two_losses_bedwars"])
-                  stars = (bwdata["player"]["achievements"]["bedwars_level"])
-                  FinalDeaths = (bwdata["player"]["stats"]["Bedwars"]["eight_two_final_deaths_bedwars"])
-                  FinalKills = (bwdata["player"]["stats"]["Bedwars"]["eight_two_final_kills_bedwars"])
-                  winstreak = (bwdata["player"]["stats"]["Bedwars"]["eight_two_winstreak"])
+                  Wins = (bwdata["eight_two_wins_bedwars"])
+                  Kills = (bwdata["eight_two_kills_bedwars"])
+                  Deaths = (bwdata["eight_two_deaths_bedwars"])
+                  voiddeaths = (bwdata["eight_two_void_final_deaths_bedwars"])
+                  voidkills = (bwdata["eight_two_void_kills_bedwars"])
+                  bedsbroken = bwdata["eight_two_beds_broken_bedwars"]
+                  bedslost = bwdata["eight_two_beds_lost_bedwars"]
+                  Losses = (bwdata["eight_two_losses_bedwars"])
+                  stars = (profiledata["player"]["achievements"]["bedwars_level"])
+                  FinalDeaths = (bwdata["eight_two_final_deaths_bedwars"])
+                  FinalKills = (bwdata["eight_two_final_kills_bedwars"])
+                  winstreak = (bwdata["eight_two_winstreak"])
                   FKDR = round(float(FinalKills) / float(FinalDeaths), 1)
                   WLR = round(float(Wins) / float(Losses), 1)
                   BBLR = round(float(bedsbroken) / float(bedslost), 1)
@@ -255,7 +270,8 @@ class minecraft(commands.Cog):
 
                   response_time = datetime.utcnow() - start
                   hours, remainder = divmod(float(response_time.total_seconds()), 3600)
-                  minutes, seconds = divmod(remainder, 60)
+                  minutes, secS = divmod(remainder, 60)
+                  seconds = round(secS, 1)
 
                   bwembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
 
@@ -269,23 +285,21 @@ class minecraft(commands.Cog):
               
             elif mode == 'solo':
                 try:
-                  async with aiohttp.ClientSession() as cs:
-                    async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as bwdataraw:
-                      bwdata = await bwdataraw.json()
+                  bwdata = await hywrap.bedwars(mojang_data["id"], hypixelapikey)
+                  profiledata = await hywrap.player(mojang_data["id"], hypixelapikey)
                   
-                  Wins = (bwdata["player"]["stats"]["Bedwars"]["eight_one_wins_bedwars"])
-                  Kills = (bwdata["player"]["stats"]["Bedwars"]["eight_one_kills_bedwars"])
-                  Deaths = (bwdata["player"]["stats"]["Bedwars"]["eight_one_deaths_bedwars"])
-                  coins = (bwdata["player"]["stats"]["Bedwars"]["coins"])
-                  voiddeaths = (bwdata["player"]["stats"]["Bedwars"]["eight_one_void_final_deaths_bedwars"])
-                  voidkills = (bwdata["player"]["stats"]["Bedwars"]["eight_one_void_kills_bedwars"])
-                  bedsbroken = bwdata["player"]["stats"]["Bedwars"]["eight_one_beds_broken_bedwars"]
-                  bedslost = bwdata["player"]["stats"]["Bedwars"]["eight_one_beds_lost_bedwars"]
-                  Losses = (bwdata["player"]["stats"]["Bedwars"]["eight_one_losses_bedwars"])
-                  stars = (bwdata["player"]["achievements"]["bedwars_level"])
-                  FinalDeaths = (bwdata["player"]["stats"]["Bedwars"]["eight_one_final_deaths_bedwars"])
-                  FinalKills = (bwdata["player"]["stats"]["Bedwars"]["eight_one_final_kills_bedwars"])
-                  winstreak = (bwdata["player"]["stats"]["Bedwars"]["eight_one_winstreak"])
+                  Wins = (bwdata["eight_one_wins_bedwars"])
+                  Kills = (bwdata["eight_one_kills_bedwars"])
+                  Deaths = (bwdata["eight_one_deaths_bedwars"])
+                  voiddeaths = (bwdata["eight_one_void_final_deaths_bedwars"])
+                  voidkills = (bwdata["eight_one_void_kills_bedwars"])
+                  bedsbroken = bwdata["eight_one_beds_broken_bedwars"]
+                  bedslost = bwdata["eight_one_beds_lost_bedwars"]
+                  Losses = (bwdata["eight_one_losses_bedwars"])
+                  stars = (profiledata["player"]["achievements"]["bedwars_level"])
+                  FinalDeaths = (bwdata["eight_one_final_deaths_bedwars"])
+                  FinalKills = (bwdata["eight_one_final_kills_bedwars"])
+                  winstreak = (bwdata["eight_one_winstreak"])
                   FKDR = round(float(FinalKills) / float(FinalDeaths), 1)
                   WLR = round(float(Wins) / float(Losses), 1)
                   BBLR = round(float(bedsbroken) / float(bedslost), 1)
@@ -326,7 +340,8 @@ class minecraft(commands.Cog):
 
                   response_time = datetime.utcnow() - start
                   hours, remainder = divmod(float(response_time.total_seconds()), 3600)
-                  minutes, seconds = divmod(remainder, 60)
+                  minutes, secS = divmod(remainder, 60)
+                  seconds = round(secS, 1)
 
                   bwembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
 
@@ -340,23 +355,21 @@ class minecraft(commands.Cog):
               
             elif mode == 'threes':
                 try:
-                  async with aiohttp.ClientSession() as cs:
-                    async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as bwdataraw:
-                      bwdata = await bwdataraw.json()
+                  bwdata = await hywrap.bedwars(mojang_data["id"], hypixelapikey)
+                  profiledata = await hywrap.player(mojang_data["id"], hypixelapikey)
                   
-                  Wins = (bwdata["player"]["stats"]["Bedwars"]["four_three_wins_bedwars"])
-                  Kills = (bwdata["player"]["stats"]["Bedwars"]["four_three_kills_bedwars"])
-                  Deaths = (bwdata["player"]["stats"]["Bedwars"]["four_three_deaths_bedwars"])
-                  coins = (bwdata["player"]["stats"]["Bedwars"]["coins"])
-                  voiddeaths = (bwdata["player"]["stats"]["Bedwars"]["four_three_void_final_deaths_bedwars"])
-                  voidkills = (bwdata["player"]["stats"]["Bedwars"]["four_three_void_kills_bedwars"])
-                  bedsbroken = bwdata["player"]["stats"]["Bedwars"]["four_three_beds_broken_bedwars"]
-                  bedslost = bwdata["player"]["stats"]["Bedwars"]["four_three_beds_lost_bedwars"]
-                  Losses = (bwdata["player"]["stats"]["Bedwars"]["four_three_losses_bedwars"])
-                  stars = (bwdata["player"]["achievements"]["bedwars_level"])
-                  FinalDeaths = (bwdata["player"]["stats"]["Bedwars"]["four_three_final_deaths_bedwars"])
-                  FinalKills = (bwdata["player"]["stats"]["Bedwars"]["four_three_final_kills_bedwars"])
-                  winstreak = (bwdata["player"]["stats"]["Bedwars"]["four_three_winstreak"])
+                  Wins = (bwdata["four_three_wins_bedwars"])
+                  Kills = (bwdata["four_three_kills_bedwars"])
+                  Deaths = (bwdata["four_three_deaths_bedwars"])
+                  voiddeaths = (bwdata["four_three_void_final_deaths_bedwars"])
+                  voidkills = (bwdata["four_three_void_kills_bedwars"])
+                  bedsbroken = bwdata["four_three_beds_broken_bedwars"]
+                  bedslost = bwdata["four_three_beds_lost_bedwars"]
+                  Losses = (bwdata["four_three_losses_bedwars"])
+                  stars = (profiledata["player"]["achievements"]["bedwars_level"])
+                  FinalDeaths = (bwdata["four_three_final_deaths_bedwars"])
+                  FinalKills = (bwdata["four_three_final_kills_bedwars"])
+                  winstreak = (bwdata["four_three_winstreak"])
                   FKDR = round(float(FinalKills) / float(FinalDeaths), 1)
                   WLR = round(float(Wins) / float(Losses), 1)
                   BBLR = round(float(bedsbroken) / float(bedslost), 1)
@@ -397,7 +410,8 @@ class minecraft(commands.Cog):
 
                   response_time = datetime.utcnow() - start
                   hours, remainder = divmod(float(response_time.total_seconds()), 3600)
-                  minutes, seconds = divmod(remainder, 60)
+                  minutes, secS = divmod(remainder, 60)
+                  seconds = round(secS, 1)
 
                   bwembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
 
@@ -420,6 +434,7 @@ class minecraft(commands.Cog):
     @commands.command(aliases = ["skywars", "skywar", "skywor", "skiwar", "skiwor"])
     @commands.cooldown(1, 2,commands.BucketType.user)
     async def sw(self, ctx, user : str = None, *, gamemode : str = 'overall'):
+        print("The SW Command was executed!")
         start = datetime.utcnow()
         mode = gamemode.lower()
         if user is None:
@@ -442,20 +457,18 @@ class minecraft(commands.Cog):
 
         if mode == 'overall':
             try:
-                async with aiohttp.ClientSession() as cs:
-                  async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as swdataraw:
-                    swdata = await swdataraw.json()
+                swdata = await hywrap.skywars(mojang_data["id"], hypixelapikey)
 
                 async with aiohttp.ClientSession() as cs:
                   async with cs.get(f"https://api.slothpixel.me/api/players/{user}") as swlvldataraw:
                     swlvldata = await swlvldataraw.json()
                 
-                SwWins = (swdata["player"]["stats"]["SkyWars"]["wins"])
-                Heads = (swdata["player"]["stats"]["SkyWars"]["heads"])
-                SwKills = (swdata["player"]["stats"]["SkyWars"]["kills"])
-                SwDeaths = (swdata["player"]["stats"]["SkyWars"]["deaths"])
-                SwLosses = (swdata["player"]["stats"]["SkyWars"]["losses"])
-                SwCoins = (swdata["player"]["stats"]["SkyWars"]["coins"])
+                SwWins = (swdata["wins"])
+                Heads = (swdata["heads"])
+                SwKills = (swdata["kills"])
+                SwDeaths = (swdata["deaths"])
+                SwLosses = (swdata["losses"])
+                SwCoins = (swdata["coins"])
                 SwKDR = round(float(SwKills) / float(SwDeaths), 1)
                 SwWLR = round(float(SwWins) / float(SwLosses), 1)
                 SwLvl = round(swlvldata["stats"]["SkyWars"]["level"], 1)
@@ -482,7 +495,8 @@ class minecraft(commands.Cog):
                 
                 response_time = datetime.utcnow() - start
                 hours, remainder = divmod(float(response_time.total_seconds()), 3600)
-                minutes, seconds = divmod(remainder, 60)
+                minutes, secS = divmod(remainder, 60)
+                seconds = round(secS, 1)
 
                 swembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
 
@@ -496,20 +510,18 @@ class minecraft(commands.Cog):
 
         elif mode == 'solo insane':
             try:
-                async with aiohttp.ClientSession() as cs:
-                      async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as swdataraw:
-                        swdata = await swdataraw.json()
+                swdata = await hywrap.skywars(mojang_data["id"], hypixelapikey)
 
                 async with aiohttp.ClientSession() as cs:
                       async with cs.get(f"https://api.slothpixel.me/api/players/{user}") as swlvldataraw:
                           swlvldata = await swlvldataraw.json()
                 
-                SwWins = (swdata["player"]["stats"]["SkyWars"]["wins_solo_insane"])
-                Heads = (swdata["player"]["stats"]["SkyWars"]["heads"])
-                SwKills = (swdata["player"]["stats"]["SkyWars"]["kills_solo_insane"])
-                SwDeaths = (swdata["player"]["stats"]["SkyWars"]["deaths_solo_insane"])
-                SwLosses = (swdata["player"]["stats"]["SkyWars"]["losses_solo_insane"])
-                SwCoins = (swdata["player"]["stats"]["SkyWars"]["coins"])
+                SwWins = (swdata["wins_solo_insane"])
+                Heads = (swdata["heads"])
+                SwKills = (swdata["kills_solo_insane"])
+                SwDeaths = (swdata["deaths_solo_insane"])
+                SwLosses = (swdata["losses_solo_insane"])
+                SwCoins = (swdata["coins"])
                 SwKDR = round(float(SwKills) / float(SwDeaths), 1)
                 SwWLR = round(float(SwWins) / float(SwLosses), 1)
                 SwLvl = round(swlvldata["stats"]["SkyWars"]["level"], 1)
@@ -536,7 +548,8 @@ class minecraft(commands.Cog):
 
                 response_time = datetime.utcnow() - start
                 hours, remainder = divmod(float(response_time.total_seconds()), 3600)
-                minutes, seconds = divmod(remainder, 60)
+                minutes, secS = divmod(remainder, 60)
+                seconds = round(secS, 1)
 
                 swembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
 
@@ -550,20 +563,18 @@ class minecraft(commands.Cog):
 
         elif mode == 'solo normal':
             try:
-                async with aiohttp.ClientSession() as cs:
-                      async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as swdataraw:
-                        swdata = await swdataraw.json()
+                swdata = await hywrap.skywars(mojang_data["id"], hypixelapikey)
 
                 async with aiohttp.ClientSession() as cs:
                       async with cs.get(f"https://api.slothpixel.me/api/players/{user}") as swlvldataraw:
                           swlvldata = await swlvldataraw.json()
                 
-                SwWins = (swdata["player"]["stats"]["SkyWars"]["wins_solo_normal"])
-                Heads = (swdata["player"]["stats"]["SkyWars"]["heads"])
-                SwKills = (swdata["player"]["stats"]["SkyWars"]["kills_solo_normal"])
-                SwDeaths = (swdata["player"]["stats"]["SkyWars"]["deaths_solo_normal"])
-                SwLosses = (swdata["player"]["stats"]["SkyWars"]["losses_solo_normal"])
-                SwCoins = (swdata["player"]["stats"]["SkyWars"]["coins"])
+                SwWins = (swdata["wins_solo_normal"])
+                Heads = (swdata["heads"])
+                SwKills = (swdata["kills_solo_normal"])
+                SwDeaths = (swdata["deaths_solo_normal"])
+                SwLosses = (swdata["losses_solo_normal"])
+                SwCoins = (swdata["coins"])
                 SwKDR = round(float(SwKills) / float(SwDeaths), 1)
                 SwWLR = round(float(SwWins) / float(SwLosses), 1)
                 SwLvl = round(swlvldata["stats"]["SkyWars"]["level"], 1)
@@ -590,7 +601,8 @@ class minecraft(commands.Cog):
 
                 response_time = datetime.utcnow() - start
                 hours, remainder = divmod(float(response_time.total_seconds()), 3600)
-                minutes, seconds = divmod(remainder, 60)
+                minutes, secS = divmod(remainder, 60)
+                seconds = round(secS, 1)
 
                 swembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
 
@@ -604,20 +616,18 @@ class minecraft(commands.Cog):
 
         elif mode == 'teams normal':
             try:
-                async with aiohttp.ClientSession() as cs:
-                      async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as swdataraw:
-                        swdata = await swdataraw.json()
+                swdata = await hywrap.skywars(mojang_data["id"], hypixelapikey)
 
                 async with aiohttp.ClientSession() as cs:
                       async with cs.get(f"https://api.slothpixel.me/api/players/{user}") as swlvldataraw:
                           swlvldata = await swlvldataraw.json()
                 
-                SwWins = (swdata["player"]["stats"]["SkyWars"]["wins_team_normal"])
-                Heads = (swdata["player"]["stats"]["SkyWars"]["heads"])
-                SwKills = (swdata["player"]["stats"]["SkyWars"]["kills_team_normal"])
-                SwDeaths = (swdata["player"]["stats"]["SkyWars"]["deaths_team_normal"])
-                SwLosses = (swdata["player"]["stats"]["SkyWars"]["losses_team_normal"])
-                SwCoins = (swdata["player"]["stats"]["SkyWars"]["coins"])
+                SwWins = (swdata["wins_team_normal"])
+                Heads = (swdata["heads"])
+                SwKills = (swdata["kills_team_normal"])
+                SwDeaths = (swdata["deaths_team_normal"])
+                SwLosses = (swdata["losses_team_normal"])
+                SwCoins = (swdata["coins"])
                 SwKDR = round(float(SwKills) / float(SwDeaths), 1)
                 SwWLR = round(float(SwWins) / float(SwLosses), 1)
                 SwLvl = round(swlvldata["stats"]["SkyWars"]["level"], 1)
@@ -644,7 +654,8 @@ class minecraft(commands.Cog):
 
                 response_time = datetime.utcnow() - start
                 hours, remainder = divmod(float(response_time.total_seconds()), 3600)
-                minutes, seconds = divmod(remainder, 60)
+                minutes, secS = divmod(remainder, 60)
+                seconds = round(secS, 1)
 
                 swembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
 
@@ -658,20 +669,18 @@ class minecraft(commands.Cog):
 
         elif mode == 'teams insane':
             try:
-                async with aiohttp.ClientSession() as cs:
-                      async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as swdataraw:
-                        swdata = await swdataraw.json()
+                swdata = await hywrap.skywars(mojang_data["id"], hypixelapikey)
 
                 async with aiohttp.ClientSession() as cs:
                       async with cs.get(f"https://api.slothpixel.me/api/players/{user}") as swlvldataraw:
                           swlvldata = await swlvldataraw.json()
                 
-                SwWins = (swdata["player"]["stats"]["SkyWars"]["wins_team_insane"])
-                Heads = (swdata["player"]["stats"]["SkyWars"]["heads"])
-                SwKills = (swdata["player"]["stats"]["SkyWars"]["kills_team_insane"])
-                SwDeaths = (swdata["player"]["stats"]["SkyWars"]["deaths_team_insane"])
-                SwLosses = (swdata["player"]["stats"]["SkyWars"]["losses_team_insane"])
-                SwCoins = (swdata["player"]["stats"]["SkyWars"]["coins"])
+                SwWins = (swdata["wins_team_insane"])
+                Heads = (swdata["heads"])
+                SwKills = (swdata["kills_team_insane"])
+                SwDeaths = (swdata["deaths_team_insane"])
+                SwLosses = (swdata["losses_team_insane"])
+                SwCoins = (swdata["coins"])
                 SwKDR = round(float(SwKills) / float(SwDeaths), 1)
                 SwWLR = round(float(SwWins) / float(SwLosses), 1)
                 SwLvl = round(swlvldata["stats"]["SkyWars"]["level"], 1)
@@ -698,7 +707,8 @@ class minecraft(commands.Cog):
 
                 response_time = datetime.utcnow() - start
                 hours, remainder = divmod(float(response_time.total_seconds()), 3600)
-                minutes, seconds = divmod(remainder, 60)
+                minutes, secS = divmod(remainder, 60)
+                seconds = round(secS, 1)
 
                 swembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
 
@@ -712,20 +722,18 @@ class minecraft(commands.Cog):
 
         elif mode == 'ranked':
             try:
-                async with aiohttp.ClientSession() as cs:
-                      async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as swdataraw:
-                        swdata = await swdataraw.json()
+                swdata = await hywrap.skywars(mojang_data["id"], hypixelapikey)
 
                 async with aiohttp.ClientSession() as cs:
                       async with cs.get(f"https://api.slothpixel.me/api/players/{user}") as swlvldataraw:
                           swlvldata = await swlvldataraw.json()
                 
-                SwWins = (swdata["player"]["stats"]["SkyWars"]["wins_ranked"])
-                Heads = (swdata["player"]["stats"]["SkyWars"]["heads"])
-                SwKills = (swdata["player"]["stats"]["SkyWars"]["kills_ranked"])
-                SwDeaths = (swdata["player"]["stats"]["SkyWars"]["deaths_ranked"])
-                SwLosses = (swdata["player"]["stats"]["SkyWars"]["losses_ranked"])
-                SwCoins = (swdata["player"]["stats"]["SkyWars"]["coins"])
+                SwWins = (swdata["wins_ranked"])
+                Heads = (swdata["heads"])
+                SwKills = (swdata["kills_ranked"])
+                SwDeaths = (swdata["deaths_ranked"])
+                SwLosses = (swdata["losses_ranked"])
+                SwCoins = (swdata["coins"])
                 SwKDR = round(float(SwKills) / float(SwDeaths), 1)
                 SwWLR = round(float(SwWins) / float(SwLosses), 1)
                 SwLvl = round(swlvldata["stats"]["SkyWars"]["level"], 1)
@@ -752,7 +760,8 @@ class minecraft(commands.Cog):
 
                 response_time = datetime.utcnow() - start
                 hours, remainder = divmod(float(response_time.total_seconds()), 3600)
-                minutes, seconds = divmod(remainder, 60)
+                minutes, secS = divmod(remainder, 60)
+                seconds = round(secS, 1)
 
                 swembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
 
@@ -772,10 +781,10 @@ class minecraft(commands.Cog):
             errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
             await ctx.send(embed = errorembed)
 
-
     @commands.command(aliases = ["duels", "d"])
     @commands.cooldown(1, 2,commands.BucketType.user)
     async def duel(self, ctx, user : str = None, *, gamemode : str = 'overall'):
+        print("The Duels Command was executed!")
         start = datetime.utcnow()
         mode = gamemode.lower()
         if user is None:
@@ -798,12 +807,8 @@ class minecraft(commands.Cog):
 
             if mode == 'overall':
               try:
-                  async with aiohttp.ClientSession() as cs:
-                        async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as duelsdataraw:
-                          duelsdat4 = await duelsdataraw.json()
+                  duels = await hywrap.duels(mojang_data["id"], hypixelapikey)
                   
-                  
-                  duels = duelsdat4["player"]["stats"]["Duels"]
                   ws = duels["current_winstreak"]
                   coins = duels["coins"]
                   bow_shots = duels["bow_shots"]
@@ -846,7 +851,8 @@ class minecraft(commands.Cog):
 
                   response_time = datetime.utcnow() - start
                   hours, remainder = divmod(float(response_time.total_seconds()), 3600)
-                  minutes, seconds = divmod(remainder, 60)
+                  minutes, secS = divmod(remainder, 60)
+                  seconds = round(secS, 1)
 
                   duelsembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
                   
@@ -860,11 +866,7 @@ class minecraft(commands.Cog):
 
             elif mode == 'bridge':
               try:
-                  async with aiohttp.ClientSession() as cs:
-                        async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as duelsdataraw:
-                          duelsdat4 = await duelsdataraw.json()
-                          duels = duelsdat4["player"]["stats"]["Duels"]
-                  
+                  duels = await hywrap.duels(mojang_data["id"], hypixelapikey)
                   
                   ws = duels["current_bridge_winstreak"]
                   coins = duels["coins"]
@@ -899,7 +901,8 @@ class minecraft(commands.Cog):
 
                   response_time = datetime.utcnow() - start
                   hours, remainder = divmod(float(response_time.total_seconds()), 3600)
-                  minutes, seconds = divmod(remainder, 60)
+                  minutes, secS = divmod(remainder, 60)
+                  seconds = round(secS, 1)
 
                   duelsembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
                   
@@ -914,13 +917,9 @@ class minecraft(commands.Cog):
 
             elif mode == 'classic':
               try:
-                  async with aiohttp.ClientSession() as cs:
-                    async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as duelsdataraw:
-                      duelsdat4 = await duelsdataraw.json()
-                      duels = duelsdat4["player"]["stats"]["Duels"]
+                  duels = await hywrap.duels(mojang_data["id"], hypixelapikey)
                   
-                  
-                  ws = duels["current_bridge_winstreak"]
+                  ws = duels["current_classic_winstreak"]
                   coins = duels["coins"]
                   wins = duels["classic_duel_wins"]
                   losses = duels["classic_duel_losses"]
@@ -953,7 +952,8 @@ class minecraft(commands.Cog):
 
                   response_time = datetime.utcnow() - start
                   hours, remainder = divmod(float(response_time.total_seconds()), 3600)
-                  minutes, seconds = divmod(remainder, 60)
+                  minutes, secS = divmod(remainder, 60)
+                  seconds = round(secS, 1)
 
                   duelsembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
                   
@@ -967,10 +967,7 @@ class minecraft(commands.Cog):
 
             elif mode == 'uhc':
               try:
-                  async with aiohttp.ClientSession() as cs:
-                        async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as duelsdataraw:
-                          duelsdat4 = await duelsdataraw.json()
-                          duels = duelsdat4["player"]["stats"]["Duels"]
+                  duels = await hywrap.duels(mojang_data["id"], hypixelapikey)
                   
                   
                   ws = duels["current_uhc_winstreak"]
@@ -1006,7 +1003,8 @@ class minecraft(commands.Cog):
 
                   response_time = datetime.utcnow() - start
                   hours, remainder = divmod(float(response_time.total_seconds()), 3600)
-                  minutes, seconds = divmod(remainder, 60)
+                  minutes, secS = divmod(remainder, 60)
+                  seconds = round(secS, 1)
 
                   duelsembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
                   
@@ -1020,10 +1018,7 @@ class minecraft(commands.Cog):
 
             elif mode == 'combo':
               try:
-                  async with aiohttp.ClientSession() as cs:
-                    async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as duelsdataraw:
-                      duelsdat4 = await duelsdataraw.json()
-                      duels = duelsdat4["player"]["stats"]["Duels"]
+                  duels = await hywrap.duels(mojang_data["id"], hypixelapikey)
                   
                   
                   ws = duels["current_combo_winstreak"]
@@ -1059,7 +1054,8 @@ class minecraft(commands.Cog):
 
                   response_time = datetime.utcnow() - start
                   hours, remainder = divmod(float(response_time.total_seconds()), 3600)
-                  minutes, seconds = divmod(remainder, 60)
+                  minutes, secS = divmod(remainder, 60)
+                  seconds = round(secS, 1)
 
                   duelsembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
                   
@@ -1073,10 +1069,7 @@ class minecraft(commands.Cog):
 
             elif mode == 'skywars':
               try:
-                  async with aiohttp.ClientSession() as cs:
-                    async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as duelsdataraw:
-                      duelsdat4 = await duelsdataraw.json()
-                      duels = duelsdat4["player"]["stats"]["Duels"]
+                  duels = await hywrap.duels(mojang_data["id"], hypixelapikey)
                   
                   
                   ws = duels["current_skywars_winstreak"]
@@ -1112,7 +1105,8 @@ class minecraft(commands.Cog):
 
                   response_time = datetime.utcnow() - start
                   hours, remainder = divmod(float(response_time.total_seconds()), 3600)
-                  minutes, seconds = divmod(remainder, 60)
+                  minutes, secS = divmod(remainder, 60)
+                  seconds = round(secS, 1)
 
                   duelsembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
                   
@@ -1126,11 +1120,7 @@ class minecraft(commands.Cog):
             
             elif mode == 'sumo':
               try:
-                  async with aiohttp.ClientSession() as cs:
-                    async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as duelsdataraw:
-                      duelsdat4 = await duelsdataraw.json()
-                      duels = duelsdat4["player"]["stats"]["Duels"]
-                  
+                  duels = await hywrap.duels(mojang_data["id"], hypixelapikey)
                   
                   ws = duels["current_winstreak_mode_sumo_duel"]
                   coins = duels["coins"]
@@ -1165,7 +1155,8 @@ class minecraft(commands.Cog):
 
                   response_time = datetime.utcnow() - start
                   hours, remainder = divmod(float(response_time.total_seconds()), 3600)
-                  minutes, seconds = divmod(remainder, 60)
+                  minutes, secS = divmod(remainder, 60)
+                  seconds = round(secS, 1)
 
                   duelsembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
                   
@@ -1179,10 +1170,7 @@ class minecraft(commands.Cog):
 
             elif mode == 'nodebuff':
               try:
-                  async with aiohttp.ClientSession() as cs:
-                    async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as duelsdataraw:
-                      duelsdat4 = await duelsdataraw.json()
-                      duels = duelsdat4["player"]["stats"]["Duels"]
+                  duels = await hywrap.duels(mojang_data["id"], hypixelapikey)
                   
                   
                   ws = duels["current_no_debuff_winstreak"]
@@ -1218,7 +1206,8 @@ class minecraft(commands.Cog):
 
                   response_time = datetime.utcnow() - start
                   hours, remainder = divmod(float(response_time.total_seconds()), 3600)
-                  minutes, seconds = divmod(remainder, 60)
+                  minutes, secS = divmod(remainder, 60)
+                  seconds = round(secS, 1)
 
                   duelsembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
                   
@@ -1232,10 +1221,7 @@ class minecraft(commands.Cog):
 
             elif mode == 'bow duels':
               try:
-                  async with aiohttp.ClientSession() as cs:
-                        async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as duelsdataraw:
-                          duelsdat4 = await duelsdataraw.json()
-                          duels = duelsdat4["player"]["stats"]["Duels"]
+                  duels = await hywrap.duels(mojang_data["id"], hypixelapikey)
                   
                   
                   ws = duels["current_winstreak_mode_bow_duel"]
@@ -1271,7 +1257,8 @@ class minecraft(commands.Cog):
 
                   response_time = datetime.utcnow() - start
                   hours, remainder = divmod(float(response_time.total_seconds()), 3600)
-                  minutes, seconds = divmod(remainder, 60)
+                  minutes, secS = divmod(remainder, 60)
+                  seconds = round(secS, 1)
 
                   duelsembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
                   
@@ -1285,10 +1272,7 @@ class minecraft(commands.Cog):
 
             elif mode == 'op duels':
               try:
-                  async with aiohttp.ClientSession() as cs:
-                        async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as duelsdataraw:
-                          duelsdat4 = await duelsdataraw.json()
-                          duels = duelsdat4["player"]["stats"]["Duels"]
+                  duels = await hywrap.duels(mojang_data["id"], hypixelapikey)
                   
                   
                   ws = duels["current_winstreak_mode_op_duel"]
@@ -1324,7 +1308,8 @@ class minecraft(commands.Cog):
 
                   response_time = datetime.utcnow() - start
                   hours, remainder = divmod(float(response_time.total_seconds()), 3600)
-                  minutes, seconds = divmod(remainder, 60)
+                  minutes, secS = divmod(remainder, 60)
+                  seconds = round(secS, 1)
 
                   duelsembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
                   
@@ -1347,6 +1332,7 @@ class minecraft(commands.Cog):
     @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def compare(self, ctx, player1 : str = None, player2 : str = None):
+      print("The Compare Command was executed!")
       if player1 is None:
         errorembed = discord.Embed(title = 'Compare')
         errorembed.add_field(name = 'Usage:', value = "``.compare {Player 1} {Player 2}``")
@@ -1552,6 +1538,7 @@ class minecraft(commands.Cog):
     @commands.command()
     @commands.cooldown(1, 2,commands.BucketType.user)
     async def p(self, ctx, mode : str = None, player : str = None):
+        print("The P Command was executed!")
         gamemode = mode.lower()
         if player is None:
             errorembed = discord.Embed(title = 'Pictured Stats')
@@ -1576,9 +1563,7 @@ class minecraft(commands.Cog):
             else:
               async with ctx.typing():
 
-                async with aiohttp.ClientSession() as cs:
-                      async with cs.get(f"https://api.hypixel.net/player?key={hypixelapikey}&uuid={mojang_data['id']}") as apiraw:
-                        api = await apiraw.json()
+                api = await hywrap.player(mojang_data["id"], hypixelapikey)
 
                 async with aiohttp.ClientSession() as cs:
                     async with cs.get(f"https://api.slothpixel.me/api/players/{player}") as profiledataraw:
@@ -1838,11 +1823,10 @@ class minecraft(commands.Cog):
                   errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
                   await ctx.send(embed = errorembed)
 
-    @commands.command(
-      aliases = ["a", "ach"]
-    )
+    @commands.command(aliases = ["a", "ach"])
     @commands.cooldown(1, 2,commands.BucketType.user)
     async def achievement(self, ctx, item : str = None, title : str = None, *, text : str = None):
+      print("The Achievement Command was executed!")
       start = datetime.utcnow()
       if item is None:
         errorembed = discord.Embed(title = 'Achievement')
@@ -1878,7 +1862,8 @@ class minecraft(commands.Cog):
                 
                 response_time = datetime.utcnow() - start
                 hours, remainder = divmod(float(response_time.total_seconds()), 3600)
-                minutes, seconds = divmod(remainder, 60)
+                minutes, secS = divmod(remainder, 60)
+                seconds = round(secS, 1)
 
                 embed.set_footer(text = f'Time taken to complete request: {seconds} s.')
                 
@@ -1895,6 +1880,7 @@ class minecraft(commands.Cog):
     @commands.command()
     @commands.cooldown(1, 2,commands.BucketType.user)
     async def server(self, ctx, server : str = None):
+        print("The Server Stats Command was executed!")
         start = datetime.utcnow()
         if server is None:
             errorembed = discord.Embed(title = 'Server')
@@ -1921,7 +1907,8 @@ class minecraft(commands.Cog):
                       
                     response_time = datetime.utcnow() - start
                     hours, remainder = divmod(float(response_time.total_seconds()), 3600)
-                    minutes, seconds = divmod(remainder, 60)
+                    minutes, secS = divmod(remainder, 60)
+                    seconds = round(secS, 1)
 
                     serverinfoembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
                     
@@ -1933,11 +1920,10 @@ class minecraft(commands.Cog):
             errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
             await ctx.send(embed = errorembed)
 
-    @commands.command(
-      aliases = ["socials", "s", "connections"]
-    )
+    @commands.command(aliases = ["socials", "s", "connections"])
     @commands.cooldown(1, 2,commands.BucketType.user)
     async def social(self, ctx, user : str = None):
+        print("The Socials Command was executed!")
         start = datetime.utcnow()
         if user is None:
             errorembed = discord.Embed(title = 'Socials')
@@ -2005,37 +1991,36 @@ class minecraft(commands.Cog):
 
                     response_time = datetime.utcnow() - start
                     hours, remainder = divmod(float(response_time.total_seconds()), 3600)
-                    minutes, seconds = divmod(remainder, 60)
+                    minutes, secS = divmod(remainder, 60)
+                    seconds = round(secS, 1)
 
                     socialembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
                     
                     await ctx.reply(embed=socialembed, mention_author=False)
     
-    @commands.command(
-      aliases = ["wd", "wdr"]
-    )
+    @commands.command(aliases = ["wd", "wdr"])
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def watchdog(self, ctx):
+      print("The WDR Command was executed!")
       start = datetime.utcnow()
-      async with aiohttp.ClientSession() as cs:
-                async with cs.get(f'https://api.hypixel.net/punishmentstats?key={hypixelapikey}') as watchdograw:
-                  watchdog = await watchdograw.json()
+      watchdog = await hywrap.watchdogStats(hypixelapikey)
 
-                  watchdogembed = discord.Embed(title = "Watchdog Bans", color = 0x2f3136)
-                  
-                  watchdogembed.add_field(name = "Last Minute:", value = f'{watchdog["watchdog_lastMinute"]:,}', inline = False)
-                  
-                  watchdogembed.add_field(name = "Daily:", value = f'{watchdog["watchdog_rollingDaily"]:,}', inline = False)
-                  
-                  watchdogembed.add_field(name = "Total:", value = f'{watchdog["watchdog_total"]:,}', inline = False)
+      watchdogembed = discord.Embed(title = "Watchdog Bans", color = 0x2f3136)
+      
+      watchdogembed.add_field(name = "Last Minute:", value = f'{watchdog["watchdog_lastMinute"]:,}', inline = False)
+      
+      watchdogembed.add_field(name = "Daily:", value = f'{watchdog["watchdog_rollingDaily"]:,}', inline = False)
+      
+      watchdogembed.add_field(name = "Total:", value = f'{watchdog["watchdog_total"]:,}', inline = False)
 
-                  response_time = datetime.utcnow() - start
-                  hours, remainder = divmod(float(response_time.total_seconds()), 3600)
-                  minutes, seconds = divmod(remainder, 60)
+      response_time = datetime.utcnow() - start
+      hours, remainder = divmod(float(response_time.total_seconds()), 3600)
+      minutes, secS = divmod(remainder, 60)
+      seconds = round(secS, 1)
 
-                  watchdogembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
+      watchdogembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
 
-                  await ctx.reply(embed = watchdogembed, mention_author = False)
+      await ctx.reply(embed = watchdogembed, mention_author = False)
 
     """ WIP
     @commands.command()
@@ -2051,6 +2036,7 @@ class minecraft(commands.Cog):
     @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def uuid(self, ctx, user : str = None):
+      print("The UUID Command was executed!")
       start = datetime.utcnow()
       if user is None:
         errorembed = discord.Embed(title = 'UUID')
@@ -2078,7 +2064,8 @@ class minecraft(commands.Cog):
                 
                 response_time = datetime.utcnow() - start
                 hours, remainder = divmod(float(response_time.total_seconds()), 3600)
-                minutes, seconds = divmod(remainder, 60)
+                minutes, secS = divmod(remainder, 60)
+                seconds = round(secS, 1)
 
                 embed.set_footer(text = f'Time taken to complete request: {seconds} s.')
                 
@@ -2087,6 +2074,7 @@ class minecraft(commands.Cog):
     @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def cape(self, ctx, user : str = None):
+        print("The Cape Command was executed!")
         start = datetime.utcnow()
         if user is None:
             errorembed = discord.Embed(title = 'Cape')
@@ -2113,7 +2101,8 @@ class minecraft(commands.Cog):
                       
                       response_time = datetime.utcnow() - start
                       hours, remainder = divmod(float(response_time.total_seconds()), 3600)
-                      minutes, seconds = divmod(remainder, 60)
+                      minutes, secS = divmod(remainder, 60)
+                      seconds = round(secS, 1)
 
                       embed.set_footer(text = f'Time taken to complete request: {seconds} s.')
                       
@@ -2127,6 +2116,7 @@ class minecraft(commands.Cog):
     @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def skin(self, ctx, user : str = None):
+        print("The Skin Command was executed!")
         start = datetime.utcnow()
         if user is None:
             errorembed = discord.Embed(title = 'Skin')
@@ -2156,16 +2146,17 @@ class minecraft(commands.Cog):
                       
                       response_time = datetime.utcnow() - start
                       hours, remainder = divmod(float(response_time.total_seconds()), 3600)
-                      minutes, seconds = divmod(remainder, 60)
-                      secs = round(seconds, 1)
+                      minutes, secS = divmod(remainder, 60)
+                      seconds = round(secS, 1)
 
-                      embed.set_footer(text = f'Time taken to complete request: {secs} s.')
+                      embed.set_footer(text = f'Time taken to complete request: {seconds} s.')
                       
                       await ctx.reply(embed = embed, mention_author = False)
 
     @commands.command()
     @commands.cooldown(1, 2,commands.BucketType.user)
     async def profile(self, ctx, user : str = None):
+        print("The Profile Command was executed!")
         start = datetime.utcnow()
         if user is None:
             errorembed = discord.Embed(title = 'Profile')
@@ -2249,7 +2240,8 @@ class minecraft(commands.Cog):
 
                       response_time = datetime.utcnow() - start
                       hours, remainder = divmod(float(response_time.total_seconds()), 3600)
-                      minutes, seconds = divmod(remainder, 60)
+                      minutes, secS = divmod(remainder, 60)
+                      seconds = round(secS, 1)
 
                       profileembed.set_footer(text = f'Time taken to complete request: {seconds} s.')
                         
