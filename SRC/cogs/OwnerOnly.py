@@ -85,6 +85,13 @@ class owner(commands.Cog):
     async def div(self, ctx, num1 : float, num2 : float):
       ans = num1 / num2
       await ctx.send(f"**Answer:** {ans:,}")
+    
+    @commands.command()
+    @commands.is_owner()
+    async def round(self, ctx, num : str):
+      number = float(num)
+      ans = round(number)
+      await ctx.send(ans)
       
     @commands.command()
     @commands.is_owner()
@@ -111,7 +118,7 @@ class owner(commands.Cog):
       
       ownerhelpembed.add_field(name = "Misc:", value = "``opinion``, ``bruh``, ``cringe``, ``gg``, ``yes``, ``nice``, ``wtf``, ``say``, ``encode``", inline = False)
       
-      ownerhelpembed.add_field(name = "Math", value = "``add``, ``sub``, ``mult``, ``div``")
+      ownerhelpembed.add_field(name = "Math", value = "``add``, ``sub``, ``mult``, ``div``, ``round``")
       
       ownerhelpembed.add_field(name = ":no_entry: DANGEROUS: :no_entry:", value = '``shutdown``', inline = False)
 

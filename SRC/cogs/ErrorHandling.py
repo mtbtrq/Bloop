@@ -2,7 +2,12 @@ import discord
 import traceback
 import sys
 from discord.ext import commands
+import json
 
+with open('./config.json') as jsonload:
+  config = json.load(jsonload)
+
+noCoolDownUsers = config.get("noCoolDownUsers")
 
 class CommandErrorHandler(commands.Cog):
 
@@ -44,10 +49,13 @@ class CommandErrorHandler(commands.Cog):
             await ctx.send(embed = errorembed)
 
         elif isinstance(error, discord.ext.commands.CommandOnCooldown):
-            errorembed = discord.Embed(title = 'An Error Occured!')
-            errorembed.add_field(name = 'Cause:', value = f"You are on cooldown, please try again in `{error.retry_after:.2f}`!")
-            errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
-            await ctx.send(embed = errorembed)
+            if ctx.author.id not in noCoolDownUsers:
+                errorembed = discord.Embed(title = 'An Error Occured!')
+                errorembed.add_field(name = 'Cause:', value = f"You are on cooldown, please try again in `{error.retry_after:.2f}`!")
+                errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
+                await ctx.send(embed = errorembed)
+            else:
+                await ctx.reinvoke()
 
         else:
             print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)

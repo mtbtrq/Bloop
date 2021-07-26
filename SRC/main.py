@@ -76,7 +76,7 @@ async def help(ctx):
 
     helpembed.set_thumbnail(url='https://media.discordapp.net/attachments/8350712o70117834773/853578246984433684/lol.png?width=480&height=480')
 
-    helpembed.set_footer(text="Bloop v2.3 | Supelion#4275")
+    helpembed.set_footer(text="Bloop v2.3 | Supelion#4275 | All Commmands work in DMs.")
 
     await ctx.reply(embed=helpembed, mention_author = False)
     print("The Help Command was executed!")

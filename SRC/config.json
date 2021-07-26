@@ -1,4 +1,5 @@
 {
-    "token": "ODM2NjU1MTEyMDIxMjEzMjI0.YIhJyw.d2twFPj2dfCqtTGicaKRGUcpark",
-    "hypixelapikey": "4ac70f3a-0df6-49ca-9d52-153abe9ad45c"
-  }
+  "token": "INSERT YOUR DISCORD BOT TOKEN HERE",
+  "hypixelapikey": "INSERT YOUR HYPIXEL API KEY HERE",
+  "noCoolDownUsers": ["REMOVE THESE QUOTES AND INSERT NOCOOLDOWN MEMBER IDS"]
+}
