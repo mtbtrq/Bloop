@@ -14,7 +14,7 @@ with open('./config.json') as f:
 token = config.get('token')
 
 async def create_db_pool():
-    client.db = await asyncpg.create_pool(dsn = "INSERT LINK HERE FOR POSTGRES DB")
+    client.db = await asyncpg.create_pool(dsn = "postgresql://postgres:5utBpuE1FRy4trJmVSCt@containers-us-west-11.railway.app:7551/railway")
     print("Connected to the DB!")
 
     await client.db.execute("CREATE TABLE IF NOT EXISTS prefixes(guild_id bigint PRIMARY KEY, prefix text);")
