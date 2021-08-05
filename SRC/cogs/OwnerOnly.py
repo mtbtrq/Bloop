@@ -108,7 +108,7 @@ class owner(commands.Cog):
 
     @commands.command()
     @commands.is_owner()
-    async def encode(self, ctx, *, msg):
+    async def encode(self, ctx, *, msg : str):
       encodeMapping = {
         ord("a"): "h",
         ord("b"): "g",
@@ -137,11 +137,11 @@ class owner(commands.Cog):
         ord("y"): "t",
         ord("z"): "y"
       }
-      await ctx.send(input.translate(encodeMapping))
+      await ctx.send(msg.translate(encodeMapping))
 
     @commands.command()
     @commands.is_owner()
-    async def decode(self, ctx, input):
+    async def decode(self, ctx, msg : str):
       decodeMapping = {
         ord("h"): "a",
         ord("g"): "b",
@@ -170,7 +170,7 @@ class owner(commands.Cog):
         ord("t"): "y",
         ord("y"): "z"
       }
-      await ctx.send(input.translate(decodeMapping))
+      await ctx.send(msg.translate(decodeMapping))
 
     @commands.command(
       aliases = ["oh"]
