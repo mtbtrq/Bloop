@@ -1,13 +1,9 @@
 import json
 import aiohttp
 import io
-import asyncio
-import tracemalloc
 from datetime import datetime
 
 from utils import hywrap
-
-import time
 
 import discord
 from discord.ext import commands
@@ -90,11 +86,11 @@ class minecraft(commands.Cog):
                   KillsFinal += int(bwdata["final_kills_bedwars"])
                   winstreak += int(bwdata["winstreak"])
                   
-                  FKDR = round(float(KillsFinal) / float(DeathsFinal), 1)
-                  WLR = round(float(wins) / float(losses), 1)
-                  BBLR = round(float(brokenBeds) / float(lostBeds), 1)
-                  KDR = round(float(Kills) / float(deaths), 1)
-                  void_kdr = round(float(killsVoid) / float(deathsVoid), 1)
+                  FKDR = round(float(KillsFinal) / float(DeathsFinal), 2)
+                  WLR = round(float(wins) / float(losses), 2)
+                  BBLR = round(float(brokenBeds) / float(lostBeds), 2)
+                  KDR = round(float(Kills) / float(deaths), 2)
+                  void_kdr = round(float(killsVoid) / float(deathsVoid), 2)
 
                   bwembed = discord.Embed(title='Bedwars Stats <:bw:850964476109914112>', description=f'Overall | {IGN}', color=0x2f3136)
 
@@ -160,11 +156,11 @@ class minecraft(commands.Cog):
                   FinalDeaths = (bwdata["four_four_final_deaths_bedwars"])
                   FinalKills = (bwdata["four_four_final_kills_bedwars"])
                   winstreak = (bwdata["four_four_winstreak"])
-                  FKDR = round(float(FinalKills) / float(FinalDeaths), 1)
-                  WLR = round(float(Wins) / float(Losses), 1)
-                  BBLR = round(float(bedsbroken) / float(bedslost), 1)
-                  KDR = round(float(Kills) / float(Deaths), 1)
-                  void_kdr = round(float(voidkills) / float(voiddeaths), 1)
+                  FKDR = round(float(FinalKills) / float(FinalDeaths), 2)
+                  WLR = round(float(Wins) / float(Losses), 2)
+                  BBLR = round(float(bedsbroken) / float(bedslost), 2)
+                  KDR = round(float(Kills) / float(Deaths), 2)
+                  void_kdr = round(float(voidkills) / float(voiddeaths), 2)
 
                   bwembed = discord.Embed(title='Bedwars Stats <:bw:850964476109914112>', description=f'Fours | {IGN}', color=0x2f3136)
 
@@ -230,11 +226,11 @@ class minecraft(commands.Cog):
                   FinalDeaths = (bwdata["eight_two_final_deaths_bedwars"])
                   FinalKills = (bwdata["eight_two_final_kills_bedwars"])
                   winstreak = (bwdata["eight_two_winstreak"])
-                  FKDR = round(float(FinalKills) / float(FinalDeaths), 1)
-                  WLR = round(float(Wins) / float(Losses), 1)
-                  BBLR = round(float(bedsbroken) / float(bedslost), 1)
-                  KDR = round(float(Kills) / float(Deaths), 1)
-                  void_kdr = round(float(voidkills) / float(voiddeaths), 1)
+                  FKDR = round(float(FinalKills) / float(FinalDeaths), 2)
+                  WLR = round(float(Wins) / float(Losses), 2)
+                  BBLR = round(float(bedsbroken) / float(bedslost), 2)
+                  KDR = round(float(Kills) / float(Deaths), 2)
+                  void_kdr = round(float(voidkills) / float(voiddeaths), 2)
 
                   bwembed = discord.Embed(title='Bedwars Stats <:bw:850964476109914112>', description=f'Doubles | {IGN}', color=0x2f3136)
 
@@ -300,11 +296,11 @@ class minecraft(commands.Cog):
                   FinalDeaths = (bwdata["eight_one_final_deaths_bedwars"])
                   FinalKills = (bwdata["eight_one_final_kills_bedwars"])
                   winstreak = (bwdata["eight_one_winstreak"])
-                  FKDR = round(float(FinalKills) / float(FinalDeaths), 1)
-                  WLR = round(float(Wins) / float(Losses), 1)
-                  BBLR = round(float(bedsbroken) / float(bedslost), 1)
-                  KDR = round(float(Kills) / float(Deaths), 1)
-                  void_kdr = round(float(voidkills) / float(voiddeaths), 1)
+                  FKDR = round(float(FinalKills) / float(FinalDeaths), 2)
+                  WLR = round(float(Wins) / float(Losses), 2)
+                  BBLR = round(float(bedsbroken) / float(bedslost), 2)
+                  KDR = round(float(Kills) / float(Deaths), 2)
+                  void_kdr = round(float(voidkills) / float(voiddeaths), 2)
 
                   bwembed = discord.Embed(title='Bedwars Stats <:bw:850964476109914112>', description=f'Solo | {IGN}', color=0x2f3136)
 
@@ -370,11 +366,11 @@ class minecraft(commands.Cog):
                   FinalDeaths = (bwdata["four_three_final_deaths_bedwars"])
                   FinalKills = (bwdata["four_three_final_kills_bedwars"])
                   winstreak = (bwdata["four_three_winstreak"])
-                  FKDR = round(float(FinalKills) / float(FinalDeaths), 1)
-                  WLR = round(float(Wins) / float(Losses), 1)
-                  BBLR = round(float(bedsbroken) / float(bedslost), 1)
-                  KDR = round(float(Kills) / float(Deaths), 1)
-                  void_kdr = round(float(voidkills) / float(voiddeaths), 1)
+                  FKDR = round(float(FinalKills) / float(FinalDeaths), 2)
+                  WLR = round(float(Wins) / float(Losses), 2)
+                  BBLR = round(float(bedsbroken) / float(bedslost), 2)
+                  KDR = round(float(Kills) / float(Deaths), 2)
+                  void_kdr = round(float(voidkills) / float(voiddeaths), 2)
 
                   bwembed = discord.Embed(title='Bedwars Stats <:bw:850964476109914112>', description=f'Threes | {IGN}', color=0x2f3136)
 
@@ -458,10 +454,7 @@ class minecraft(commands.Cog):
         if mode == 'overall':
             try:
                 swdata = await hywrap.skywars(mojang_data["id"], hypixelapikey)
-
-                async with aiohttp.ClientSession() as cs:
-                  async with cs.get(f"https://api.slothpixel.me/api/players/{user}") as swlvldataraw:
-                    swlvldata = await swlvldataraw.json()
+                profileData = await hywrap.player(mojang_data["id"], hypixelapikey)
                 
                 SwWins = (swdata["wins"])
                 Heads = (swdata["heads"])
@@ -469,9 +462,9 @@ class minecraft(commands.Cog):
                 SwDeaths = (swdata["deaths"])
                 SwLosses = (swdata["losses"])
                 SwCoins = (swdata["coins"])
-                SwKDR = round(float(SwKills) / float(SwDeaths), 1)
-                SwWLR = round(float(SwWins) / float(SwLosses), 1)
-                SwLvl = round(swlvldata["stats"]["SkyWars"]["level"], 1)
+                SwKDR = round(float(SwKills) / float(SwDeaths), 2)
+                SwWLR = round(float(SwWins) / float(SwLosses), 2)
+                SwLvl = (profileData["player"]["achievements"]["skywars_you_re_a_star"])
 
                 swembed = discord.Embed(title='Skywars Stats <:sw:850964475544731689>', description=f'Overall | {IGN}', color=0x2f3136)
 
@@ -511,10 +504,7 @@ class minecraft(commands.Cog):
         elif mode == 'solo insane':
             try:
                 swdata = await hywrap.skywars(mojang_data["id"], hypixelapikey)
-
-                async with aiohttp.ClientSession() as cs:
-                      async with cs.get(f"https://api.slothpixel.me/api/players/{user}") as swlvldataraw:
-                          swlvldata = await swlvldataraw.json()
+                profileData = await hywrap.player(mojang_data["id"], hypixelapikey)
                 
                 SwWins = (swdata["wins_solo_insane"])
                 Heads = (swdata["heads"])
@@ -522,9 +512,9 @@ class minecraft(commands.Cog):
                 SwDeaths = (swdata["deaths_solo_insane"])
                 SwLosses = (swdata["losses_solo_insane"])
                 SwCoins = (swdata["coins"])
-                SwKDR = round(float(SwKills) / float(SwDeaths), 1)
-                SwWLR = round(float(SwWins) / float(SwLosses), 1)
-                SwLvl = round(swlvldata["stats"]["SkyWars"]["level"], 1)
+                SwKDR = round(float(SwKills) / float(SwDeaths), 2)
+                SwWLR = round(float(SwWins) / float(SwLosses), 2)
+                SwLvl = profileData["achievements"]["skywars_you_re_a_star"]
 
                 swembed = discord.Embed(title='Skywars Stats <:sw:850964475544731689>', description=f'Solo Insane | {IGN}', color=0x2f3136)
 
@@ -564,10 +554,7 @@ class minecraft(commands.Cog):
         elif mode == 'solo normal':
             try:
                 swdata = await hywrap.skywars(mojang_data["id"], hypixelapikey)
-
-                async with aiohttp.ClientSession() as cs:
-                      async with cs.get(f"https://api.slothpixel.me/api/players/{user}") as swlvldataraw:
-                          swlvldata = await swlvldataraw.json()
+                profileData = await hywrap.player(mojang_data["id"], hypixelapikey)
                 
                 SwWins = (swdata["wins_solo_normal"])
                 Heads = (swdata["heads"])
@@ -575,9 +562,9 @@ class minecraft(commands.Cog):
                 SwDeaths = (swdata["deaths_solo_normal"])
                 SwLosses = (swdata["losses_solo_normal"])
                 SwCoins = (swdata["coins"])
-                SwKDR = round(float(SwKills) / float(SwDeaths), 1)
-                SwWLR = round(float(SwWins) / float(SwLosses), 1)
-                SwLvl = round(swlvldata["stats"]["SkyWars"]["level"], 1)
+                SwKDR = round(float(SwKills) / float(SwDeaths), 2)
+                SwWLR = round(float(SwWins) / float(SwLosses), 2)
+                SwLvl = profileData["achievements"]["skywars_you_re_a_star"]
 
                 swembed = discord.Embed(title='Skywars Stats <:sw:850964475544731689>', description=f'Solo Normal | {IGN}', color=0x2f3136)
 
@@ -617,10 +604,7 @@ class minecraft(commands.Cog):
         elif mode == 'teams normal':
             try:
                 swdata = await hywrap.skywars(mojang_data["id"], hypixelapikey)
-
-                async with aiohttp.ClientSession() as cs:
-                      async with cs.get(f"https://api.slothpixel.me/api/players/{user}") as swlvldataraw:
-                          swlvldata = await swlvldataraw.json()
+                profileData = await hywrap.player(mojang_data["id"], hypixelapikey)
                 
                 SwWins = (swdata["wins_team_normal"])
                 Heads = (swdata["heads"])
@@ -630,7 +614,7 @@ class minecraft(commands.Cog):
                 SwCoins = (swdata["coins"])
                 SwKDR = round(float(SwKills) / float(SwDeaths), 1)
                 SwWLR = round(float(SwWins) / float(SwLosses), 1)
-                SwLvl = round(swlvldata["stats"]["SkyWars"]["level"], 1)
+                SwLvl = profileData["achievements"]["skywars_you_re_a_star"]
 
                 swembed = discord.Embed(title='Skywars Stats <:sw:850964475544731689>', description=f'Teams Normal | {IGN}', color=0x2f3136)
 
@@ -670,10 +654,7 @@ class minecraft(commands.Cog):
         elif mode == 'teams insane':
             try:
                 swdata = await hywrap.skywars(mojang_data["id"], hypixelapikey)
-
-                async with aiohttp.ClientSession() as cs:
-                      async with cs.get(f"https://api.slothpixel.me/api/players/{user}") as swlvldataraw:
-                          swlvldata = await swlvldataraw.json()
+                profileData = await hywrap.player(mojang_data["id"], hypixelapikey)
                 
                 SwWins = (swdata["wins_team_insane"])
                 Heads = (swdata["heads"])
@@ -681,9 +662,9 @@ class minecraft(commands.Cog):
                 SwDeaths = (swdata["deaths_team_insane"])
                 SwLosses = (swdata["losses_team_insane"])
                 SwCoins = (swdata["coins"])
-                SwKDR = round(float(SwKills) / float(SwDeaths), 1)
-                SwWLR = round(float(SwWins) / float(SwLosses), 1)
-                SwLvl = round(swlvldata["stats"]["SkyWars"]["level"], 1)
+                SwKDR = round(float(SwKills) / float(SwDeaths), 2)
+                SwWLR = round(float(SwWins) / float(SwLosses), 2)
+                SwLvl = profileData["achievements"]["skywars_you_re_a_star"]
 
                 swembed = discord.Embed(title='Skywars Stats <:sw:850964475544731689>', description=f'Teams Insane | {IGN}', color=0x2f3136)
 
@@ -723,10 +704,7 @@ class minecraft(commands.Cog):
         elif mode == 'ranked':
             try:
                 swdata = await hywrap.skywars(mojang_data["id"], hypixelapikey)
-
-                async with aiohttp.ClientSession() as cs:
-                      async with cs.get(f"https://api.slothpixel.me/api/players/{user}") as swlvldataraw:
-                          swlvldata = await swlvldataraw.json()
+                profileData = await hywrap.player(mojang_data["id"], hypixelapikey)
                 
                 SwWins = (swdata["wins_ranked"])
                 Heads = (swdata["heads"])
@@ -734,9 +712,9 @@ class minecraft(commands.Cog):
                 SwDeaths = (swdata["deaths_ranked"])
                 SwLosses = (swdata["losses_ranked"])
                 SwCoins = (swdata["coins"])
-                SwKDR = round(float(SwKills) / float(SwDeaths), 1)
-                SwWLR = round(float(SwWins) / float(SwLosses), 1)
-                SwLvl = round(swlvldata["stats"]["SkyWars"]["level"], 1)
+                SwKDR = round(float(SwKills) / float(SwDeaths), 2)
+                SwWLR = round(float(SwWins) / float(SwLosses), 2)
+                SwLvl = profileData["achievements"]["skywars_you_re_a_star"]
 
                 swembed = discord.Embed(title='Skywars Stats <:sw:850964475544731689>', description=f'Ranked | {IGN}', color=0x2f3136)
 
@@ -818,8 +796,8 @@ class minecraft(commands.Cog):
                   deaths = duels["deaths"]
                   melee_swings = duels["melee_swings"]
                   melee_hits = duels["melee_hits"]
-                  kdr = round(float(kills) / float(deaths), 1)
-                  wlr = round(float(wins) / float(losses), 1)
+                  kdr = round(float(kills) / float(deaths), 2)
+                  wlr = round(float(wins) / float(losses), 2)
                   accuracy = round(float(melee_hits) / float(melee_swings), 1)
 
 
@@ -875,8 +853,8 @@ class minecraft(commands.Cog):
                   kills = duels["bridge_kills"]
                   goals = duels["bridge_duel_goals"]
                   deaths = duels["bridge_deaths"]
-                  kdr = round(float(kills) / float(deaths), 1)
-                  wlr = round(float(wins) / float(losses), 1)
+                  kdr = round(float(kills) / float(deaths), 2)
+                  wlr = round(float(wins) / float(losses), 2)
 
 
                   duelsembed = discord.Embed(title = f'Duels Stats <:duels:850964475937816586>', description = f'Bridge Duels | {mojang_data["name"]}', color = 0x2f3136)
@@ -926,8 +904,8 @@ class minecraft(commands.Cog):
                   kills = duels["classic_duel_kills"]
                   games = duels["classic_duel_rounds_played"]
                   deaths = duels["classic_duel_deaths"]
-                  kdr = round(float(kills) / float(deaths), 1)
-                  wlr = round(float(wins) / float(losses), 1)
+                  kdr = round(float(kills) / float(deaths), 2)
+                  wlr = round(float(wins) / float(losses), 2)
 
 
                   duelsembed = discord.Embed(title = f'Duels Stats <:duels:850964475937816586>', description = f'Classic Duels | {mojang_data["name"]}', color = 0x2f3136)
@@ -977,8 +955,8 @@ class minecraft(commands.Cog):
                   kills = duels["uhc_duel_kills"]
                   games = duels["uhc_duel_rounds_played"]
                   deaths = duels["uhc_duel_deaths"]
-                  kdr = round(float(kills) / float(deaths), 1)
-                  wlr = round(float(wins) / float(losses), 1)
+                  kdr = round(float(kills) / float(deaths), 2)
+                  wlr = round(float(wins) / float(losses), 2)
 
 
                   duelsembed = discord.Embed(title = f'Duels Stats <:duels:850964475937816586>', description = f'UHC Duels | {mojang_data["name"]}', color = 0x2f3136)
@@ -1028,8 +1006,8 @@ class minecraft(commands.Cog):
                   kills = duels["combo_duel_kills"]
                   games = duels["combo_duel_rounds_played"]
                   deaths = duels["combo_duel_deaths"]
-                  kdr = round(float(kills) / float(deaths), 1)
-                  wlr = round(float(wins) / float(losses), 1)
+                  kdr = round(float(kills) / float(deaths), 2)
+                  wlr = round(float(wins) / float(losses), 2)
 
 
                   duelsembed = discord.Embed(title = f'Duels Stats <:duels:850964475937816586>', description = f'Combo Duels | {mojang_data["name"]}', color = 0x2f3136)
@@ -1079,8 +1057,8 @@ class minecraft(commands.Cog):
                   kills = duels["sw_duel_kills"]
                   games = duels["sw_duel_rounds_played"]
                   deaths = duels["sw_duel_deaths"]
-                  kdr = round(float(kills) / float(deaths), 1)
-                  wlr = round(float(wins) / float(losses), 1)
+                  kdr = round(float(kills) / float(deaths), 2)
+                  wlr = round(float(wins) / float(losses), 2)
 
 
                   duelsembed = discord.Embed(title = f'Duels Stats <:duels:850964475937816586>', description = f'Skywars Duels | {mojang_data["name"]}', color = 0x2f3136)
@@ -1129,8 +1107,8 @@ class minecraft(commands.Cog):
                   kills = duels["sumo_duel_kills"]
                   games = duels["sumo_duel_rounds_played"]
                   deaths = duels["sumo_duel_deaths"]
-                  kdr = round(float(kills) / float(deaths), 1)
-                  wlr = round(float(wins) / float(losses), 1)
+                  kdr = round(float(kills) / float(deaths), 2)
+                  wlr = round(float(wins) / float(losses), 2)
 
 
                   duelsembed = discord.Embed(title = f'Duels Stats <:duels:850964475937816586>', description = f'Sumo Duels | {mojang_data["name"]}', color = 0x2f3136)
@@ -1180,8 +1158,8 @@ class minecraft(commands.Cog):
                   kills = duels["potion_duel_kills"]
                   games = duels["potion_duel_rounds_played"]
                   deaths = duels["potion_duel_deaths"]
-                  kdr = round(float(kills) / float(deaths), 1)
-                  wlr = round(float(wins) / float(losses), 1)
+                  kdr = round(float(kills) / float(deaths), 2)
+                  wlr = round(float(wins) / float(losses), 2)
 
 
                   duelsembed = discord.Embed(title = f'Duels Stats <:duels:850964475937816586>', description = f'Potion Duels | {mojang_data["name"]}', color = 0x2f3136)
@@ -1231,8 +1209,8 @@ class minecraft(commands.Cog):
                   kills = duels["bow_duel_kills"]
                   games = duels["bow_duel_rounds_played"]
                   deaths = duels["bow_duel_deaths"]
-                  kdr = round(float(kills) / float(deaths), 1)
-                  wlr = round(float(wins) / float(losses), 1)
+                  kdr = round(float(kills) / float(deaths), 2)
+                  wlr = round(float(wins) / float(losses), 2)
 
 
                   duelsembed = discord.Embed(title = f'Duels Stats <:duels:850964475937816586>', description = f'Bow Duels | {mojang_data["name"]}', color = 0x2f3136)
@@ -1282,8 +1260,8 @@ class minecraft(commands.Cog):
                   kills = duels["op_duel_kills"]
                   games = duels["op_duel_rounds_played"]
                   deaths = duels["op_duel_deaths"]
-                  kdr = round(float(kills) / float(deaths), 1)
-                  wlr = round(float(wins) / float(losses), 1)
+                  kdr = round(float(kills) / float(deaths), 2)
+                  wlr = round(float(wins) / float(losses), 2)
 
 
                   duelsembed = discord.Embed(title = f'Duels Stats <:duels:850964475937816586>', description = f'OP Duels | {mojang_data["name"]}', color = 0x2f3136)
@@ -2022,17 +2000,6 @@ class minecraft(commands.Cog):
 
       await ctx.reply(embed = watchdogembed, mention_author = False)
 
-    """ WIP
-    @commands.command()
-    @commands.cooldown(1, 5, commands.BucketType.user)
-    async def leaderboards(self, ctx):
-      async with aiohttp.ClientSession() as cs:
-        async with cs.get(f'https://api.hypixel.net/leaderboards?key={hypixelapikey}') as lbsRaw:
-            lb = await lbsRaw.json()
-
-            embed = discord.Embed(title = "Bedwars Leaderboards")
-    """
-
     @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def uuid(self, ctx, user : str = None):
@@ -2048,14 +2015,8 @@ class minecraft(commands.Cog):
         async with aiohttp.ClientSession() as cs:
             async with cs.get(f'https://api.mojang.com/users/profiles/minecraft/{user}') as mojangdataraw:
               try:
-                mojang_data = await mojangdataraw.json()
-              except aiohttp.client_exceptions.ContentTypeError:
-                pass
+                mojang_data = await hywrap.mojangData(user)
 
-              except:
-                await ctx.send(f"The user your provided is not valid! `{user}`", delete_after=3)
-            
-              else:
                 embed = discord.Embed(title = 'UUID Converter', color = 0x2f3136)
                 
                 embed.add_field(name = 'Username', value = f'``{mojang_data["name"]}``', inline = False)
@@ -2070,6 +2031,9 @@ class minecraft(commands.Cog):
                 embed.set_footer(text = f'Time taken to complete request: {seconds} s.')
                 
                 await ctx.send(embed = embed)
+              except Exception as e:
+                await ctx.send(f"The user your provided is not valid! `{user}`")
+                print(e)
 
     @commands.command()
     @commands.cooldown(1, 5, commands.BucketType.user)

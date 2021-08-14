@@ -154,3 +154,82 @@ async def guild(uuid : str, hypixelapikey : str = None):
             async with cs.get(f'https://api.hypixel.net/guild?key={hypixelapikey}&player={uuid}') as guildRaw:
                 guild = await guildRaw.json()
                 return guild
+
+# Returns the recent games of a player
+async def recentGames(uuid : str, hypixelapikey : str = None):
+    if hypixelapikey is None:
+        print("Please Enter a Hypixel API Key!")
+    if uuid is None:
+        print("Please specify a UUID!")
+    else:
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get(f'https://api.hypixel.net/recentgames?key={hypixelapikey}&uuid={uuid}') as f:
+                recentGames = await f.json()
+                return recentGames
+
+# Returns the friends list of a player
+async def friends(uuid : str, hypixelapikey : str = None):
+    if hypixelapikey is None:
+        print("Please Enter a Hypixel API Key!")
+    if uuid is None:
+        print("Please specify a UUID!")
+    else:
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get(f'https://api.hypixel.net/friends?key={hypixelapikey}&uuid={uuid}') as f:
+                friendsList = await f.json()
+                return friendsList
+
+# Returns API Key info
+async def key(hypixelapikey : str = None):
+    if hypixelapikey is None:
+        print("Please Enter a Hypixel API Key!")
+    else:
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get(f'https://api.hypixel.net/key?key={hypixelapikey}') as f:
+                keyInfo = await f.json()
+                return keyInfo
+
+# Returns a player's status
+async def status(uuid : str, hypixelapikey : str = None):
+    if hypixelapikey is None:
+        print("Please Enter a Hypixel API Key!")
+    if uuid is None:
+        print("Please specify a UUID!")
+    else:
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get(f'https://api.hypixel.net/status?key={hypixelapikey}&uuid={uuid}') as f:
+                statusInfo = await f.json()
+                return statusInfo
+
+# Returns a player's ranked skywars stats using the new ranked skywars endpoint
+async def rankedSkywars(uuid : str, hypixelapikey : str = None):
+    if hypixelapikey is None:
+        print("Please Enter a Hypixel API Key!")
+    if uuid is None:
+        print("Please specify a UUID!")
+    else:
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get(f'https://api.hypixel.net/player/ranked/skywars?key={hypixelapikey}&uuid={uuid}') as f:
+                statusInfo = await f.json()
+                return statusInfo
+
+# Returns a given player's UUID by making use of the mojang API
+async def checkUUID(name : str):
+    if name is None:
+        print("Please specify a UUID!")
+    else:
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get(f'https://api.mojang.com/users/profiles/minecraft/{name}') as f:
+                r = await f.json()
+                uuid = r["id"]
+                return uuid
+
+# Returns the entire mojang API page of a specified player
+async def mojangData(name : str):
+    if name is None:
+        print("Please specify a UUID!")
+    else:
+        async with aiohttp.ClientSession() as cs:
+            async with cs.get(f'https://api.mojang.com/users/profiles/minecraft/{name}') as f:
+                r = await f.json()
+                return r

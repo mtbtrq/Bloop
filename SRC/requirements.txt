@@ -1,0 +1,4 @@
+asyncpg
+discord
+aiohttp
+pillow
