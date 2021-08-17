@@ -53,34 +53,6 @@ async def on_ready():
     user = client.get_user(467962329435471878)
     await user.send("I'm online. <:online:850325400605425684>")
     print(f"I'm ready! I have logged in as {client.user}")
-
-@client.command()
-async def elmne(ctx):
-    embed = discord.Embed(title = "Good Job.")
-    embed.add_field(name = "Next Step", value = "Subscribe to Supelion on YouTube with an account that has subscriptions public. Once you have done that, DM Supelion of that screenshot and he will DM you your next hint.")
-    embed.set_footer(text = "If you unsubscribe in the future, you will be banned from future events.")
-    await ctx.send(embed = embed)
-
-@client.command()
-async def fghrei(ctx):
-    embed = discord.Embed(title = "Good Job.")
-    embed.add_field(name = "Next Step", value = "Z29vZCBqb2IgbWFraW5nIGl0IHRoaXMgZmFyLCBub3csIGV4ZWN1dGUgdGhpcyBjb21tYW5kOiBoaWps")
-    embed.set_footer(text = "Decode the text!")
-    await ctx.send(embed = embed)
-
-@client.command()
-async def hijl(ctx):
-    embed = discord.Embed(title = "Good Job.")
-    embed.add_field(name = "Next Step", value = "Check Supelion's Socials for a command.")
-    embed.set_footer(text = "This one might not be so easy, so good luck!")
-    await ctx.send(embed = embed)
-
-@client.command()
-async def lolIwon(ctx):
-    embed = discord.Embed(title = "GG.")
-    embed.add_field(name = "You won!", value = "DM Supelion#4275 to claim your prize!")
-    await ctx.send(embed = embed)
-    print(f"{ctx.author} won the giveaway!")
     
 @client.event
 async def on_guild_remove(guild):
