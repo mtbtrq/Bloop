@@ -113,7 +113,7 @@ async def stats(ctx):
 
     statsembed.add_field(name = f"Uptime:", value = f"{hours}h, {minutes}m, {seconds}s.\n\n[Support Website](https://supelion.github.io/bl00p/)", inline = False)
     
-    statsembed.set_footer(text="Bloop v2.4 | Supelion#4275")
+    statsembed.set_footer(text="Bloop v2.5 | Supelion#4275")
     
     await ctx.reply(embed=statsembed, mention_author=False)
     print("The Stats Command was executed!")
@@ -125,13 +125,13 @@ async def help(ctx):
         
     helpembed.add_field(name = "My Prefix:", value = "``.``")
         
-    helpembed.add_field(name='<:minecraft:848988105943810095> Minecraft', value='``bw`` • ``sw`` • ``duels`` • ``profile`` • ``wdr`` • ``server``\n\n``socials`` • ``skin`` • ``p`` • ``uuid`` • ``compare``\n\n``achievement``', inline=False)
+    helpembed.add_field(name='<:minecraft:848988105943810095> Minecraft', value='``bw`` • ``sw`` • ``duels`` • ``profile`` • ``wdr`` • ``server``\n\n``socials`` • ``skin`` • ``p`` • ``uuid`` • ``compare``\n\n``achievement`` • ``map`` • ``requeue``', inline=False)
 
     helpembed.add_field(name='<:misc:844235406877917234> Utility', value='``src`` • ``ping`` • ``invite`` • ``stats`` • ``suggest`` • ``prefix``', inline=False)
 
     helpembed.set_thumbnail(url='https://media.discordapp.net/attachments/8350712o70117834773/853578246984433684/lol.png?width=480&height=480')
 
-    helpembed.set_footer(text="Bloop v2.4 | Supelion#4275 | All Commmands work in DMs.")
+    helpembed.set_footer(text="Bloop v2.5 | Supelion#4275 | All Commmands work in DMs.")
 
     await ctx.reply(embed=helpembed, mention_author = False)
     print("The Help Command was executed!")
