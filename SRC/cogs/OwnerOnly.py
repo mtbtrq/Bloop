@@ -1,10 +1,7 @@
 import discord
-import json
-import os
-import aiohttp
 from discord.ext import commands
 
-class owner(commands.Cog):
+class Owner(commands.Cog):
 
     def __init__(self, client):
         self.client = client
@@ -263,4 +260,4 @@ class owner(commands.Cog):
       await ctx.reply(embed = ownerhelpembed)
 
 def setup(client):
-    client.add_cog(owner(client))
+    client.add_cog(Owner(client))

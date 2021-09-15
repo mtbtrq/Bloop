@@ -3,16 +3,28 @@ import traceback
 import sys
 from discord.ext import commands
 import json
+from datetime import datetime
 
 with open('./config.json') as jsonload:
   config = json.load(jsonload)
 
 noCoolDownUsers = config.get("noCoolDownUsers")
 
+now = datetime.now()
+
+logFileName = f"./logs - {now.strftime('%H ; %M ; %S')}.txt"
+
+print(f"Logging commands to {logFileName}")
+
 class CommandErrorHandler(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+
+    @commands.Cog.listener()
+    async def on_command(self, ctx):
+        logs = open(logFileName, "a")
+        logs.write(f"\n'{ctx.command}' was executed in '{ctx.guild.name}' (ID: {ctx.guild.id}) by {ctx.author} (ID: {ctx.author.id}) at {datetime.utcnow()} UTC")
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
