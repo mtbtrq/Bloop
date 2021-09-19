@@ -12,7 +12,7 @@ noCoolDownUsers = config.get("noCoolDownUsers")
 
 now = datetime.now()
 
-logFileName = f"./logs - {now.strftime('%H ; %M ; %S')}.txt"
+logFileName = f"./log - {now.strftime('%H ; %M ; %S')}.txt"
 
 print(f"Logging commands to {logFileName}")
 

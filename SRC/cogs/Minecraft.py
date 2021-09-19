@@ -17,6 +17,26 @@ with open('./config.json') as jsonload:
 
 hypixelapikey = config.get('hypixelapikey')
 
+async def getRank(apiData):
+  rank = await hywrap.rank(apiData)
+
+  if rank == "SUPERSTAR":
+    rank = "[MVP++] "
+  elif rank == "MVP_PLUS":
+    rank = "[MVP+] "
+  elif rank == "VIP_PLUS":
+    rank = "[VIP+] "
+  elif rank == "VIP":
+    rank = "[VIP] "
+  elif rank == "YOUTUBER":
+    rank = "[YOUTUBE] "
+  elif rank == "ADMIN":
+    rank = "[ADMIN] "
+  else:
+    rank = ""
+
+  return rank
+
 class Minecraft(commands.Cog):
 
     def __init__(self, client):
@@ -1341,12 +1361,10 @@ class Minecraft(commands.Cog):
         player1ign = mojangplayer1["name"]
         player2ign = mojangplayer2["name"]
 
-        img = Image.open("overall.png")
+        img = Image.open("./images/overall.png")
         draw = ImageDraw.Draw(img)
-        font = ImageFont.truetype("Minecraftia.ttf",
-                                  40)
-        fontbig = ImageFont.truetype("Minecraftia.ttf",
-                                      50)
+        font = ImageFont.truetype("./images/Minecraftia.ttf", 40)
+        fontbig = ImageFont.truetype("./images/Minecraftia.ttf", 50)
                                       
         draw.text((200, 200), f"{player1ign}", self.white, font=fontbig)
         draw.text((1200, 200), f"{player2ign}", self.white, font=fontbig)
@@ -1465,24 +1483,7 @@ class Minecraft(commands.Cog):
                   try:
                     api = await hywrap.player(uuid, hypixelapikey)
 
-                    rank = await hywrap.rank(api)
-
-                    if rank == "SUPERSTAR":
-                      rank = "[MVP++] "
-                    elif rank == "MVP_PLUS":
-                      rank = "[MVP+] "
-                    elif rank == "VIP_PLUS":
-                      rank = "[VIP+] "
-                    elif rank == "VIP":
-                      rank = "[VIP] "
-                    elif rank == "YOUTUBER":
-                      rank = "[YOUTUBE] "
-                    elif rank == "ADMIN":
-                      rank = "[ADMIN] "
-                    else:
-                      rank = ""
-
-                    IGN = mojang_data["name"]
+                    rank = await getRank(api)
 
                     img = Image.open("./images/bw.png")
                     draw = ImageDraw.Draw(img)
@@ -1510,7 +1511,7 @@ class Minecraft(commands.Cog):
                     KDR = round(float(Kills) / float(Deaths), 1)
                     void_kdr = round(float(voidkills) / float(voiddeaths), 1)
                     
-                    draw.text((50, 60), f"{rank}{IGN}", self.orangey, font=fontbig)
+                    draw.text((50, 60), f"{rank}{ign}", self.orangey, font=fontbig)
 
                     draw.text((50, 200), f"Games Played: {games:,}", self.white, font=font)
                     draw.text((50, 270), f"Final Kills: {FinalKills:,}", self.white, font=font)
@@ -1520,13 +1521,13 @@ class Minecraft(commands.Cog):
                     draw.text((50, 550), f"Void Deaths: {voiddeaths:,}", self.white, font=font)
                     draw.text((50, 620), f"Void KDR: {void_kdr:,}", self.white, font=font)
 
-                    draw.text((700, 200), f"Stars: {Levels:,}", self.white, font=font)
-                    draw.text((700, 270), f"Wins: {Wins:,}", self.white, font=font)
-                    draw.text((700, 340), f"Losses: {Losses:,}", self.white, font=font)
-                    draw.text((700, 410), f"WLR: {WLR:,}", self.white, font=font)
-                    draw.text((700, 480), f"BBLR: {BBLR:,}", self.white, font=font)
-                    draw.text((700, 550), f"KDR: {KDR:,}", self.white, font=font)
-                    draw.text((700, 620), f"Winstreak: {winstreak:,}", self.white, font=font)
+                    draw.text((600, 200), f"Stars: {Levels:,}", self.white, font=font)
+                    draw.text((600, 270), f"Wins: {Wins:,}", self.white, font=font)
+                    draw.text((600, 340), f"Losses: {Losses:,}", self.white, font=font)
+                    draw.text((600, 410), f"WLR: {WLR:,}", self.white, font=font)
+                    draw.text((600, 480), f"BBLR: {BBLR:,}", self.white, font=font)
+                    draw.text((600, 550), f"KDR: {KDR:,}", self.white, font=font)
+                    draw.text((600, 620), f"Winstreak: {winstreak:,}", self.white, font=font)
 
                     with io.BytesIO() as image_binary:
                         img.save(image_binary, 'PNG')
@@ -1544,35 +1545,12 @@ class Minecraft(commands.Cog):
                   try:
                     api = await hywrap.player(mojang_data["id"], hypixelapikey)
 
-                    async with aiohttp.ClientSession() as cs:
-                      async with cs.get(f'https://mc-heads.net/body/{mojang_data["id"]}/right') as skin:
-                        skin_read = await skin.read()
-                        image_bytesio = io.BytesIO(skin_read)
-
-                    async with aiohttp.ClientSession() as cs:
-                      async with cs.get(f"https://api.slothpixel.me/api/players/{player}") as profiledataraw:
-                        profiledata = await profiledataraw.json()
-                        rank = profiledata["rank"]
-
-                    if rank == "MVP_PLUS_PLUS":
-                      rank = "[MVP++]"
-                    elif rank == "MVP_PLUS":
-                      rank = "[MVP+]"
-                    elif rank == "VIP_PLUS":
-                      rank = "[VIP+]"
-                    elif rank == None:
-                      rank = "[Non]"
-                    elif rank == "YOUTUBER":
-                      rank = "[YOUTUBE]"
-                    elif rank == "MODERATOR":
-                      rank = "[MOD]"
-                    else:
-                      rank = f'[{profiledata["rank"]}]'
+                    rank = await getRank(api)
 
                     img = Image.open("./images/sw.png")
                     draw = ImageDraw.Draw(img)
-                    font = ImageFont.truetype("./images/Minecraftia.ttf", 40)
-                    fontbig = ImageFont.truetype("./images/Minecraftia.ttf", 50)
+                    font = ImageFont.truetype("./images/Minecraftia.ttf", 30)
+                    fontbig = ImageFont.truetype("./images/Minecraftia.ttf", 40)
                     
                     SwWins = (api["player"]["stats"]["SkyWars"]["wins"])
                     Heads = (api["player"]["stats"]["SkyWars"]["heads"])
@@ -1585,25 +1563,19 @@ class Minecraft(commands.Cog):
                     SwWLR = round(float(SwWins) / float(SwLosses), 1)
                     SwLvl = api["player"]["achievements"]["skywars_you_re_a_star"]
 
-                    draw.text((200, 150), f"{rank} {ign}", self.orangey, font=fontbig)
+                    draw.text((50, 60), f"{rank}{ign}", self.orangey, font=fontbig)
 
-                    draw.text((800, 270), f"Stars: {SwLvl:,}", self.white, font=font)
-                    draw.text((200, 270), f"Heads: {Heads:,}", self.white, font=font)
-
-                    draw.text((200, 400), f"Kills: {SwKills:,}", self.white, font=font)
-                    draw.text((200, 470), f"Deaths: {SwDeaths:,}", self.white, font=font)
-                    draw.text((200, 540), f"KDR: {SwKDR:,}", self.white, font=font)
+                    draw.text((50, 200), f"Stars: {SwLvl:,}", self.white, font=font)
+                    draw.text((50, 270), f"Coins: {SwCoins:,}", self.white, font=font)
+                    draw.text((50, 340), f"Kills: {SwKills:,}", self.white, font=font)
+                    draw.text((50, 410), f"Deaths: {SwDeaths:,}", self.white, font=font)
+                    draw.text((50, 480), f"KDR: {SwKDR:,}", self.white, font=font)
                     
-                    draw.text((800, 400), f"Wins: {SwWins:,}", self.white, font=font)
-                    draw.text((800, 470), f"Losses {SwLosses:,}", self.white, font=font)
-                    draw.text((800, 540), f"WLR {SwWLR:,}", self.white, font=font)
-
-                    draw.text((200, 800), f"Coins: {SwCoins:,}", self.white, font=font)
-                    draw.text((800, 800), f"Last Mode: {lastmode}", self.white, font=font)
-
-                    skin_img = Image.open(image_bytesio)
-                    skin_img.thumbnail((500, 500))
-                    img.paste(skin_img, (1400, 300), mask = skin_img)
+                    draw.text((600, 200), f"Wins: {SwWins:,}", self.white, font=font)
+                    draw.text((600, 270), f"Losses {SwLosses:,}", self.white, font=font)
+                    draw.text((600, 340), f"WLR {SwWLR:,}", self.white, font=font)
+                    draw.text((600, 410), f"Heads: {Heads:,}", self.white, font=font)
+                    draw.text((600, 480), f"Last Mode: {lastmode}", self.white, font=font)
 
                     with io.BytesIO() as image_binary:
                       img.save(image_binary, 'PNG')
@@ -1618,37 +1590,15 @@ class Minecraft(commands.Cog):
 
                 elif gamemode == "duels":
                   try:
-                    duels = await hywrap.duels(mojang_data["id"], hypixelapikey)
+                    api = await hywrap.player(mojang_data["id"], hypixelapikey)
+                    duels = api["player"]["stats"]["Duels"]
 
-                    async with aiohttp.ClientSession() as cs:
-                      async with cs.get(f'https://mc-heads.net/body/{mojang_data["id"]}/right') as skin:
-                        skin_read = await skin.read()
-                        image_bytesio = io.BytesIO(skin_read)
-
-                    async with aiohttp.ClientSession() as cs:
-                      async with cs.get(f"https://api.slothpixel.me/api/players/{player}") as profiledataraw:
-                        profiledata = await profiledataraw.json()
-                        rank = profiledata["rank"]
-
-                    if rank == "MVP_PLUS_PLUS":
-                      rank = "[MVP++]"
-                    elif rank == "MVP_PLUS":
-                      rank = "[MVP+]"
-                    elif rank == "VIP_PLUS":
-                      rank = "[VIP+]"
-                    elif rank == None:
-                      rank = "[Non]"
-                    elif rank == "YOUTUBER":
-                      rank = "[YOUTUBE]"
-                    elif rank == "MODERATOR":
-                      rank = "[MOD]"
-                    else:
-                      rank = f'[{profiledata["rank"]}]'
+                    rank = await getRank(api)
 
                     img = Image.open("./images/duels.png")
                     draw = ImageDraw.Draw(img)
-                    font = ImageFont.truetype("./images/Minecraftia.ttf", 40)
-                    fontbig = ImageFont.truetype("./images/Minecraftia.ttf", 50)
+                    font = ImageFont.truetype("./images/Minecraftia.ttf", 30)
+                    fontbig = ImageFont.truetype("./images/Minecraftia.ttf", 40)
 
                     ws = (duels["current_winstreak"])
                     best_ws = (duels["best_overall_winstreak"])
@@ -1661,26 +1611,19 @@ class Minecraft(commands.Cog):
                     coins = (duels["coins"])
                     games = (duels["games_played_duels"])
 
-                    draw.text((200, 150), f"{rank} {ign}", self.orangey, font=fontbig)
+                    draw.text((50, 60), f"{rank}{ign}", self.orangey, font=fontbig)
 
-                    draw.text((800, 270), f"Games Played: {games:,}", self.white, font=font)
-                    draw.text((200, 270), f"Coins: {coins:,}", self.white, font=font)
-
-                    draw.text((200, 400), f"Wins: {wins:,}", self.white, font=font)
-                    draw.text((200, 470), f"Losses: {losses:,}", self.white, font=font)
-                    draw.text((200, 540), f"WLR: {WLR:,}", self.white, font=font)
+                    draw.text((50, 200), f"Games Played: {games:,}", self.white, font=font)
+                    draw.text((50, 270), f"Coins: {coins:,}", self.white, font=font)
+                    draw.text((50, 340), f"Wins: {wins:,}", self.white, font=font)
+                    draw.text((50, 410), f"Losses: {losses:,}", self.white, font=font)
+                    draw.text((50, 480), f"WLR: {WLR:,}", self.white, font=font)
                     
-                    draw.text((800, 400), f"Swings: {swings:,}", self.white, font=font)
-                    draw.text((800, 470), f"Hits: {hits:,}", self.white, font=font)
-                    draw.text((800, 540), f"Accuracy: {accuracy:,}", self.white, font=font)
-
-                    draw.text((200, 800), f"Winstreak: {ws:,}", self.white, font=font)
-                    draw.text((800, 800), f"Best Winstreak: {best_ws:,}", self.white, font=font)
-
-                    skin_img = Image.open(image_bytesio)
-                    skin_img.thumbnail((500, 500))
-                    img.paste(skin_img, (1400, 400), mask = skin_img)
-                    
+                    draw.text((600, 200), f"Swings: {swings:,}", self.white, font=font)
+                    draw.text((600, 270), f"Hits: {hits:,}", self.white, font=font)
+                    draw.text((600, 340), f"Accuracy: {accuracy:,}", self.white, font=font)
+                    draw.text((600, 410), f"Winstreak: {ws:,}", self.white, font=font)
+                    draw.text((600, 480), f"Best Winstreak: {best_ws:,}", self.white, font=font)
 
                     with io.BytesIO() as image_binary:
                       img.save(image_binary, 'PNG')
@@ -1694,7 +1637,7 @@ class Minecraft(commands.Cog):
 
                 else:
                   errorembed = discord.Embed(title = 'Invalid Command Usage!')
-                  errorembed.add_field(name = 'Usage:', value = "``.p {gamemode} {player}``")
+                  errorembed.add_field(name = 'Usage:', value = "``.p {player} {gamemode}``")
                   errorembed.set_footer(text = 'Gamemode can be bedwars, skywars or duels')
                   errorembed.set_thumbnail(url = "https://media.discordapp.net/attachments/835071270117834773/856907114517626900/error.png")
                   await ctx.send(embed = errorembed)
