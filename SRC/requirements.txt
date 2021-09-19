@@ -1,3 +1,0 @@
-aiohttp
-pillow
-py-cord

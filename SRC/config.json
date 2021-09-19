@@ -1,7 +1,0 @@
-{
-  "token": "INERT YOUR DISCORD BOT TOKEN HERE",
-  "hypixelapikey": "INSERT YOUR HYPIXEL API KEY HERE",
-  "bot-log-channel": "INSERT A CHANNEL ID HERE",
-  "noCoolDownUsers": ["INSERT USER IDS HERE, SEPERATED BY COMMAS"],
-  "prefix": "."
-}
